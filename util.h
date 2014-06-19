@@ -4,6 +4,7 @@
 #include <string>
 
 typedef unsigned int	GLuint;	
+typedef unsigned int	GLenum;
 
 namespace util {
     void checkOpenGLError();
@@ -12,6 +13,7 @@ namespace util {
     void checkOpenGLError();
     void checkCompileError(GLuint shader);
     void checkLinkError(GLuint program);
+    GLuint compileShader(GLenum shaderType, const char* path);
 };
 
 #endif	/* UTIL_H */

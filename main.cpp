@@ -33,37 +33,14 @@ void compileShaders(void){
     GLuint vertexShader;
     GLuint fragmentShader;
     
-    string vertexSrc = util::readFile(vertexShaderPath);
-    string fragmentSrc = util::readFile(fragmentShaderPath);
-    
-    const char *vertexShaderSource = vertexSrc.c_str();
-    const char *fragmentShaderSource = fragmentSrc.c_str();
-    
-    util::checkOpenGLError();
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    util::checkOpenGLError();
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    util::checkOpenGLError();
-    glCompileShader(vertexShader);
-    util::checkCompileError(vertexShader);
-    util::checkOpenGLError();
+    vertexShader = util::compileShader(GL_VERTEX_SHADER, vertexShaderPath);
+    fragmentShader = util::compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
 
-            
-    
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    util::checkOpenGLError();
-    glCompileShader(fragmentShader);
-    util::checkCompileError(fragmentShader);
-    util::checkOpenGLError();
-    
     program = glCreateProgram();
-    util::checkOpenGLError();
     glAttachShader(program, vertexShader);
-    util::checkOpenGLError();
     glAttachShader(program, fragmentShader);
-    util::checkOpenGLError();
     glLinkProgram(program);
+
     util::checkOpenGLError();
     util::checkLinkError(program);
 

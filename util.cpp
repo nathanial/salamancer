@@ -61,3 +61,14 @@ void util::checkLinkError(GLuint program){
         throw OpenGLException();
     }
 }
+
+GLuint util::compileShader(GLenum shaderType, const char* path){
+    string shaderSource = readFile(path);
+    const char *source = shaderSource.c_str();
+    GLuint shader = glCreateShader(shaderType);
+    glShaderSource(shader, 1, &source, NULL);
+    glCompileShader(shader);
+    util::checkCompileError(shader);
+    util::checkOpenGLError();
+    return shader;
+}
