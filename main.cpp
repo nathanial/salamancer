@@ -15,11 +15,13 @@ static GLuint program;
 static SDL_Window* window;
 static SDL_Renderer* renderer;
 static bool running = true;
+static GLint colorLocation;
 
 static GLuint vao;
 
 static const char *vertexShaderPath = "shaders/vertex.shader";
 static const char *fragmentShaderPath = "shaders/fragment.shader";
+static const char *geometryShaderPath = "shaders/geometry.shader";
 
 
 void init(void){
@@ -30,30 +32,52 @@ void init(void){
 }
 
 void compileShaders(void){
-    GLuint vertexShader;
-    GLuint fragmentShader;
-    
-    vertexShader = util::compileShader(GL_VERTEX_SHADER, vertexShaderPath);
-    fragmentShader = util::compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
+    GLuint vertexShader = util::compileShader(GL_VERTEX_SHADER, vertexShaderPath);
+    GLuint fragmentShader = util::compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
+    GLuint geometryShader = util::compileShader(GL_GEOMETRY_SHADER, geometryShaderPath);
 
     program = glCreateProgram();
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
+    glAttachShader(program, geometryShader);
     glLinkProgram(program);
+    
+    colorLocation = glGetUniformLocation(program, "color");
 
     util::checkOpenGLError();
     util::checkLinkError(program);
+    
 
     init();
     
 }
 
 void render(){
-    const GLfloat color[] = { 1.0f, 0.0f, 0.0f, 1.0f};
+    double currentTime = ((double)SDL_GetTicks()) / 1000;
+    
+    const GLfloat color[] = { 1.0f, 1.0f,
+                              1.0f, 1.0f };
+    const GLfloat reddish[] = {(float)sin(currentTime),0,0,1};
     glClearBufferfv(GL_COLOR, 0, color);
+
+    // Use the program object we created earlier for rendering
     glUseProgram(program);
-    glPointSize(40.0f);
-    glDrawArrays(GL_POINTS, 0, 1);
+
+    GLfloat position[] = { (float)sin(currentTime) * 0.5f,
+                         (float)cos(currentTime) * 0.5f,
+                         0.0f, 0.0f };
+
+    // Update the value of input attribute 0
+    glVertexAttrib4fv(0, position);
+    glUniform4fv(colorLocation, 1, reddish);
+    
+    util::checkOpenGLError();
+
+    glPointSize(5);
+    // Draw one triangle
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    
+    
     SDL_GL_SwapWindow(window);
 }
 
@@ -69,8 +93,8 @@ void handleEvents(){
                 running = false;
                 break;
             default:
-                break;
-        }
+                break; 
+       }
     }
 }
 
@@ -104,7 +128,8 @@ int main(int argc, char* args[]){
     
     
     compileShaders();
-
+    
+    
     while(running){
         handleEvents();
         update();
