@@ -1,15 +1,10 @@
 #version 330 core
 
-// "offset" and "color" are input vertex attributes
-layout (location = 0) in vec4 offset;
+layout (location = 0) in vec4 Vertex;
+
+uniform mat4 Transform;
 
 void main(void)
 {
-    const vec4 vertices[3] = vec4[3](vec4( 0.25, -0.25, 0.5, 1.0),
-                                     vec4(-0.25, -0.25, 0.5, 1.0),
-                                     vec4( 0.25,  0.25, 0.5, 1.0));
-
-    // Add "offset" to our hard-coded vertex position
-    gl_Position = vertices[gl_VertexID] + offset;
-
+    gl_Position = Transform * Vertex;
 }
