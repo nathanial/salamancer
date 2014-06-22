@@ -15,15 +15,17 @@ using namespace std;
 static SDL_Window* window;
 static SDL_Renderer* renderer;
 static bool running = true;
-static GLint colorLocation;
-static GLint transformLocation;
 
 static int windowWidth = 600;
 static int windowHeight = 600;
 
-//static GLProgram glProgram;
-
 static GLuint buffer;
+
+static GLProgram program;
+
+static GLint colorLocation;
+static GLint transformLocation;
+
 
 void init(void){
     GLuint vao;
@@ -31,28 +33,15 @@ void init(void){
     glBindVertexArray(vao);
     
     glGenBuffers(1, &buffer);
-    util::checkOpenGLError();
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    util::checkOpenGLError();
     glBufferData(GL_ARRAY_BUFFER, 1024 * 1024, NULL, GL_STATIC_DRAW);
-    util::checkOpenGLError();
     
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shapes::square), shapes::square);
-    util::checkOpenGLError();
-    
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
-    util::checkOpenGLError();
     glEnableVertexAttribArray(0);
+
     util::checkOpenGLError();
     
-}
-
-void compileShaders(void){
-//    glProgram.loadVertexShader("shaders/vertex.shader");
-//    glProgram.loadFragmentShader("shaders/fragment.shader");
-//    glProgram.link();
-//    glProgram.use();
-    //init();
 }
 
 void render(){
@@ -81,6 +70,7 @@ void render(){
     glUniformMatrix4fv(transformLocation, 1, GL_FALSE, transform);
     
     util::checkOpenGLError();
+    
     glUniform4fv(colorLocation, 1, reddish);
     util::checkOpenGLError();
 
@@ -152,20 +142,23 @@ void runEventLoop(){
     }    
 }
 
-void test(){
-    GLProgram program;
+int main(int argc, char* args[]){
+    initSDL();
+    initGlew();
+    
+    
     program.loadVertexShader("shaders/vertex.shader");
     program.loadFragmentShader("shaders/fragment.shader");
     program.compileAndLink();
-}
-
-int main(int argc, char* args[]){
-    test();
+    program.use();
     
-//    initSDL();
-//    initGlew();
-//    compileShaders();
-//    //runEventLoop();
-//    SDL_Quit();
+    transformLocation = program.getUniformLocation("Transform");
+    colorLocation = program.getUniformLocation("color");
+
+
+    init();
+    
+    runEventLoop();
+    SDL_Quit();
     return 0;
 }

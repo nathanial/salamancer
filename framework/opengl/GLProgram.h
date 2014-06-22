@@ -15,6 +15,8 @@
 #include "Shader.h"
 
 typedef std::shared_ptr<Shader> ShaderPtr;
+typedef unsigned int	GLuint;	
+typedef int GLint;
 
 class GLProgram {
 public:
@@ -25,10 +27,14 @@ public:
     void loadFragmentShader(const char *path);
     void compileAndLink();
     void use();
+    GLint getUniformLocation(const char *name);
     
 private:
     DISALLOW_COPY_AND_ASSIGN(GLProgram);
     std::vector<ShaderPtr> shaders;
+    GLuint programHandle;
+    
+    void loadShader(GLuint shaderType, const char *path);
 };
 
 #endif	/* GLPROGRAM_H */

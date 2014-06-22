@@ -16,11 +16,16 @@ public:
     Shader(GLuint shaderType, const char *path);
     ~Shader();
     void compile();
+    void attach(GLuint program);
+    void detach(GLuint program);
 private:    
     DISALLOW_COPY_AND_ASSIGN(Shader);
     
     std::string path;
+    bool compiled = false;
     GLuint shaderType;
+    GLuint shaderHandle;
+    
 };
 
 #endif	/* SHADER_H */
