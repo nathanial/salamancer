@@ -8,25 +8,20 @@
 #include "util.h"
 #include "shapes.h"
 #include "vmath.h"
+#include "framework/opengl/GLProgram.h"
 
 using namespace std;
 
-#define MAX_COMPILE_LOG_LEN 1000
-
-static GLuint program;
 static SDL_Window* window;
 static SDL_Renderer* renderer;
 static bool running = true;
 static GLint colorLocation;
 static GLint transformLocation;
 
-static const char *vertexShaderPath = "shaders/vertex.shader";
-static const char *fragmentShaderPath = "shaders/fragment.shader";
-static const char *geometryShaderPath = "shaders/geometry.shader";
-
 static int windowWidth = 600;
 static int windowHeight = 600;
 
+//static GLProgram glProgram;
 
 static GLuint buffer;
 
@@ -53,26 +48,11 @@ void init(void){
 }
 
 void compileShaders(void){
-    GLuint vertexShader = util::compileShader(GL_VERTEX_SHADER, vertexShaderPath);
-    GLuint fragmentShader = util::compileShader(GL_FRAGMENT_SHADER, fragmentShaderPath);
-    GLuint geometryShader = util::compileShader(GL_GEOMETRY_SHADER, geometryShaderPath);
-
-    program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-    //glAttachShader(program, geometryShader);
-    glLinkProgram(program);
-    
-    colorLocation = glGetUniformLocation(program, "color");
-    transformLocation = glGetUniformLocation(program, "Transform");
-
-    util::checkOpenGLError();
-    util::checkLinkError(program);
-    
-    glUseProgram(program);
-
-    init();
-    
+//    glProgram.loadVertexShader("shaders/vertex.shader");
+//    glProgram.loadFragmentShader("shaders/fragment.shader");
+//    glProgram.link();
+//    glProgram.use();
+    //init();
 }
 
 void render(){
@@ -134,8 +114,7 @@ void handleEvents(){
     }
 }
 
-int main(int argc, char* args[]){
-    
+void initSDL(){
     SDL_Init(SDL_INIT_EVERYTHING);
     
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -151,7 +130,9 @@ int main(int argc, char* args[]){
     }
     
     SDL_GL_MakeCurrent(window, context);
-    
+}
+
+void initGlew(){
     glewExperimental = true;
     
     GLenum status = glewInit();
@@ -161,18 +142,30 @@ int main(int argc, char* args[]){
     }
     
     util::clearOpenGLErrors();
-    
-    
-    compileShaders();
-    
-    
+}
+
+void runEventLoop(){
     while(running){
         handleEvents();
         update();
         render();
-    }
+    }    
+}
+
+void test(){
+    GLProgram program;
+    program.loadVertexShader("shaders/vertex.shader");
+    program.loadFragmentShader("shaders/fragment.shader");
+    program.compileAndLink();
+}
+
+int main(int argc, char* args[]){
+    test();
     
-//    SDL_GL_DeleteContext(context);
-    SDL_Quit();
+//    initSDL();
+//    initGlew();
+//    compileShaders();
+//    //runEventLoop();
+//    SDL_Quit();
     return 0;
 }
