@@ -17,10 +17,13 @@ public:
     virtual size_t dataSize() = 0;
     virtual void* dataPtr() = 0;
     virtual int vertexCount() = 0;
+    virtual void* colorPtr();
+    virtual size_t colorSize();
     
 protected:
     GLuint vao;
     GLuint buffer;
+    GLuint colorBuffer;
 };
 
 #endif	/* ELEMENT_H */

@@ -10,6 +10,7 @@
 #include "framework/opengl/GLProgram.h"
 #include "framework/elements/Element.h"
 #include "framework/elements/Square.h"
+#include "framework/elements/Cube.h"
 
 using namespace std;
 
@@ -23,44 +24,42 @@ static int windowHeight = 600;
 
 
 static GLProgram program;
-static Square square;
+static Cube cube;
 
-static GLint colorLocation;
 static GLint transformLocation;
 
 
-
 void render(){
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     double currentTime = ((double)SDL_GetTicks()) / 1000;
     
     const GLfloat color[] = { 1.0f, 1.0f,
                               1.0f, 1.0f };
     
-    float redValue = (float)sin(currentTime);
-    if(redValue < 0){
-        redValue *= -1;
-    }
-    
-    const GLfloat reddish[] = {redValue,0,0,1};
-    
-    float scaleValue = 50* (sin(currentTime / 10))  + 0.1;
+    float rotation = (int)(SDL_GetTicks() / 10) % 360;
     
     float aspect = (float)windowWidth / (float)windowHeight;
     vmath::mat4 transform(vmath::mat4::identity());
     
-    transform = transform * vmath::perspective(45.0f, aspect, 0.1f, 100.0f);
+    auto perspective = vmath::perspective(45.0f, aspect, 0.1f, 100.0f);
+    
+    transform = transform * perspective;
+    transform = transform * vmath::lookat(
+            vmath::vec3(4.0f,3.0f,-3.0f), 
+            vmath::vec3(0.0f,0.0f,0.0f), 
+            vmath::vec3(0.0f,1.0f,0.0f)
+            );
+    transform = transform * vmath::rotate(rotation, 0.0f, 1.0f, 0.0f);
     
     glClearBufferfv(GL_COLOR, 0, color);
-    util::checkOpenGLError();
-    
     glUniformMatrix4fv(transformLocation, 1, GL_FALSE, transform);
-    
-    util::checkOpenGLError();
-    
-    glUniform4fv(colorLocation, 1, reddish);
-    util::checkOpenGLError();
 
-    square.render();
+    cube.render();
+    
+    util::checkOpenGLError();
+    
     
     SDL_GL_SwapWindow(window);
 }
@@ -138,10 +137,8 @@ int main(int argc, char* args[]){
     program.use();
     
     transformLocation = program.getUniformLocation("Transform");
-    colorLocation = program.getUniformLocation("color");
     
-
-    square.load();
+    cube.load();
     
     runEventLoop();
     SDL_Quit();
