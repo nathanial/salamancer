@@ -6,9 +6,10 @@
 #include <string>
 #include "exceptions.h"
 #include "util.h"
-#include "shapes.h"
 #include "vmath.h"
 #include "framework/opengl/GLProgram.h"
+#include "framework/elements/Element.h"
+#include "framework/elements/Square.h"
 
 using namespace std;
 
@@ -19,30 +20,15 @@ static bool running = true;
 static int windowWidth = 600;
 static int windowHeight = 600;
 
-static GLuint buffer;
+
 
 static GLProgram program;
+static Square square;
 
 static GLint colorLocation;
 static GLint transformLocation;
 
 
-void init(void){
-    GLuint vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, 1024 * 1024, NULL, GL_STATIC_DRAW);
-    
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(shapes::square), shapes::square);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(0);
-
-    util::checkOpenGLError();
-    
-}
 
 void render(){
     double currentTime = ((double)SDL_GetTicks()) / 1000;
@@ -74,8 +60,7 @@ void render(){
     glUniform4fv(colorLocation, 1, reddish);
     util::checkOpenGLError();
 
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    
+    square.render();
     
     SDL_GL_SwapWindow(window);
 }
@@ -154,9 +139,9 @@ int main(int argc, char* args[]){
     
     transformLocation = program.getUniformLocation("Transform");
     colorLocation = program.getUniformLocation("color");
+    
 
-
-    init();
+    square.load();
     
     runEventLoop();
     SDL_Quit();

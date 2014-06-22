@@ -5,7 +5,8 @@
 #include <vector>
 #include <functional>
 
-typedef unsigned int	GLuint;	
+typedef unsigned int	GLuint;
+typedef int             GLint;
 typedef unsigned int	GLenum;
 
 namespace util {
