@@ -28,10 +28,27 @@ static Cube cube;
 
 static GLint transformLocation;
 
+float absF(float x){
+    if(x < 0){
+        return -1 * x;
+    } else {
+        return x;
+    }
+}
+
+vmath::mat4 createTransform(double currentTime, float x, float y, float z){
+    float aspect = (float)windowWidth / (float)windowHeight;
+    vmath::mat4 transform(vmath::mat4::identity());
+    transform = vmath::mat4::identity();
+    transform *= vmath::perspective(1, aspect, 0.1f, 1000.0f);
+    transform *= vmath::translate(x, y, z);
+    transform *= vmath::rotate(90.0f, 1.0f, 0.0f, 0.0f);
+    transform *= vmath::translate(0.0f, 0.0f, (float)sin(currentTime * 2) * 10);
+    return transform;
+}
 
 void render(){
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS);
+    
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     double currentTime = ((double)SDL_GetTicks()) / 1000;
     
@@ -40,26 +57,21 @@ void render(){
     
     float rotation = (int)(SDL_GetTicks() / 10) % 360;
     
-    float aspect = (float)windowWidth / (float)windowHeight;
-    vmath::mat4 transform(vmath::mat4::identity());
+    float z = -300.0f;
     
-    auto perspective = vmath::perspective(45.0f, aspect, 0.1f, 100.0f);
-    
-    transform = transform * perspective;
-    transform = transform * vmath::lookat(
-            vmath::vec3(4.0f,3.0f,-3.0f), 
-            vmath::vec3(0.0f,0.0f,0.0f), 
-            vmath::vec3(0.0f,1.0f,0.0f)
-            );
-    transform = transform * vmath::rotate(rotation, 0.0f, 1.0f, 0.0f);
+    auto renderCube = [&](float x, float y){
+        vmath::mat4 transform = createTransform(currentTime, x, y, z);
+        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, transform);
+        cube.render();
+    };
     
     glClearBufferfv(GL_COLOR, 0, color);
-    glUniformMatrix4fv(transformLocation, 1, GL_FALSE, transform);
 
-    cube.render();
-    
-    util::checkOpenGLError();
-    
+    for(int i = 0; i < 100; i++){
+        for(int j = 0; j < 100; j++){
+            renderCube((float)(i - 50)*2, (float)(j - 50)*2);
+        }
+    }
     
     SDL_GL_SwapWindow(window);
 }
@@ -94,7 +106,7 @@ void initSDL(){
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-    window = SDL_CreateWindow("GodKing", 0, 0, 600, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    window = SDL_CreateWindow("GodKing", 200, 200, 600, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
     
     SDL_GLContext context = SDL_GL_CreateContext(window);
     
@@ -119,16 +131,35 @@ void initGlew(){
 }
 
 void runEventLoop(){
+    Uint32 frameCount = 0;
+    Uint32 frameTime = 0;
+    Uint32 ticks = SDL_GetTicks();
+    
+    auto fps = [&](){
+        std::cout << 1000.0 / frameTime << ", ";
+    };
+    
     while(running){
         handleEvents();
         update();
         render();
+        frameCount++;
+        Uint32 newTicks = SDL_GetTicks();
+        frameTime = newTicks - ticks;
+        ticks = newTicks;
+        fps();
     }    
+}
+
+void initGL(){
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 }
 
 int main(int argc, char* args[]){
     initSDL();
     initGlew();
+    initGL();
     
     
     program.loadVertexShader("shaders/vertex.shader");
