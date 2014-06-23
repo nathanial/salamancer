@@ -11,6 +11,7 @@
 #include "framework/elements/Element.h"
 #include "framework/elements/Square.h"
 #include "framework/elements/Cube.h"
+#include "framework/elements/Chunk.h"
 
 using namespace std;
 
@@ -24,7 +25,7 @@ static int windowHeight = 600;
 
 
 static GLProgram program;
-static Cube cube;
+static Chunk chunk;
 
 static GLint transformLocation;
 
@@ -43,7 +44,7 @@ vmath::mat4 createTransform(double currentTime, float x, float y, float z){
     transform *= vmath::perspective(1, aspect, 0.1f, 1000.0f);
     transform *= vmath::translate(x, y, z);
     transform *= vmath::rotate(90.0f, 1.0f, 0.0f, 0.0f);
-    transform *= vmath::translate(0.0f, 0.0f, (float)sin(currentTime * 2) * 10);
+    transform *= vmath::translate(0.0f, 0.0f, (float)sin(currentTime) * 5);
     return transform;
 }
 
@@ -55,23 +56,17 @@ void render(){
     const GLfloat color[] = { 1.0f, 1.0f,
                               1.0f, 1.0f };
     
-    float rotation = (int)(SDL_GetTicks() / 10) % 360;
+    float z = -20.0f;
     
-    float z = -300.0f;
-    
-    auto renderCube = [&](float x, float y){
+    auto renderChunk = [&](float x, float y){
         vmath::mat4 transform = createTransform(currentTime, x, y, z);
         glUniformMatrix4fv(transformLocation, 1, GL_FALSE, transform);
-        cube.render();
+        chunk.render();
     };
     
     glClearBufferfv(GL_COLOR, 0, color);
 
-    for(int i = 0; i < 100; i++){
-        for(int j = 0; j < 100; j++){
-            renderCube((float)(i - 50)*2, (float)(j - 50)*2);
-        }
-    }
+    renderChunk(0.0f,0.0f);
     
     SDL_GL_SwapWindow(window);
 }
@@ -162,14 +157,14 @@ int main(int argc, char* args[]){
     initGL();
     
     
-    program.loadVertexShader("shaders/vertex.shader");
-    program.loadFragmentShader("shaders/fragment.shader");
+    program.loadVertexShader("/home/nathan/Projects/godking/shaders/vertex.shader");
+    program.loadFragmentShader("/home/nathan/Projects/godking/shaders/fragment.shader");
     program.compileAndLink();
     program.use();
     
     transformLocation = program.getUniformLocation("Transform");
     
-    cube.load();
+    chunk.load();
     
     runEventLoop();
     SDL_Quit();
