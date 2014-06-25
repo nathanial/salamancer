@@ -138,12 +138,28 @@ void Chunk::generateCubesBuffer(){
     
     GLfloat *cubeVertices = new GLfloat[FLOATS_IN_ARRAY * CUBES];
     
-    for(int i = 0; i < (VERTICES_PER_CUBE * CUBES); i ++){
-        for(int j = 0; j < 4; j++){
-            cubeVertices[i * 4 + j] = cube_vertices[(i*4+j) % FLOATS_IN_ARRAY];
-            if(j == 0){
-                int cube = i / VERTICES_PER_CUBE;
-                cubeVertices[i * 4 + j] += OFFSET * cube;
+    int cubeIndex = 0;
+    auto createCube = [&](int row, int column, int rank){
+        for(int i = 0; i < VERTICES_PER_CUBE; i++){
+            for(int j = 0; j < 4; j++){
+                int index = (i * 4 + j) + (VERTICES_PER_CUBE * cubeIndex * 4);
+                cubeVertices[index] = cube_vertices[index % FLOATS_IN_ARRAY];
+                if(j == 0){
+                    cubeVertices[index] += OFFSET * row;
+                } else if(j == 1){
+                    cubeVertices[index] += OFFSET * column;
+                } else if(j == 2){
+                    cubeVertices[index] += OFFSET * rank;
+                }
+            }                    
+        }
+        cubeIndex++;
+    };
+    
+    for(int row = 0; row < ROWS; row++){
+        for(int column = 0; column < COLUMNS; column++){
+            for(int rank = 0; rank < RANKS; rank++){
+                createCube(row, column, rank);
             }
         }
     }
