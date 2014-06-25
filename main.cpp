@@ -19,8 +19,8 @@ static SDL_Window* window;
 static SDL_Renderer* renderer;
 static bool running = true;
 
-static int windowWidth = 600;
-static int windowHeight = 600;
+static int windowWidth = 1920;
+static int windowHeight = 1080;
 
 
 
@@ -66,7 +66,9 @@ void render(){
     
     glClearBufferfv(GL_COLOR, 0, color);
 
-    renderChunk(-15, 10.0f);
+    renderChunk(40, 10.0f);
+    renderChunk(0, 10.0f);
+    renderChunk(-40, 10.0f);
     
     SDL_GL_SwapWindow(window);
 }
@@ -85,9 +87,9 @@ void handleEvents(){
             case SDL_WINDOWEVENT:
                 switch(event.window.event){
                     case SDL_WINDOWEVENT_RESIZED:
-                        windowWidth = event.window.data1;
-                        windowHeight = event.window.data2;
-                        glViewport(0,0,event.window.data1, event.window.data2);
+                        windowWidth = event.window.data1 / 2.0;
+                        windowHeight = event.window.data2 / 2.0;
+                        glViewport(0,0,event.window.data1 / 2.0, event.window.data2 / 2.0);
                         break;
                 }
                 break;
@@ -101,7 +103,7 @@ void initSDL(){
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-    window = SDL_CreateWindow("GodKing", 200, 200, 600, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
+    window = SDL_CreateWindow("GodKing", 200, 200, windowWidth, windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     
     SDL_GLContext context = SDL_GL_CreateContext(window);
     
@@ -123,6 +125,9 @@ void initGlew(){
     }
     
     util::clearOpenGLErrors();
+    
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
 }
 
 void runEventLoop(){
