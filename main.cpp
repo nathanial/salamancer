@@ -44,7 +44,7 @@ vmath::mat4 createTransform(double currentTime, float x, float y, float z){
     transform *= vmath::perspective(1, aspect, 0.1f, 1000.0f);
     transform *= vmath::translate(x, y, z);
     transform *= vmath::rotate(90.0f, 1.0f, 0.0f, 0.0f);
-    transform *= vmath::translate(0.0f, 0.0f, (float)sin(currentTime) * 5);
+    transform *= vmath::translate(0.0f, 0.0f, (float)sin(currentTime) * 50);
     return transform;
 }
 
@@ -56,7 +56,7 @@ void render(){
     const GLfloat color[] = { 1.0f, 1.0f,
                               1.0f, 1.0f };
     
-    float z = -20.0f;
+    float z = -500.0f;
     
     auto renderChunk = [&](float x, float y){
         vmath::mat4 transform = createTransform(currentTime, x, y, z);

@@ -44,6 +44,7 @@ private:
     GLuint colorBuffer;
     
     void generateCubesBuffer();
+    void generateColorsBuffer();
 };
 
 #endif	/* CHUNK_H */
