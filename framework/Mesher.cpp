@@ -21,22 +21,18 @@ struct Point {
     }
 };
 
-struct Vertex {
-    
-};
+typedef std::vector<float> FloatArray;
 
-struct Face {
-    
-};
-
+typedef FloatArray Vertex;
 
 typedef std::vector<Point> Points;
 
 typedef std::vector<Vertex> Vertices;
 
-typedef std::vector<Face> Faces;
+typedef std::vector<Vertex> Faces;
 
 typedef std::unique_ptr<int[]> Int32Array;
+
 
 
 struct MonotonePolygon {
@@ -53,15 +49,15 @@ struct MonotonePolygon {
 
 typedef std::vector<MonotonePolygon> Polygons;
 
-void merge_run(MonotonePolygon &polygon, auto v, auto u_l, auto u_r){
+void merge_run(MonotonePolygon &polygon, float v, float u_l, float u_r){
     
 }
 
-void close_off(auto a, auto b){
+void close_off(MonotonePolygon &poly, int value){
     
 }
 
-void mesh(auto volume, auto dims){
+void mesh(Int32Array volume, Int32Array dims){
     auto f = [&](int i, int j, int k){
         return volume[i + dims[0] * (j + dims[1] * k)];
     };
@@ -122,8 +118,8 @@ void mesh(auto volume, auto dims){
                 int fp = 0;
                 for(int i = 0, j = 0; i < nf && j < nr-2; ){
                     auto p = polygons[frontier[i]];
-                    auto p_1 = p.left.at(p.left.size()-1).first;
-                    auto p_r = p.right.at(p.right.size()-1).first;
+                    auto p_1 = p.left[p.left.size()-1].first;
+                    auto p_r = p.right[p.right.size()-1].first;
                     auto p_c = p.color;
                     auto r_l = runs[j]; //start of run
                     auto r_r = runs[j+2]; //end of run
@@ -148,6 +144,142 @@ void mesh(auto volume, auto dims){
                             close_off(p, x[v]);
                             i++;
                         }
+                    }
+                }
+                
+                //close off any residual polygons
+                for(; i < nf; i++){
+                    close_off(polygons[i], x[v]);
+                }
+                
+                //add any extra runs to frontier
+                for(; j < nr-2; j += 2){
+                    int r_l = runs[j];
+                    int r_r = runs[j+2];
+                    int r_c = runs[j+1];
+                    if(r_c){
+                        MonotonePolygon n_poly(r_c, x[v], r_l, r_r);
+                        next_frontier[fp++] = polygons.size();
+                        polygons.push_back(n_poly);
+                    }
+                }
+
+                next_frontier.swap(frontier);
+                nf = fp;
+            }
+            
+            //close off frontier
+            for(int i = 0; i < nf; i++){
+                auto p = polygons[frontier[i]];
+                close_off(p, dims[v]);
+            }
+            
+            //monotone subdivision of polygon is complete at this point
+            x[axis]++;
+            
+            //now we just need to triangulate each monotone polygon
+            for(int i = 0; i < polygons.size(); i++){
+                MonotonePolygon p = polygons[i];
+                Color c = p.color;
+                bool flipped = false;
+                
+                if(c < 0){
+                    flipped = true;
+                    c = -c;
+                }
+                
+                for(int j = 0; j < p.left.size(); j++){
+                    left_index[j] = vertices.size();
+                    Vertex y = {0.0,0.0,0.0};
+                    Point z = p.left[j];
+                    y[axis] = x[axis];
+                    y[u] = z.first;
+                    y[v] = z.second;
+                    vertices.push_back(y);
+                }
+                
+                for(int j = 0; j < p.right.size(); j++){
+                    right_index[j] = vertices.size();
+                    Vertex y = {0.0,0.0,0.0};
+                    Point z = p.right[j];
+                    y[axis] = x[axis];
+                    y[u] = z.first;
+                    y[v] = z.second;
+                    vertices.push_back(y);
+                }
+                
+                //triangulate the monotone polygon
+                int bottom = 0;
+                int top = 0;
+                int l_i = 0;
+                int r_i = 1;
+                bool side = true;
+                
+                stack[top++] = left_index[0];
+                stack[top++] = p.left[0].first;
+                stack[top++] = p.left[0].second;
+                
+                stack[top++] = right_index[0];
+                stack[top++] = p.right[0].first;
+                stack[top++] = p.right[0].second;
+                
+                while(l_i < p.left.size() || r_i < p.right.size()){
+                    bool n_side = false;
+                    
+                    if(l_i == p.left.size()){
+                        n_side = true;
+                    } else if(r_i != p.right.size()) {
+                        Point l = p.left[l_i];
+                        Point r = p.right[r_i];
+                        n_side = l.second > r.second;
+                    }
+                    auto idx = n_side ? right_index[r_i] : left_index[l_i];
+                    Point vert = n_side ? p.right[r_i] : p.left[l_i];
+                    if(n_side != side){
+                        //opposite side
+                        while(bottom+3 < top){
+                            if(flipped == n_side){
+                                faces.push_back({stack[bottom], stack[bottom+3], idx, c});
+                            } else {
+                                faces.push_back({stack[bottom+3], stack[bottom], idx, c});
+                            }
+                            bottom += 3;
+                        }
+                    } else {
+                        while(bottom+3 < top){
+                            for(int j = 0; j < 2; j++){
+                                for(int k = 0; k < 2; k++){
+                                    if(k == 0){
+                                        delta[j][k] = stack[top-3*(j+1)+k+1] - vert.first;
+                                    } else {
+                                        delta[j][k] = stack[top-3*(j+1)+k+1] - vert.second;
+                                    }
+                                }
+                                auto det = delta[0][0] * delta[1][1] - delta[1][0] * delta[0][1];
+                                if(n_side == (det > 0)){
+                                    break;
+                                }
+                                if(det != 0){
+                                    if(flipped == n_side){
+                                        faces.push_back({stack[top-3], stack[top-6], idx, c});
+                                    } else {
+                                        faces.push_back({stack[top-6], stack[top-3], idx, c});
+                                    }
+                                }
+                                top -= 3;
+                            }
+                        }
+                        
+                        stack[top++] = idx;
+                        stack[top++] = vert.first;
+                        stack[top++] = vert.second;
+                        
+                        if(n_side){
+                            r_i++;
+                        } else {
+                            l_i++;
+                        }
+                        side = n_side;
                     }
                 }
             }
