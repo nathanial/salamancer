@@ -128,6 +128,8 @@ void initGlew(){
     
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
+    
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 }
 
 void runEventLoop(){

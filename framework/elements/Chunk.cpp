@@ -113,7 +113,6 @@ void Chunk::load(){
     glGenVertexArrays(1, &this->vao);
     glBindVertexArray(this->vao);
     
-
     this->generateCubesBuffer();
     this->generateColorsBuffer();
 
