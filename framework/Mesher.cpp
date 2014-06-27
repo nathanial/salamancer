@@ -31,6 +31,7 @@ void Mesher::close_off(MonotonePolygon &poly, float value){
     poly.right.push_back(Point(poly.right[poly.right.size()-1].first, value));
 }
 
+
 std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims[3]){
     auto f = [&](int x, int y, int z){
         return volume.voxels[x][y][z];
@@ -243,20 +244,22 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
                                 top -= 3;
                             }
                         }
-                        
-                        stack[top++] = idx;
-                        stack[top++] = vert.first;
-                        stack[top++] = vert.second;
-                        
-                        if(n_side){
-                            r_i++;
-                        } else {
-                            l_i++;
-                        }
-                        side = n_side;
+                       
                     }
+                    stack[top++] = idx;
+                    stack[top++] = vert.first;
+                    stack[top++] = vert.second;
+
+                    if(n_side){
+                        r_i++;
+                    } else {
+                        l_i++;
+                    }
+                    side = n_side;
                 }
             }
         }
     }
+    
+    return std::tuple<Vertices, Faces>(vertices, faces);
 }
