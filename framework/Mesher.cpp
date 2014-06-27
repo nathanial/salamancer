@@ -41,7 +41,6 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
     Faces faces;
     
     for(int axis = 0; axis < 3; axis++){
-        int i,j,k;
         int u = (axis+1)%3; //u and v are orthogonal directions to the axis
         int v = (axis+2)%3;
         int x[3] = {0};
@@ -51,7 +50,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
         Int32Array next_frontier(new int[dims[u]]);
         Int32Array left_index(new int[2 * dims[v]]);
         Int32Array right_index(new int[2 * dims[v]]);
-        Int32Array stack(new int[24 * dims[v]]);
+        FloatArray stack(24 * dims[v]);
         int delta[][2] = {{0,0},{0,0}};
         
         //q points along axis
@@ -91,6 +90,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
                 
                 //update the frontier by merging runs
                 int fp = 0;
+                int i,j;
                 for(i = 0, j = 0; i < nf && j < nr-2; ){
                     auto p = polygons[frontier[i]];
                     auto p_1 = p.left[p.left.size()-1].first;

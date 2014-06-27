@@ -10,6 +10,7 @@
 
 #include "util.h"
 #include "framework/Volume.h"
+#include "framework/Mesher.h"
 
 class Position {
 public:
@@ -36,6 +37,7 @@ private:
 
     Volume volume;
     Position position;
+    Mesher::Vertices vertices;
     
     GLuint vao;
     GLuint cubesBuffer;

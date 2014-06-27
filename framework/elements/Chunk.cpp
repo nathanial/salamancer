@@ -12,6 +12,8 @@
 #include "framework/Mesher.h"
 #include "framework/Volume.h"
 
+static const bool mesh = true;
+
 
 static const int VERTICES_PER_CUBE = 12 * 3;
 static const int CUBES = Volume::XWIDTH * Volume::YWIDTH * Volume::ZWIDTH;
@@ -110,8 +112,18 @@ Chunk::Chunk() {
     }
     
     int dims[3] = {Volume::XWIDTH, Volume::YWIDTH, Volume::ZWIDTH};
-    Mesher::mesh(this->volume, dims);
+    auto meshResults = Mesher::mesh(this->volume, dims);
+    Mesher::Vertices vertices = std::get<0>(meshResults);
+    Mesher::Faces faces = std::get<1>(meshResults);
+    for(auto v : vertices){
+        std::cout << "Vertex: " << v[0] << "," << v[1] << "," << v[2] << std::endl;
+    }
+    for(auto f : faces){
+        std::cout << "Face: " << f[0] << "," << f[1] << "," << f[2] << std::endl;
+    }
     
+    
+    this->vertices = vertices;
 }
 
 Chunk::~Chunk() {
@@ -130,7 +142,11 @@ void Chunk::load(){
 
 void Chunk::render(){
     glBindVertexArray(this->vao);
-    glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_CUBE * CUBES);
+    if(mesh){
+        glDrawArrays(GL_TRIANGLES, 0, this->vertices.size());
+    } else {
+        glDrawArrays(GL_TRIANGLES, 0, VERTICES_PER_CUBE * CUBES);
+    }
 }
     
 void Chunk::setPosition(Position position){
@@ -145,42 +161,68 @@ void Chunk::generateCubesBuffer(){
     glGenBuffers(1, &this->cubesBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, this->cubesBuffer);
     
-    GLfloat *cubeVertices = new GLfloat[FLOATS_IN_ARRAY * CUBES];
     
-    int cubeIndex = 0;
-    auto createCube = [&](int row, int column, int rank){
-        for(int i = 0; i < VERTICES_PER_CUBE; i++){
-            for(int j = 0; j < 4; j++){
-                int index = (i * 4 + j) + (VERTICES_PER_CUBE * cubeIndex * 4);
-                cubeVertices[index] = cube_vertices[index % FLOATS_IN_ARRAY];
-                if(j == 0){
-                    cubeVertices[index] += OFFSET * row;
-                } else if(j == 1){
-                    cubeVertices[index] += OFFSET * column;
-                } else if(j == 2){
-                    cubeVertices[index] += OFFSET * rank;
-                }
-            }                    
+    if(mesh){
+        GLfloat *cubeVertices = new GLfloat[this->vertices.size() * 4];
+    
+        int i = 0;
+        for(Mesher::Vertex v : vertices){
+            cubeVertices[i++] = v[0];
+            cubeVertices[i++] = v[1];
+            cubeVertices[i++] = v[2];
+            cubeVertices[i++] = 1;
         }
-        cubeIndex++;
-    };
-    
-    for(int row = 0; row < Volume::XWIDTH; row++){
-        for(int column = 0; column < Volume::YWIDTH; column++){
-            for(int rank = 0; rank < Volume::ZWIDTH; rank++){
-                if(this->volume.voxels[row][column][rank] != 0){
-                    createCube(row, column, rank);
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * this->vertices.size() * 4, cubeVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(0);
+        util::checkOpenGLError();
+
+        delete [] cubeVertices;
+    } else {
+        GLfloat *cubeVertices = new GLfloat[FLOATS_IN_ARRAY * CUBES];
+        int cubeIndex = 0;
+        auto createCube = [&](int row, int column, int rank){
+            for(int i = 0; i < VERTICES_PER_CUBE; i++){
+                for(int j = 0; j < 4; j++){
+                    int index = (i * 4 + j) + (VERTICES_PER_CUBE * cubeIndex * 4);
+                    cubeVertices[index] = cube_vertices[index % FLOATS_IN_ARRAY];
+                    if(j == 0){
+                        cubeVertices[index] += OFFSET * row;
+                    } else if(j == 1){
+                        cubeVertices[index] += OFFSET * column;
+                    } else if(j == 2){
+                        cubeVertices[index] += OFFSET * rank;
+                    }
+                }                    
+            }
+            cubeIndex++;
+        };
+
+        for(int row = 0; row < Volume::XWIDTH; row++){
+            for(int column = 0; column < Volume::YWIDTH; column++){
+                for(int rank = 0; rank < Volume::ZWIDTH; rank++){
+                    if(this->volume.voxels[row][column][rank] != 0){
+                        createCube(row, column, rank);
+                    }
                 }
             }
         }
+        
+        glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTICES_PER_CUBE * CUBES * 4, cubeVertices, GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(0);
+        util::checkOpenGLError();
+
+        delete [] cubeVertices;
     }
     
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTICES_PER_CUBE * CUBES * 4, cubeVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(0);
-    util::checkOpenGLError();
+
     
-    delete [] cubeVertices;
+    
+
+    
+ 
 }
 
 void Chunk::generateColorsBuffer(){
