@@ -9,6 +9,7 @@
 #define	CHUNK_H
 
 #include "util.h"
+#include "framework/Volume.h"
 
 class Position {
 public:
@@ -31,12 +32,9 @@ public:
     void setPosition(Position position);
     Position getPosition();
 private:
-    DISALLOW_COPY_AND_ASSIGN(Chunk);
-    
-    const int XWIDTH = 16;
-    const int YWIDTH = 16;
-    const int ZWIDTH = 16;
-    
+    DISALLOW_COPY_AND_ASSIGN(Chunk);   
+
+    Volume volume;
     Position position;
     
     GLuint vao;

@@ -10,56 +10,30 @@
 #include <tuple>
 
 #include "Mesher.h"
+#include "Volume.h"
 #include "util.h"
 
-typedef int Color;
-
-struct Point {
-    float first;
-    float second;
-    Point(float first, float second) : first(first), second(second) {
+void Mesher::merge_run(MonotonePolygon &polygon, float v, float u_l, float u_r){
+    auto l = polygon.left[polygon.left.size()-1].first;
+    auto r = polygon.right[polygon.right.size()-1].second;
+    if(1 != u_l){
+        polygon.left.push_back(Point(l, v));
+        polygon.left.push_back(Point(u_l, v));
     }
-};
-
-typedef std::vector<float> FloatArray;
-
-typedef FloatArray Vertex;
-
-typedef std::vector<Point> Points;
-
-typedef std::vector<Vertex> Vertices;
-
-typedef std::vector<Vertex> Faces;
-
-typedef std::unique_ptr<int[]> Int32Array;
-
-
-
-struct MonotonePolygon {
-    Color color;
-    Points left;
-    Points right;
-    
-    MonotonePolygon(Color c, float v, float ul, float ur){
-        this->color = c;
-        this->left.push_back(Point(ul, v));
-        this->right.push_back(Point(ur, v));
+    if(r != u_r){
+        polygon.right.push_back(Point(r, v));
+        polygon.right.push_back(Point(u_r, v));
     }
-};
-
-typedef std::vector<MonotonePolygon> Polygons;
-
-void merge_run(MonotonePolygon &polygon, float v, float u_l, float u_r){
-    
 }
 
-void close_off(MonotonePolygon &poly, int value){
-    
+void Mesher::close_off(MonotonePolygon &poly, float value){
+    poly.left.push_back(Point(poly.left[poly.left.size()-1].first, value));
+    poly.right.push_back(Point(poly.right[poly.right.size()-1].first, value));
 }
 
-void mesh(Int32Array volume, Int32Array dims){
-    auto f = [&](int i, int j, int k){
-        return volume[i + dims[0] * (j + dims[1] * k)];
+std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims[3]){
+    auto f = [&](int x, int y, int z){
+        return volume.voxels[x][y][z];
     };
     
     Vertices vertices;
@@ -116,7 +90,7 @@ void mesh(Int32Array volume, Int32Array dims){
                 
                 //update the frontier by merging runs
                 int fp = 0;
-                for(int i = 0, j = 0; i < nf && j < nr-2; ){
+                for(i = 0, j = 0; i < nf && j < nr-2; ){
                     auto p = polygons[frontier[i]];
                     auto p_1 = p.left[p.left.size()-1].first;
                     auto p_r = p.right[p.right.size()-1].first;

@@ -9,18 +9,16 @@
 #include <iostream>
 
 #include <GL/glew.h>
+#include "framework/Mesher.h"
+#include "framework/Volume.h"
 
 
-#define VERTICES_PER_CUBE (12 * 3)
-#define ROWS 16
-#define RANKS 16
-#define COLUMNS 16
-#define CUBES (ROWS * COLUMNS * RANKS)
-#define VERTEX 1.0f
-#define OFFSET (VERTEX * 2)
-
-#define FLOATS_IN_ARRAY (VERTICES_PER_CUBE * 4)
-#define FLOATS_IN_COLOR_ARRAY (VERTICES_PER_CUBE * 3)
+static const int VERTICES_PER_CUBE = 12 * 3;
+static const int CUBES = Volume::XWIDTH * Volume::YWIDTH * Volume::ZWIDTH;
+static const float VERTEX = 1.0f;
+static const float OFFSET = VERTEX * 2;
+static const int FLOATS_IN_ARRAY = VERTICES_PER_CUBE * 4;
+static const int FLOATS_IN_COLOR_ARRAY = VERTICES_PER_CUBE * 3;
 
 static GLfloat cube_vertices[] = {
     -VERTEX,-VERTEX,-VERTEX, 1, // triangle 1 : begin
@@ -101,6 +99,18 @@ static GLfloat cube_colors[] = {
 };
 
 Chunk::Chunk() {
+    for(int row = 0; row < Volume::XWIDTH; row++){
+        for(int column = 0; column < Volume::YWIDTH; column++){
+            for(int rank = 0; rank < Volume::ZWIDTH; rank++){
+//                int choice = rand() % 100;
+//                this->volume[row][column][rank] = choice > 50 ? 1 : 0;
+                this->volume.voxels[row][column][rank] = 1;
+            }
+        }
+    }
+    
+    int dims[3] = {Volume::XWIDTH, Volume::YWIDTH, Volume::ZWIDTH};
+    Mesher::mesh(this->volume, dims);
     
 }
 
@@ -155,10 +165,12 @@ void Chunk::generateCubesBuffer(){
         cubeIndex++;
     };
     
-    for(int row = 0; row < ROWS; row++){
-        for(int column = 0; column < COLUMNS; column++){
-            for(int rank = 0; rank < RANKS; rank++){
-                createCube(row, column, rank);
+    for(int row = 0; row < Volume::XWIDTH; row++){
+        for(int column = 0; column < Volume::YWIDTH; column++){
+            for(int rank = 0; rank < Volume::ZWIDTH; rank++){
+                if(this->volume.voxels[row][column][rank] != 0){
+                    createCube(row, column, rank);
+                }
             }
         }
     }
