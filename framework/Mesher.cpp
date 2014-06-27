@@ -15,7 +15,7 @@
 
 void Mesher::merge_run(MonotonePolygon &polygon, float v, float u_l, float u_r){
     auto l = polygon.left[polygon.left.size()-1].first;
-    auto r = polygon.right[polygon.right.size()-1].second;
+    auto r = polygon.right[polygon.right.size()-1].first;
     if(1 != u_l){
         polygon.left.push_back(Point(l, v));
         polygon.left.push_back(Point(u_l, v));
@@ -32,7 +32,7 @@ void Mesher::close_off(MonotonePolygon &poly, float value){
 }
 
 
-std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims[3]){
+std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, int dims[3]){
     auto f = [&](int x, int y, int z){
         return volume.voxels[x][y][z];
     };
@@ -41,16 +41,17 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
     Faces faces;
     
     for(int axis = 0; axis < 3; axis++){
+        int i = 0,j = 0,k = 0;
         int u = (axis+1)%3; //u and v are orthogonal directions to the axis
         int v = (axis+2)%3;
         int x[3] = {0};
         int q[3] = {0};
-        Int32Array runs(new int[2 * (dims[u]+1)]);
-        Int32Array frontier(new int[dims[u]]); //frontier is a list of pointers to polygons
-        Int32Array next_frontier(new int[dims[u]]);
-        Int32Array left_index(new int[2 * dims[v]]);
-        Int32Array right_index(new int[2 * dims[v]]);
-        FloatArray stack(24 * dims[v]);
+        Int32Array runs(2 * (dims[u]+1));
+        Int32Array frontier(dims[u]); //frontier is a list of pointers to polygons
+        Int32Array next_frontier(dims[u]);
+        Int32Array left_index(2 * dims[v]);
+        Int32Array right_index(2 * dims[v]);
+        Int32Array stack(24 * dims[v]);
         int delta[][2] = {{0,0},{0,0}};
         
         //q points along axis
@@ -90,7 +91,6 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
                 
                 //update the frontier by merging runs
                 int fp = 0;
-                int i,j;
                 for(i = 0, j = 0; i < nf && j < nr-2; ){
                     auto p = polygons[frontier[i]];
                     auto p_1 = p.left[p.left.size()-1].first;
@@ -124,7 +124,8 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
                 
                 //close off any residual polygons
                 for(; i < nf; i++){
-                    close_off(polygons[i], x[v]);
+                    MonotonePolygon &polygon = polygons[frontier[i]];
+                    close_off(polygon, x[v]);
                 }
                 
                 //add any extra runs to frontier
@@ -139,13 +140,15 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
                     }
                 }
 
-                next_frontier.swap(frontier);
+                auto tmp = next_frontier;
+                next_frontier = frontier;
+                frontier = tmp;
                 nf = fp;
             }
             
             //close off frontier
             for(int i = 0; i < nf; i++){
-                auto p = polygons[frontier[i]];
+                MonotonePolygon& p = polygons[frontier[i]];
                 close_off(p, dims[v]);
             }
             
@@ -153,8 +156,8 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
             x[axis]++;
             
             //now we just need to triangulate each monotone polygon
-            for(int i = 0; i < polygons.size(); i++){
-                MonotonePolygon p = polygons[i];
+            for(i = 0; i < polygons.size(); i++){
+                MonotonePolygon& p = polygons[i];
                 Color c = p.color;
                 bool flipped = false;
                 
@@ -163,7 +166,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
                     c = -c;
                 }
                 
-                for(int j = 0; j < p.left.size(); j++){
+                for(j = 0; j < p.left.size(); j++){
                     left_index[j] = vertices.size();
                     Vertex y = {0.0,0.0,0.0};
                     Point z = p.left[j];
@@ -173,7 +176,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
                     vertices.push_back(y);
                 }
                 
-                for(int j = 0; j < p.right.size(); j++){
+                for(j = 0; j < p.right.size(); j++){
                     right_index[j] = vertices.size();
                     Vertex y = {0.0,0.0,0.0};
                     Point z = p.right[j];
@@ -186,7 +189,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(Volume volume, int dims
                 //triangulate the monotone polygon
                 int bottom = 0;
                 int top = 0;
-                int l_i = 0;
+                int l_i = 1;
                 int r_i = 1;
                 bool side = true;
                 

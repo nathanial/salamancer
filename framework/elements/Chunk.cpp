@@ -115,9 +115,11 @@ Chunk::Chunk() {
     auto meshResults = Mesher::mesh(this->volume, dims);
     Mesher::Vertices vertices = std::get<0>(meshResults);
     Mesher::Faces faces = std::get<1>(meshResults);
+    int i = 0;
     for(auto v : vertices){
-        std::cout << "Vertex: " << v[0] << "," << v[1] << "," << v[2] << std::endl;
+        std::cout << "Vertex " << (++i) << ": " << v[0] << "," << v[1] << "," << v[2] << std::endl;
     }
+    i = 0;
     for(auto f : faces){
         std::cout << "Face: " << f[0] << "," << f[1] << "," << f[2] << std::endl;
     }

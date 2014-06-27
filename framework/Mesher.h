@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 #include <tuple>
+#include "util.h"
 #include "Volume.h"
 
 namespace Mesher {
@@ -27,14 +28,16 @@ namespace Mesher {
     typedef std::vector<float> FloatArray;
 
     typedef FloatArray Vertex;
+    
+    typedef std::vector<int> Face;
 
     typedef std::vector<Point> Points;
 
     typedef std::vector<Vertex> Vertices;
 
-    typedef std::vector<Vertex> Faces;
+    typedef std::vector<Face> Faces;
 
-    typedef std::unique_ptr<int[]> Int32Array;
+    typedef std::vector<int> Int32Array;
     
     class MonotonePolygon {
     public:
@@ -53,7 +56,7 @@ namespace Mesher {
     
     void merge_run(MonotonePolygon &polygon, float v, float u_l, float u_r);
     void close_off(MonotonePolygon &poly, float value);
-    std::tuple<Vertices, Faces> mesh(Volume volume, int dims[3]);
+    std::tuple<Vertices, Faces> mesh(const Volume& volume, int dims[3]);
 };
 
 #endif	/* MESHER_H */
