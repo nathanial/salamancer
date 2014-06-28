@@ -92,7 +92,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, i
                 //update the frontier by merging runs
                 int fp = 0;
                 for(i = 0, j = 0; i < nf && j < nr-2; ){
-                    auto p = polygons[frontier[i]];
+                    MonotonePolygon& p = polygons[frontier[i]];
                     auto p_1 = p.left[p.left.size()-1].first;
                     auto p_r = p.right[p.right.size()-1].first;
                     auto p_c = p.color;
@@ -233,21 +233,20 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, i
                                         delta[j][k] = stack[top-3*(j+1)+k+1] - vert.second;
                                     }
                                 }
-                                auto det = delta[0][0] * delta[1][1] - delta[1][0] * delta[0][1];
-                                if(n_side == (det > 0)){
-                                    break;
-                                }
-                                if(det != 0){
-                                    if(flipped == n_side){
-                                        faces.push_back({stack[top-3], stack[top-6], idx, c});
-                                    } else {
-                                        faces.push_back({stack[top-6], stack[top-3], idx, c});
-                                    }
-                                }
-                                top -= 3;
                             }
+                            auto det = delta[0][0] * delta[1][1] - delta[1][0] * delta[0][1];
+                            if(n_side == (det > 0)){
+                                break;
+                            }
+                            if(det != 0){
+                                if(flipped == n_side){
+                                    faces.push_back({stack[top-3], stack[top-6], idx, c});
+                                } else {
+                                    faces.push_back({stack[top-6], stack[top-3], idx, c});
+                                }
+                            }
+                            top -= 3;
                         }
-                       
                     }
                     stack[top++] = idx;
                     stack[top++] = vert.first;
