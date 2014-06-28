@@ -158,6 +158,7 @@ void initGL(){
     glDepthFunc(GL_LESS);
 }
 
+
 int main(int argc, char* args[]){
     initSDL();
     initGlew();

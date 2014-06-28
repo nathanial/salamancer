@@ -40,10 +40,10 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, i
     Vertices vertices;
     Faces faces;
     
-    for(int axis = 0; axis < 3; axis++){
+    for(int d = 0; d < 3; d++){
         int i = 0,j = 0,k = 0;
-        int u = (axis+1)%3; //u and v are orthogonal directions to the axis
-        int v = (axis+2)%3;
+        int u = (d+1)%3; //u and v are orthogonal directions to the axis
+        int v = (d+2)%3;
         int x[3] = {0};
         int q[3] = {0};
         Int32Array runs(2 * (dims[u]+1));
@@ -55,22 +55,20 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, i
         int delta[][2] = {{0,0},{0,0}};
         
         //q points along axis
-        q[axis] = 1;
+        q[d] = 1;
         
-        for(x[axis] = -1; x[axis] < dims[axis]; ){
-            int n = 0;
+        for(x[d] = -1; x[d] < dims[d]; ){
             Polygons polygons;
             int nf = 0;
+            int n = 0;
             
             for(x[v] = 0; x[v] < dims[v]; x[v]++){
-                int nr = 0;
-                int p = 0;
-                int c = 0;
                 //make one pass over the u-scan line of the volume to run-length encode polygon
+                int nr = 0, p = 0, c = 0;
                 for(x[u] = 0; x[u] < dims[u]; x[u]++, p = c){
                     //compute the type of this face
-                    auto a = (0 <= x[axis] ? f(x[0], x[1], x[2]) : 0);
-                    auto b = (x[axis] < dims[axis]-1 ? f(x[0] + q[0], x[1] + q[1], x[2] + q[2]) : 0);
+                    int a = (0 <= x[d] ? f(x[0], x[1], x[2]) : 0);
+                    int b = (x[d] < dims[d]-1 ? f(x[0] + q[0], x[1] + q[1], x[2] + q[2]) : 0);
                     c = a;
                     if((!a) == (!b)){
                         c = 0;
@@ -108,7 +106,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, i
                     } else {
                         //check if we need to advance the run pointer
                         if(r_r <= p_r){
-                            if(r_c){
+                            if(!!r_c){
                                 MonotonePolygon n_poly(r_c, x[v], r_l, r_r);
                                 next_frontier[fp++] = polygons.size();
                                 polygons.push_back(n_poly);
@@ -133,27 +131,27 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, i
                     int r_l = runs[j];
                     int r_r = runs[j+2];
                     int r_c = runs[j+1];
-                    if(r_c){
+                    if(!!r_c){
                         MonotonePolygon n_poly(r_c, x[v], r_l, r_r);
                         next_frontier[fp++] = polygons.size();
                         polygons.push_back(n_poly);
                     }
                 }
 
-                auto tmp = next_frontier;
+                Int32Array tmp = next_frontier;
                 next_frontier = frontier;
                 frontier = tmp;
                 nf = fp;
             }
             
             //close off frontier
-            for(int i = 0; i < nf; i++){
+            for(i = 0; i < nf; i++){
                 MonotonePolygon& p = polygons[frontier[i]];
                 close_off(p, dims[v]);
             }
             
             //monotone subdivision of polygon is complete at this point
-            x[axis]++;
+            x[d]++;
             
             //now we just need to triangulate each monotone polygon
             for(i = 0; i < polygons.size(); i++){
@@ -170,7 +168,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, i
                     left_index[j] = vertices.size();
                     Vertex y = {0.0,0.0,0.0};
                     Point z = p.left[j];
-                    y[axis] = x[axis];
+                    y[d] = x[d];
                     y[u] = z.first;
                     y[v] = z.second;
                     vertices.push_back(y);
@@ -180,7 +178,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, i
                     right_index[j] = vertices.size();
                     Vertex y = {0.0,0.0,0.0};
                     Point z = p.right[j];
-                    y[axis] = x[axis];
+                    y[d] = x[d];
                     y[u] = z.first;
                     y[v] = z.second;
                     vertices.push_back(y);
