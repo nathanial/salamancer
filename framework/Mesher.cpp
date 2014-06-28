@@ -6,6 +6,7 @@
  */
 
 #include <memory>
+#include <iostream>
 #include <vector>
 #include <tuple>
 
@@ -13,14 +14,25 @@
 #include "Volume.h"
 #include "util.h"
 
+bool float_equal(float a, float b){
+    float diff = a - b;
+    if(diff < 0){
+        diff *= -1;
+    }
+    bool equal = diff < 0.001;
+    return equal;
+}
+
 void Mesher::merge_run(MonotonePolygon &polygon, float v, float u_l, float u_r){
-    auto l = polygon.left[polygon.left.size()-1].first;
-    auto r = polygon.right[polygon.right.size()-1].first;
-    if(1 != u_l){
+    float l = polygon.left[polygon.left.size()-1].first;
+    float r = polygon.right[polygon.right.size()-1].first;
+    if(!float_equal(l,u_l)){
+        std::cout << "Not Equal " << l << "," << u_l << std::endl;
         polygon.left.push_back(Point(l, v));
         polygon.left.push_back(Point(u_l, v));
     }
-    if(r != u_r){
+    if(!float_equal(r,u_r)){
+        std::cout << "Not Equal " << r << "," << u_r << std::endl;
         polygon.right.push_back(Point(r, v));
         polygon.right.push_back(Point(u_r, v));
     }
@@ -37,11 +49,11 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, i
         return volume.voxels[x][y][z];
     };
     
+    int i,j,k;
     Vertices vertices;
     Faces faces;
     
     for(int d = 0; d < 3; d++){
-        int i = 0,j = 0,k = 0;
         int u = (d+1)%3; //u and v are orthogonal directions to the axis
         int v = (d+2)%3;
         int x[3] = {0};
