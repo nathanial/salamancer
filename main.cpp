@@ -56,7 +56,7 @@ void render(){
     const GLfloat color[] = { 1.0f, 1.0f,
                               1.0f, 1.0f };
     
-    float z = -100.0f;
+    float z = -800.0f;
     
     auto renderChunk = [&](float x, float y){
         vmath::mat4 transform = createTransform(currentTime, x, y, z);
@@ -65,10 +65,15 @@ void render(){
     };
     
     glClearBufferfv(GL_COLOR, 0, color);
+    
+    for(int i = 0; i < 100; i++){
+        for(int j = 0; j < 100; j++){
+            renderChunk(i * 20 - currentTime * 10, j * 20 - currentTime * 10);
+        }
+    }
+    
 
-    renderChunk(40, 10.0f);
-    renderChunk(0, 10.0f);
-    renderChunk(-40, 10.0f);
+    
     
     SDL_GL_SwapWindow(window);
 }
@@ -126,8 +131,8 @@ void initGlew(){
     
     util::clearOpenGLErrors();
     
-    //glEnable(GL_CULL_FACE);
-    //glCullFace(GL_BACK);
+//    glEnable(GL_CULL_FACE);
+//    glCullFace(GL_BACK);
     
     glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 }
