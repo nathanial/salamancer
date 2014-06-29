@@ -8,6 +8,7 @@
 #ifndef VOLUME_H
 #define	VOLUME_H
 
+
 class Volume {
 public:
     static const int XWIDTH = 16;
