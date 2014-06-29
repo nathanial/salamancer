@@ -19,45 +19,6 @@ static const float OFFSET = VERTEX * 2;
 static const int FLOATS_IN_ARRAY = VERTICES_PER_CUBE * 4;
 static const int FLOATS_IN_COLOR_ARRAY = VERTICES_PER_CUBE * 3;
 
-static GLfloat cube_vertices[] = {
-    -VERTEX,-VERTEX,-VERTEX, 1, // triangle 1 : begin
-    -VERTEX,-VERTEX, VERTEX, 1,
-    -VERTEX, VERTEX, VERTEX, 1, // triangle 1 : end
-    VERTEX, VERTEX,-VERTEX, 1, // triangle 2 : begin
-    -VERTEX,-VERTEX,-VERTEX, 1,
-    -VERTEX, VERTEX,-VERTEX, 1, // triangle 2 : end
-    VERTEX,-VERTEX, VERTEX, 1,
-    -VERTEX,-VERTEX,-VERTEX, 1,
-    VERTEX,-VERTEX,-VERTEX, 1,
-    VERTEX, VERTEX,-VERTEX, 1,
-    VERTEX,-VERTEX,-VERTEX, 1,
-    -VERTEX,-VERTEX,-VERTEX, 1,
-    -VERTEX,-VERTEX,-VERTEX, 1,
-    -VERTEX, VERTEX, VERTEX, 1,
-    -VERTEX, VERTEX,-VERTEX, 1,
-    VERTEX,-VERTEX, VERTEX, 1,
-    -VERTEX,-VERTEX, VERTEX, 1,
-    -VERTEX,-VERTEX,-VERTEX, 1,
-    -VERTEX, VERTEX, VERTEX, 1,
-    -VERTEX,-VERTEX, VERTEX, 1,
-    VERTEX,-VERTEX, VERTEX, 1,
-    VERTEX, VERTEX, VERTEX, 1,
-    VERTEX,-VERTEX,-VERTEX, 1,
-    VERTEX, VERTEX,-VERTEX, 1,
-    VERTEX,-VERTEX,-VERTEX, 1,
-    VERTEX, VERTEX, VERTEX, 1,
-    VERTEX,-VERTEX, VERTEX, 1,
-    VERTEX, VERTEX, VERTEX, 1,
-    VERTEX, VERTEX,-VERTEX, 1,
-    -VERTEX, VERTEX,-VERTEX, 1,
-    VERTEX, VERTEX, VERTEX, 1,
-    -VERTEX, VERTEX,-VERTEX, 1,
-    -VERTEX, VERTEX, VERTEX, 1,
-    VERTEX, VERTEX, VERTEX, 1,
-    -VERTEX, VERTEX, VERTEX, 1,
-    VERTEX,-VERTEX, VERTEX, 1
-};
-
 static GLfloat cube_colors[] = {
     0.583f,  0.771f,  0.014f,
     0.609f,  0.115f,  0.436f,
@@ -110,17 +71,17 @@ Chunk::Chunk() {
     
     int dims[3] = {Volume::XWIDTH, Volume::YWIDTH, Volume::ZWIDTH};
     auto meshResults = Mesher::mesh(this->volume, dims);
-    Mesher::Vertices vertices = std::get<0>(meshResults);
-    Mesher::Faces faces = std::get<1>(meshResults);
-    int i = 0;
-    for(auto v : vertices){
-        std::cout << "Vertex " << (++i) << ": " << v[0] << "," << v[1] << "," << v[2] << std::endl;
-    }
-    i = 0;
-    for(auto f : faces){
-        std::cout << "Face: " << f[0] << "," << f[1] << "," << f[2] << std::endl;
-    }
-    
+    Mesher::Vertices &vertices = std::get<0>(meshResults);
+    Mesher::Faces &faces = std::get<1>(meshResults);
+//    int i = 0;
+//    for(auto v : vertices){
+//        std::cout << "Vertex " << (++i) << ": " << v[0] << "," << v[1] << "," << v[2] << std::endl;
+//    }
+//    i = 0;
+//    for(auto f : faces){
+//        std::cout << "Face: " << f[0] << "," << f[1] << "," << f[2] << std::endl;
+//    }
+//    
     
     this->vertices = vertices;
     this->faces = faces;
@@ -158,8 +119,6 @@ Position Chunk::getPosition(){
 void Chunk::generateFacesBuffer(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->facesBuffer );
 
-
-    
     GLuint *indices = new GLuint[this->faces.size() * 3];
     
     for(int i = 0; i < this->faces.size(); i++){

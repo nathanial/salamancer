@@ -7,11 +7,7 @@
 #include "exceptions.h"
 #include "util.h"
 #include "vmath.h"
-#include "framework/opengl/GLProgram.h"
-#include "framework/elements/Element.h"
-#include "framework/elements/Square.h"
-#include "framework/elements/Cube.h"
-#include "framework/elements/Chunk.h"
+#include "framework/elements/World.h"
 
 using namespace std;
 
@@ -19,17 +15,8 @@ static SDL_Window* window;
 static SDL_Renderer* renderer;
 static bool running = true;
 
-static int windowWidth = 1920;
-static int windowHeight = 1080;
 
-static float positionX = 0;
-static float positionY = 0;
-static float positionZ = -800;
-
-static GLProgram program;
-static Chunk chunk;
-
-static GLint transformLocation;
+static World world;
 
 float absF(float x){
     if(x < 0){
@@ -39,39 +26,17 @@ float absF(float x){
     }
 }
 
-vmath::mat4 createTransform(double currentTime, float x, float y, float z){
-    float aspect = (float)windowWidth / (float)windowHeight;
-    vmath::mat4 transform(vmath::mat4::identity());
-    transform = vmath::mat4::identity();
-    transform *= vmath::perspective(1, aspect, 0.1f, 10000.0f);
-    transform *= vmath::translate(x, y, z);
-    //transform *= vmath::rotate((float)currentTime * 100, 1.0f, 0.0f, 0.0f);
-//    transform *= vmath::translate(0.0f, 0.0f, (float)sin(currentTime) * 10);
-    return transform;
-}
-
 void render(){
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    double currentTime = ((double)SDL_GetTicks()) / 1000;
     
     const GLfloat color[] = { 1.0f, 1.0f,
                               1.0f, 1.0f };
     
-    auto renderChunk = [&](float x, float y, float z){
-        vmath::mat4 transform = createTransform(currentTime, x, y, z);
-        glUniformMatrix4fv(transformLocation, 1, GL_FALSE, transform);
-        chunk.render();
-    };
     
     glClearBufferfv(GL_COLOR, 0, color);
     
-    for(int i = -50; i < 50; i++){
-        for(int j = -50; j < 50; j++){
-            renderChunk(i * 50 + positionX, j * 50 + positionY, positionZ);
-        }
-    }
-    
+    world.render();
     
     SDL_GL_SwapWindow(window);
 }
@@ -87,22 +52,22 @@ void handleEvents(){
             case SDL_KEYDOWN:
                 switch(event.key.keysym.sym){
                     case SDLK_DOWN:
-                        positionY += 10;                        
+                        world.camera.move(0, 10, 0);
                         break;
                     case SDLK_UP:
-                        positionY -= 10;
+                        world.camera.move(0, -10, 0);
                         break;
                     case SDLK_LEFT:
-                        positionX += 10;
+                        world.camera.move(10, 0, 0);
                         break;
                     case SDLK_RIGHT:
-                        positionX -= 10;
+                        world.camera.move(-10, 0, 0);
                         break;
                     case SDLK_PAGEDOWN:
-                        positionZ -= 10;
+                        world.camera.move(0,0,-10);
                         break;
                     case SDLK_PAGEUP:
-                        positionZ += 10;
+                        world.camera.move(0,0,10);
                         break;
                 }
                 break;
@@ -112,8 +77,8 @@ void handleEvents(){
             case SDL_WINDOWEVENT:
                 switch(event.window.event){
                     case SDL_WINDOWEVENT_RESIZED:
-                        windowWidth = event.window.data1 / 2.0;
-                        windowHeight = event.window.data2 / 2.0;
+                        world.camera.windowWidth = event.window.data1 / 2.0;
+                        world.camera.windowHeight = event.window.data2 / 2.0;
                         glViewport(0,0,event.window.data1 / 2.0, event.window.data2 / 2.0);
                         break;
                 }
@@ -128,7 +93,7 @@ void initSDL(){
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-    window = SDL_CreateWindow("GodKing", 200, 200, windowWidth, windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("GodKing", 200, 200, world.camera.windowWidth, world.camera.windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
     
     SDL_GLContext context = SDL_GL_CreateContext(window);
     
@@ -185,20 +150,16 @@ void initGL(){
 
 
 int main(int argc, char* args[]){
+    world.camera.windowWidth = 1920;
+    world.camera.windowHeight = 1080;
+
+    
     initSDL();
     initGlew();
     initGL();
     
-    
-    program.loadVertexShader("/home/nathan/Projects/godking/shaders/vertex.shader");
-    program.loadFragmentShader("/home/nathan/Projects/godking/shaders/fragment.shader");
-    program.compileAndLink();
-    program.use();
-    
-    transformLocation = program.getUniformLocation("Transform");
-    
-    chunk.load();
-    
+    world.load();
+
     runEventLoop();
     SDL_Quit();
     return 0;
