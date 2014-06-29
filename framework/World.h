@@ -28,11 +28,9 @@ public:
     static const int YCHUNKS = 5;
     static const int ZCHUNKS = 20;
 
-    
-    
     Camera camera;
     
-    Chunk chunks[XCHUNKS][YCHUNKS][ZCHUNKS];
+    Chunk chunks [XCHUNKS][YCHUNKS][ZCHUNKS];
     
     
     void render();

@@ -11,6 +11,7 @@
 #include <GL/glew.h>
 #include "framework/Mesher.h"
 #include "framework/Volume.h"
+#include "Camera.h"
 
 static const int VERTICES_PER_CUBE = 12 * 3;
 static const int CUBES = Volume::XWIDTH * Volume::YWIDTH * Volume::ZWIDTH;
@@ -58,40 +59,17 @@ static GLfloat cube_colors[] = {
     0.982f,  0.099f,  0.879f
 };
 
-Chunk::Chunk() {
-    for(int row = 0; row < Volume::XWIDTH; row++){
-        for(int column = 0; column < Volume::YWIDTH; column++){
-            for(int rank = 0; rank < Volume::ZWIDTH; rank++){
-//                int choice = rand() % 100;
-//                this->volume[row][column][rank] = choice > 50 ? 1 : 0;
-                this->volume.voxels[row][column][rank] = 1;
-            }
-        }
-    }
-    
+Chunk::Chunk(){}
+Chunk::~Chunk(){}
+
+void Chunk::load(){
     int dims[3] = {Volume::XWIDTH, Volume::YWIDTH, Volume::ZWIDTH};
     auto meshResults = Mesher::mesh(this->volume, dims);
     Mesher::Vertices &vertices = std::get<0>(meshResults);
     Mesher::Faces &faces = std::get<1>(meshResults);
-//    int i = 0;
-//    for(auto v : vertices){
-//        std::cout << "Vertex " << (++i) << ": " << v[0] << "," << v[1] << "," << v[2] << std::endl;
-//    }
-//    i = 0;
-//    for(auto f : faces){
-//        std::cout << "Face: " << f[0] << "," << f[1] << "," << f[2] << std::endl;
-//    }
-//    
-    
     this->vertices = vertices;
     this->faces = faces;
-}
-
-Chunk::~Chunk() {
     
-}
-
-void Chunk::load(){
     glGenBuffers(1, &this->verticesBuffer);
     glGenBuffers(1, &this->facesBuffer);
     glGenVertexArrays(1, &this->vao);
@@ -125,10 +103,6 @@ void Chunk::generateFacesBuffer(){
         for(int j = 0; j < 3; j++){
             indices[i*3+j] = (unsigned int)this->faces[i][j];
         }
-    }
-    
-    for(int i = 0; i < this->faces.size() * 3; i += 3){
-        std::cout << "Index: " << indices[i] << "," << indices[i+1] << "," << indices[i+2] << std::endl;
     }
     
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->faces.size() * 3, indices, GL_STATIC_DRAW);
@@ -168,4 +142,3 @@ void Chunk::generateColorsBuffer(){
     util::checkOpenGLError();
     
 }
-

@@ -7,7 +7,7 @@
 #include "exceptions.h"
 #include "util.h"
 #include "vmath.h"
-#include "framework/elements/World.h"
+#include "framework/World.h"
 
 using namespace std;
 

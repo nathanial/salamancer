@@ -8,6 +8,8 @@
 #ifndef CHUNK_H
 #define	CHUNK_H
 
+#include <memory.h>
+
 #include "util.h"
 #include "framework/Position.h"
 #include "framework/Volume.h"
@@ -17,15 +19,16 @@ class Chunk {
 public:
     Chunk();
     ~Chunk();
+    
     void load();
     void render();
     
     void setPosition(Position position);
     Position getPosition();
-private:
-    DISALLOW_COPY_AND_ASSIGN(Chunk);   
+    
+    VolumePtr volume;
 
-    Volume volume;
+private:
     Position position;
     Mesher::Vertices vertices;
     Mesher::Faces faces;

@@ -8,6 +8,7 @@
 #ifndef VOLUME_H
 #define	VOLUME_H
 
+#include <memory>
 
 class Volume {
 public:
@@ -16,6 +17,8 @@ public:
     static const int ZWIDTH = 16;
     unsigned char voxels[XWIDTH][YWIDTH][ZWIDTH];
 };
+
+typedef std::shared_ptr<Volume> VolumePtr;
 
 #endif	/* VOLUME_H */
 

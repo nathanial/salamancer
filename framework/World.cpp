@@ -7,10 +7,19 @@
 
 #include "World.h"
 #include "vmath.h"
+#include "terrain/PerlinTerrainGenerator.h"
 #include <GL/glew.h>
 
 
 World::World() {
+    PerlinTerrainGenerator gen;
+    for(int i = 0; i < XCHUNKS; i++){
+        for(int j = 0; j < YCHUNKS; j++){
+            for(int k = 0; k < ZCHUNKS; k++){
+                this->chunks[i][j][k].volume = gen.generate(Position(i,j,k));
+            }
+        }
+    }
 }
 
 
