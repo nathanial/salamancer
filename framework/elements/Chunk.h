@@ -38,12 +38,15 @@ private:
     Volume volume;
     Position position;
     Mesher::Vertices vertices;
+    Mesher::Faces faces;
     
     GLuint vao;
-    GLuint cubesBuffer;
+    GLuint verticesBuffer;
+    GLuint facesBuffer;
     GLuint colorBuffer;
     
-    void generateCubesBuffer();
+    void generateFacesBuffer();
+    void generateVerticesBuffer();
     void generateColorsBuffer();
 };
 
