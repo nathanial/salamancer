@@ -22,7 +22,9 @@ static bool running = true;
 static int windowWidth = 1920;
 static int windowHeight = 1080;
 
-
+static float positionX = 0;
+static float positionY = 0;
+static float positionZ = -800;
 
 static GLProgram program;
 static Chunk chunk;
@@ -41,9 +43,9 @@ vmath::mat4 createTransform(double currentTime, float x, float y, float z){
     float aspect = (float)windowWidth / (float)windowHeight;
     vmath::mat4 transform(vmath::mat4::identity());
     transform = vmath::mat4::identity();
-    transform *= vmath::perspective(1, aspect, 0.1f, 1000.0f);
+    transform *= vmath::perspective(1, aspect, 0.1f, 10000.0f);
     transform *= vmath::translate(x, y, z);
-    transform *= vmath::rotate((float)currentTime * 100, 1.0f, 0.0f, 0.0f);
+    //transform *= vmath::rotate((float)currentTime * 100, 1.0f, 0.0f, 0.0f);
 //    transform *= vmath::translate(0.0f, 0.0f, (float)sin(currentTime) * 10);
     return transform;
 }
@@ -56,9 +58,7 @@ void render(){
     const GLfloat color[] = { 1.0f, 1.0f,
                               1.0f, 1.0f };
     
-    float z = -800.0f;
-    
-    auto renderChunk = [&](float x, float y){
+    auto renderChunk = [&](float x, float y, float z){
         vmath::mat4 transform = createTransform(currentTime, x, y, z);
         glUniformMatrix4fv(transformLocation, 1, GL_FALSE, transform);
         chunk.render();
@@ -66,13 +66,11 @@ void render(){
     
     glClearBufferfv(GL_COLOR, 0, color);
     
-    for(int i = 0; i < 100; i++){
-        for(int j = 0; j < 100; j++){
-            renderChunk(i * 20 - currentTime * 10, j * 20 - currentTime * 10);
+    for(int i = -50; i < 50; i++){
+        for(int j = -50; j < 50; j++){
+            renderChunk(i * 50 + positionX, j * 50 + positionY, positionZ);
         }
     }
-    
-
     
     
     SDL_GL_SwapWindow(window);
@@ -86,6 +84,28 @@ void handleEvents(){
     SDL_Event event;
     if(SDL_PollEvent(&event)){
         switch(event.type){
+            case SDL_KEYDOWN:
+                switch(event.key.keysym.sym){
+                    case SDLK_DOWN:
+                        positionY += 10;                        
+                        break;
+                    case SDLK_UP:
+                        positionY -= 10;
+                        break;
+                    case SDLK_LEFT:
+                        positionX += 10;
+                        break;
+                    case SDLK_RIGHT:
+                        positionX -= 10;
+                        break;
+                    case SDLK_PAGEDOWN:
+                        positionZ -= 10;
+                        break;
+                    case SDLK_PAGEUP:
+                        positionZ += 10;
+                        break;
+                }
+                break;
             case SDL_QUIT:
                 running = false;
                 break;
@@ -131,10 +151,10 @@ void initGlew(){
     
     util::clearOpenGLErrors();
     
-//    glEnable(GL_CULL_FACE);
-//    glCullFace(GL_BACK);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
     
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    //glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 }
 
 void runEventLoop(){

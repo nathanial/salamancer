@@ -200,21 +200,13 @@ void Chunk::generateVerticesBuffer(){
 }
 
 void Chunk::generateColorsBuffer(){
-//    glGenBuffers(1, &this->colorBuffer);
-//    glBindBuffer(GL_ARRAY_BUFFER, this->colorBuffer);
-//    
-//    GLfloat *colorVertices = new GLfloat[FLOATS_IN_COLOR_ARRAY * CUBES];
-//    for(int i = 0; i < (VERTICES_PER_CUBE * CUBES); i++){
-//        for(int j = 0; j < 4; j++){
-//            colorVertices[i * 3 + j] = cube_colors[(i*3+j) % FLOATS_IN_COLOR_ARRAY];
-//        }
-//    }
-//    
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * VERTICES_PER_CUBE * CUBES * 3, colorVertices, GL_STATIC_DRAW);
-//    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-//    glEnableVertexAttribArray(1);
-//    util::checkOpenGLError();
-//    
-//    delete [] colorVertices;
+    glGenBuffers(1, &this->colorBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, this->colorBuffer);
+    
+    glBufferData(GL_ARRAY_BUFFER, sizeof(cube_colors), cube_colors, GL_STATIC_DRAW);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(1);
+    util::checkOpenGLError();
+    
 }
 
