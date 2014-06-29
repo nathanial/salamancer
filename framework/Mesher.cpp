@@ -39,14 +39,16 @@ void Mesher::merge_run(MonotonePolygon &polygon, float v, float u_l, float u_r){
 }
 
 void Mesher::close_off(MonotonePolygon &poly, float value){
-    poly.left.push_back(Point(poly.left[poly.left.size()-1].first, value));
-    poly.right.push_back(Point(poly.right[poly.right.size()-1].first, value));
+    float p1 = poly.left.at(poly.left.size()-1).first;
+    float p2 = poly.right.at(poly.right.size()-1).first;
+    poly.left.push_back(Point(p1, value));
+    poly.right.push_back(Point(p2, value));
 }
 
 
-std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(const Volume &volume, int dims[3]){
+std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume, int dims[3]){
     auto f = [&](int x, int y, int z){
-        return volume.voxels[x][y][z];
+        return volume->voxels[x][y][z];
     };
     
     int i,j,k;

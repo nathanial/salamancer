@@ -56,7 +56,7 @@ namespace Mesher {
     
     void merge_run(MonotonePolygon &polygon, float v, float u_l, float u_r);
     void close_off(MonotonePolygon &poly, float value);
-    std::tuple<Vertices, Faces> mesh(const Volume& volume, int dims[3]);
+    std::tuple<Vertices, Faces> mesh(VolumePtr volume, int dims[3]);
 };
 
 #endif	/* MESHER_H */
