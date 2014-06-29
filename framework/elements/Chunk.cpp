@@ -139,15 +139,11 @@ void Chunk::load(){
     this->generateVerticesBuffer();
     this->generateFacesBuffer();
     this->generateColorsBuffer();
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-    glEnableVertexAttribArray(0);
 }
 
 void Chunk::render(){
     glBindVertexArray(this->vao);
-    glDrawElements(GL_TRIANGLES, this->faces.size(), GL_UNSIGNED_SHORT, 0);
-    //glDrawArrays(GL_TRIANGLES, 0, this->vertices.size());
+    glDrawElements(GL_TRIANGLES, this->faces.size() * 3, GL_UNSIGNED_INT, 0);
     util::checkOpenGLError();
 }
     
@@ -161,6 +157,8 @@ Position Chunk::getPosition(){
 
 void Chunk::generateFacesBuffer(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->facesBuffer );
+
+
     
     GLuint *indices = new GLuint[this->faces.size() * 3];
     
@@ -169,6 +167,11 @@ void Chunk::generateFacesBuffer(){
             indices[i*3+j] = (unsigned int)this->faces[i][j];
         }
     }
+    
+    for(int i = 0; i < this->faces.size() * 3; i += 3){
+        std::cout << "Index: " << indices[i] << "," << indices[i+1] << "," << indices[i+2] << std::endl;
+    }
+    
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * this->faces.size() * 3, indices, GL_STATIC_DRAW);
     
     util::checkOpenGLError();
@@ -178,6 +181,8 @@ void Chunk::generateFacesBuffer(){
 
 void Chunk::generateVerticesBuffer(){
     glBindBuffer(GL_ARRAY_BUFFER, this->verticesBuffer);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(0);
         
     GLfloat *cubeVertices = new GLfloat[this->vertices.size() * 3];
 

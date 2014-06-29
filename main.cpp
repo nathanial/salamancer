@@ -43,7 +43,7 @@ vmath::mat4 createTransform(double currentTime, float x, float y, float z){
     transform = vmath::mat4::identity();
     transform *= vmath::perspective(1, aspect, 0.1f, 1000.0f);
     transform *= vmath::translate(x, y, z);
-    transform *= vmath::rotate((float)currentTime * 100, 0.0f, 1.0f, 0.0f);
+    transform *= vmath::rotate((float)currentTime * 100, 1.0f, 0.0f, 0.0f);
 //    transform *= vmath::translate(0.0f, 0.0f, (float)sin(currentTime) * 10);
     return transform;
 }
