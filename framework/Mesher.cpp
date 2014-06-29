@@ -9,6 +9,7 @@
 #include <iostream>
 #include <vector>
 #include <tuple>
+#include <assert.h>
 
 #include "Mesher.h"
 #include "Volume.h"
@@ -23,26 +24,30 @@ bool float_equal(float a, float b){
     return equal;
 }
 
-void Mesher::merge_run(MonotonePolygon &polygon, float v, float u_l, float u_r){
-    float l = polygon.left[polygon.left.size()-1].first;
-    float r = polygon.right[polygon.right.size()-1].first;
+void Mesher::merge_run(MonotonePolygon *polygon, float v, float u_l, float u_r){
+    assert(polygon->left.size() > 0);
+    assert(polygon->right.size() > 0);
+    
+    float l = polygon->left[polygon->left.size()-1].first;
+    float r = polygon->right[polygon->right.size()-1].first;
     if(!float_equal(l,u_l)){
-        std::cout << "Not Equal " << l << "," << u_l << std::endl;
-        polygon.left.push_back(Point(l, v));
-        polygon.left.push_back(Point(u_l, v));
+        polygon->left.push_back(Point(l, v));
+        polygon->left.push_back(Point(u_l, v));
     }
     if(!float_equal(r,u_r)){
-        std::cout << "Not Equal " << r << "," << u_r << std::endl;
-        polygon.right.push_back(Point(r, v));
-        polygon.right.push_back(Point(u_r, v));
+        polygon->right.push_back(Point(r, v));
+        polygon->right.push_back(Point(u_r, v));
     }
 }
 
-void Mesher::close_off(MonotonePolygon &poly, float value){
-    float p1 = poly.left.at(poly.left.size()-1).first;
-    float p2 = poly.right.at(poly.right.size()-1).first;
-    poly.left.push_back(Point(p1, value));
-    poly.right.push_back(Point(p2, value));
+void Mesher::close_off(MonotonePolygon *poly, float value){
+    assert(poly->left.size() > 0);
+    assert(poly->right.size() > 0);
+    
+    float p1 = poly->left.at(poly->left.size()-1).first;
+    float p2 = poly->right.at(poly->right.size()-1).first;
+    poly->left.push_back(Point(p1, value));
+    poly->right.push_back(Point(p2, value));
 }
 
 
@@ -104,10 +109,11 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume, int d
                 //update the frontier by merging runs
                 int fp = 0;
                 for(i = 0, j = 0; i < nf && j < nr-2; ){
-                    MonotonePolygon& p = polygons[frontier[i]];
-                    auto p_1 = p.left[p.left.size()-1].first;
-                    auto p_r = p.right[p.right.size()-1].first;
-                    auto p_c = p.color;
+                    int frontierIndex = frontier[i];
+                    MonotonePolygon* p = &polygons[frontierIndex];
+                    auto p_1 = p->left[p->left.size()-1].first;
+                    auto p_r = p->right[p->right.size()-1].first;
+                    auto p_c = p->color;
                     auto r_l = runs[j]; //start of run
                     auto r_r = runs[j+2]; //end of run
                     auto r_c = runs[j+1]; //color of run
@@ -124,10 +130,12 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume, int d
                                 MonotonePolygon n_poly(r_c, x[v], r_l, r_r);
                                 next_frontier[fp++] = polygons.size();
                                 polygons.push_back(n_poly);
+                                p = &polygons[frontierIndex];
                             }
                             j += 2;
                         }
                         if(p_r <= r_r){
+                            p = &polygons[frontierIndex];
                             close_off(p, x[v]);
                             i++;
                         }
@@ -136,7 +144,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume, int d
                 
                 //close off any residual polygons
                 for(; i < nf; i++){
-                    MonotonePolygon &polygon = polygons[frontier[i]];
+                    MonotonePolygon *polygon = &polygons[frontier[i]];
                     close_off(polygon, x[v]);
                 }
                 
@@ -160,7 +168,7 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume, int d
             
             //close off frontier
             for(i = 0; i < nf; i++){
-                MonotonePolygon& p = polygons[frontier[i]];
+                MonotonePolygon* p = &polygons[frontier[i]];
                 close_off(p, dims[v]);
             }
             
@@ -169,8 +177,8 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume, int d
             
             //now we just need to triangulate each monotone polygon
             for(i = 0; i < polygons.size(); i++){
-                MonotonePolygon& p = polygons[i];
-                Color c = p.color;
+                MonotonePolygon* p = &polygons[i];
+                Color c = p->color;
                 bool flipped = false;
                 
                 if(c < 0){
@@ -178,20 +186,20 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume, int d
                     c = -c;
                 }
                 
-                for(j = 0; j < p.left.size(); j++){
+                for(j = 0; j < p->left.size(); j++){
                     left_index[j] = vertices.size();
                     Vertex y = {0.0,0.0,0.0};
-                    Point z = p.left[j];
+                    Point z = p->left[j];
                     y[d] = x[d];
                     y[u] = z.first;
                     y[v] = z.second;
                     vertices.push_back(y);
                 }
                 
-                for(j = 0; j < p.right.size(); j++){
+                for(j = 0; j < p->right.size(); j++){
                     right_index[j] = vertices.size();
                     Vertex y = {0.0,0.0,0.0};
-                    Point z = p.right[j];
+                    Point z = p->right[j];
                     y[d] = x[d];
                     y[u] = z.first;
                     y[v] = z.second;
@@ -206,25 +214,25 @@ std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume, int d
                 bool side = true;
                 
                 stack[top++] = left_index[0];
-                stack[top++] = p.left[0].first;
-                stack[top++] = p.left[0].second;
+                stack[top++] = p->left[0].first;
+                stack[top++] = p->left[0].second;
                 
                 stack[top++] = right_index[0];
-                stack[top++] = p.right[0].first;
-                stack[top++] = p.right[0].second;
+                stack[top++] = p->right[0].first;
+                stack[top++] = p->right[0].second;
                 
-                while(l_i < p.left.size() || r_i < p.right.size()){
+                while(l_i < p->left.size() || r_i < p->right.size()){
                     bool n_side = false;
                     
-                    if(l_i == p.left.size()){
+                    if(l_i == p->left.size()){
                         n_side = true;
-                    } else if(r_i != p.right.size()) {
-                        Point l = p.left[l_i];
-                        Point r = p.right[r_i];
+                    } else if(r_i != p->right.size()) {
+                        Point l = p->left[l_i];
+                        Point r = p->right[r_i];
                         n_side = l.second > r.second;
                     }
                     auto idx = n_side ? right_index[r_i] : left_index[l_i];
-                    Point vert = n_side ? p.right[r_i] : p.left[l_i];
+                    Point vert = n_side ? p->right[r_i] : p->left[l_i];
                     if(n_side != side){
                         //opposite side
                         while(bottom+3 < top){

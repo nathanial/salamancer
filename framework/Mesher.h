@@ -39,6 +39,7 @@ namespace Mesher {
 
     typedef std::vector<int> Int32Array;
     
+    
     class MonotonePolygon {
     public:
         Color color;
@@ -54,8 +55,8 @@ namespace Mesher {
 
     typedef std::vector<MonotonePolygon> Polygons;
     
-    void merge_run(MonotonePolygon &polygon, float v, float u_l, float u_r);
-    void close_off(MonotonePolygon &poly, float value);
+    void merge_run(MonotonePolygon *polygon, float v, float u_l, float u_r);
+    void close_off(MonotonePolygon *poly, float value);
     std::tuple<Vertices, Faces> mesh(VolumePtr volume, int dims[3]);
 };
 
