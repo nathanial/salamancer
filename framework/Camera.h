@@ -21,7 +21,7 @@ public:
     int windowWidth;
     int windowHeight;
 
-    void rotate(float x, float y);
+    void rotate(float x, float y, float z);
     void move(float x, float y, float z);
     
     vmath::mat4 getMatrix();

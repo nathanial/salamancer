@@ -51,23 +51,42 @@ void handleEvents(){
         switch(event.type){
             case SDL_KEYDOWN:
                 switch(event.key.keysym.sym){
-                    case SDLK_DOWN:
+                    case SDLK_s:
                         world.camera.move(0, 10, 0);
                         break;
-                    case SDLK_UP:
+                    case SDLK_w:
                         world.camera.move(0, -10, 0);
                         break;
-                    case SDLK_LEFT:
+                    case SDLK_a:
                         world.camera.move(10, 0, 0);
                         break;
-                    case SDLK_RIGHT:
+                    case SDLK_d:
                         world.camera.move(-10, 0, 0);
                         break;
-                    case SDLK_PAGEDOWN:
+                    case SDLK_q:
                         world.camera.move(0,0,-10);
                         break;
-                    case SDLK_PAGEUP:
+                    case SDLK_e:
                         world.camera.move(0,0,10);
+                        break;
+                    case SDLK_UP:
+                        world.camera.rotate(1.0f, 0.0f, 0.0f);
+                        break;
+                    case SDLK_DOWN:
+                        world.camera.rotate(-1.0f, 0.0f, 0.0f);
+                        break;
+                    case SDLK_LEFT:
+                        world.camera.rotate(0.0f, 1.0, 0.0f);
+                        break;
+                    case SDLK_RIGHT:
+                        world.camera.rotate(0.0f, -1.0, 0.0f);
+                        break;
+                    
+                    case SDLK_PAGEDOWN:
+                        world.camera.rotate(0,0,-1.0f);
+                        break;
+                    case SDLK_PAGEUP:
+                        world.camera.rotate(0,0,1.0f);
                         break;
                 }
                 break;
@@ -150,7 +169,7 @@ void initGL(){
 
 
 int main(int argc, char* args[]){
-    world.camera.windowWidth = 1920;
+    world.camera.windowWidth = 1080;
     world.camera.windowHeight = 1080;
 
     
