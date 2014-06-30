@@ -44,8 +44,8 @@ void World::render() {
 }
 
 void World::load(){
-    program.loadVertexShader("/home/nathan/Projects/godking/shaders/vertex.shader");
-    program.loadFragmentShader("/home/nathan/Projects/godking/shaders/fragment.shader");
+    program.loadVertexShader("shaders/vertex.shader");
+    program.loadFragmentShader("shaders/fragment.shader");
     program.compileAndLink();
     program.use();
     

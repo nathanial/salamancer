@@ -66,11 +66,11 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/godking
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/salamancer
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/godking: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/salamancer: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/godking ${OBJECTFILES} ${LDLIBSOPTIONS}
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/salamancer ${OBJECTFILES} ${LDLIBSOPTIONS}
 
 ${OBJECTDIR}/framework/Camera.o: framework/Camera.cpp 
 	${MKDIR} -p ${OBJECTDIR}/framework
@@ -133,7 +133,7 @@ ${OBJECTDIR}/util.o: util.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/godking
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/salamancer
 
 # Subprojects
 .clean-subprojects:
