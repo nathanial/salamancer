@@ -16,6 +16,8 @@
           <itemPath>framework/terrain/PerlinTerrainGenerator.h</itemPath>
           <itemPath>framework/terrain/TerrainGenerator.cpp</itemPath>
           <itemPath>framework/terrain/TerrainGenerator.h</itemPath>
+          <itemPath>framework/terrain/noiseutils.cpp</itemPath>
+          <itemPath>framework/terrain/noiseutils.h</itemPath>
         </logicalFolder>
         <itemPath>framework/Camera.cpp</itemPath>
         <itemPath>framework/Camera.h</itemPath>
@@ -145,6 +147,10 @@
             tool="3"
             flavor2="0">
       </item>
+      <item path="framework/terrain/noiseutils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="framework/terrain/noiseutils.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="shaders/fragment.shader" ex="false" tool="3" flavor2="0">
@@ -233,6 +239,10 @@
             ex="false"
             tool="3"
             flavor2="0">
+      </item>
+      <item path="framework/terrain/noiseutils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="framework/terrain/noiseutils.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

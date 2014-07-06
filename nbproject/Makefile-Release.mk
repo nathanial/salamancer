@@ -44,6 +44,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/framework/opengl/Shader.o \
 	${OBJECTDIR}/framework/terrain/PerlinTerrainGenerator.o \
 	${OBJECTDIR}/framework/terrain/TerrainGenerator.o \
+	${OBJECTDIR}/framework/terrain/noiseutils.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/util.o
 
@@ -116,6 +117,11 @@ ${OBJECTDIR}/framework/terrain/TerrainGenerator.o: framework/terrain/TerrainGene
 	${MKDIR} -p ${OBJECTDIR}/framework/terrain
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/framework/terrain/TerrainGenerator.o framework/terrain/TerrainGenerator.cpp
+
+${OBJECTDIR}/framework/terrain/noiseutils.o: framework/terrain/noiseutils.cpp 
+	${MKDIR} -p ${OBJECTDIR}/framework/terrain
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/framework/terrain/noiseutils.o framework/terrain/noiseutils.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}

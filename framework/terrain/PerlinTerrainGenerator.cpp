@@ -7,62 +7,68 @@
 
 #include "PerlinTerrainGenerator.h"
 #include "noise/noise.h"
+#include "noiseutils.h"
 #include "framework/World.h"
 #include <iostream>
 
+using namespace noise;
 
-VolumePtr PerlinTerrainGenerator::generate(Position position) {
-    noise::module::Perlin perlin;
+module::Perlin perlin;
+
+
+VolumePtr generateTerrain(Position position){
+    VolumePtr volume(new Volume());
     
-    Volume *v = new Volume();
-    VolumePtr volume(v);
+    std::cout << "+++++++++++++++++++++++++++++++Position: " << position.x << " " << position.y << " " << position.z << std::endl;
     
-    auto scale = [](float x, float fromLow, float fromHigh, float toLow, float toHigh ) {
-        return ( x - fromLow ) * ( toHigh - toLow ) / ( fromHigh - fromLow ) + toLow;
-    };
+    utils::NoiseMap heightMap;
+    utils::NoiseMapBuilderPlane heightMapBuilder;
+    heightMapBuilder.SetSourceModule(perlin);
+    heightMapBuilder.SetDestNoiseMap(heightMap);
+    heightMapBuilder.SetDestSize(90,90);
+    heightMapBuilder.SetBounds(
+            position.x*4,(position.x+1)*4,
+            position.z*4,(position.z+1)*4
+    );
+    heightMapBuilder.Build();
     
-    int width = Volume::XWIDTH;
-    
-    std::cout << position.y << std::endl;
-    if((int)position.y == World::YCHUNKS -1){
-        std::cout << "HERE" << std::endl;
-        float floor = 0;
-        float ceiling = 20;
-        float divisor = 50;
-        for(int i = 0; i < Volume::XWIDTH; i++){
-            for(int j = 0; j < Volume::ZWIDTH; j++){
-                double n = perlin.GetValue(i / divisor, 1,  j / divisor);
-                int y = scale(n, -1, 1, floor, ceiling);
-                int xidx = abs((width + i % width) % width);
-                int yidx = abs((width + y % width) % width);
-                int zidx = abs((width + j % width) % width);
-                if(xidx >= width || yidx >= width || zidx >= width){
-                    continue;
-                }
-                volume->voxels[xidx][yidx][zidx] = 1;
+    for(int x = 0; x < Volume::XWIDTH; x++){
+        for(int z = 0; z < Volume::ZWIDTH; z++){
+            float y = heightMap.GetValue(x, z);
+            y = (y+1.5)*4;
+            if(y <= 0){
+                std::cout << "1 Ooops: " << heightMap.GetValue(x,z) + 1.5 << std::endl;
+                y = 0;
             }
-        }
-    } else {
-        for(int i = 0; i < Volume::XWIDTH; i++){
-            for(int j = 0; j < Volume::YWIDTH; j++){
-                for(int k = 0; k < Volume::ZWIDTH; k++){
-                    volume->voxels[i][j][k] = 1;
-                }
+            if(y >= 16){
+                std::cout << "2 Ooops: " << heightMap.GetValue(x,z) + 1.5 << std::endl;
+                y = 15;
+            }
+            volume->voxels[x][(int)y][z] = 1;
+            for(int height = y; height >= 0; height--){
+                volume->voxels[x][height][z] = 1;
             }
         }
     }
-     
-    
-//    for(int x = 0; x < Volume::XWIDTH; x++){
-//        for(int y = 0; y < Volume::YWIDTH; y++){
-//            for(int z = 0; z < Volume::ZWIDTH; z++){
-//                int d = rand() % 100;
-//                if(d > 50){
-//                    volume->voxels[x][y][z] = 1;
-//                }
-//            }
-//        }
-//    }
-    
     return volume;
+}
+
+VolumePtr generateBlock(){
+    VolumePtr volume(new Volume());
+    for(int i = 0; i < Volume::XWIDTH; i++){
+        for(int j = 0; j < Volume::YWIDTH; j++){
+            for(int k = 0; k < Volume::ZWIDTH; k++){
+                volume->voxels[i][j][k] = 1;
+            }
+        }
+    }
+    return volume;
+}
+
+VolumePtr PerlinTerrainGenerator::generate(Position position) {
+    if((int)position.y == World::YCHUNKS -1){
+        return generateTerrain(position);
+    } else {
+        return generateBlock();
+    }
 }
