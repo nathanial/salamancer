@@ -7,6 +7,7 @@ layout(location = 2) in vec3 normal;
 smooth out vec4 interpColor;
 
 uniform vec3 dirToLight;
+uniform vec4 lightIntensity;
 
 uniform mat4 Transform;
 uniform mat3 normalModelToCameraMatrix;
@@ -20,6 +21,5 @@ void main(void)
     float cosAngIncidence = dot(normCamSpace, dirToLight);
     cosAngIncidence = clamp(cosAngIncidence, 0, 1);
 
-    interpColor = vec4(vertexColor, 1.0);
-    
+    interpColor = lightIntensity * cosAngIncidence;
 }

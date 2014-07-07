@@ -43,6 +43,10 @@ private:
             );
     
     GLint transformLocation;
+    GLint dirToLightLocation;
+    GLint lightIntensityLocation;
+    GLint normalModelToCameraMatrixLocation;
+    
     GLProgram program;
 };
 
