@@ -24,9 +24,9 @@ public:
     World();
     ~World();
     
-    static const int XCHUNKS = 5;
-    static const int YCHUNKS = 5;
-    static const int ZCHUNKS = 5;
+    static const int XCHUNKS = 10;
+    static const int YCHUNKS = 1;
+    static const int ZCHUNKS = 10;
 
     Camera camera;
     
