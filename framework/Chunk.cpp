@@ -152,3 +152,4 @@ void Chunk::generateColorsBuffer(){
     delete [] colors;
     
 }
+

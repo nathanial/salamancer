@@ -36,12 +36,15 @@ void World::render() {
                 vmath::mat4 transform = this->createTransform(pos, rot);
                 vmath::vec4 lightDirection(0.866f, 0.5f, 0.0f, 0.0f);
                 vmath::vec4 lightDirCameraSpace = lightDirection * transform;
+                vmath::vec4 lightIntensity(1,1,1,1);
                 
                 vmath::mat4 normMatrix = transform;
                 
                 glUniformMatrix4fv(this->transformLocation, 1, GL_FALSE, transform);
                 glUniform3fv(this->dirToLightLocation, 1, lightDirCameraSpace);
                 glUniformMatrix3fv(this->normalModelToCameraMatrixLocation, 1, GL_FALSE, normMatrix);
+                glUniform4fv(this->lightIntensityLocation, 1, lightIntensity);
+                
                 this->chunks[i][j][k].render();
                 util::checkOpenGLError();
             }

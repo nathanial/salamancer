@@ -2,7 +2,6 @@
 
 layout (location = 0) in vec3 position;
 layout(location = 1) in vec3 vertexColor;
-layout(location = 2) in vec3 normal;
 
 smooth out vec4 interpColor;
 
@@ -14,6 +13,8 @@ uniform mat3 normalModelToCameraMatrix;
 
 void main(void)
 {
+    vec3 normal = vec3(0,0,1.0);
+
     gl_Position = Transform * vec4(position, 1.0);
 
     vec3 normCamSpace = normalize(normalModelToCameraMatrix * normal);
