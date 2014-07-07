@@ -10,10 +10,20 @@
 
 #include "TerrainGenerator.h"
 #include "framework/Volume.h"
+#include "noise/noise.h"
+#include "noiseutils.h"
 
 class PerlinTerrainGenerator : public TerrainGenerator {
 public:
+    PerlinTerrainGenerator();
+    ~PerlinTerrainGenerator();
     virtual VolumePtr generate(Position chunk);
+    
+    private:
+        module::Perlin perlin;
+        utils::NoiseMap heightMap;
+        
+        VolumePtr generateTerrain(Position position);
 };
 
 #endif	/* PERINTERRAINGENERATOR_H */

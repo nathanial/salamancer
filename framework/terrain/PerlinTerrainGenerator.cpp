@@ -13,28 +13,34 @@
 
 using namespace noise;
 
-module::Perlin perlin;
 
 
-VolumePtr generateTerrain(Position position){
-    VolumePtr volume(new Volume());
-    
-    std::cout << "+++++++++++++++++++++++++++++++Position: " << position.x << " " << position.y << " " << position.z << std::endl;
-    
-    utils::NoiseMap heightMap;
+PerlinTerrainGenerator::PerlinTerrainGenerator() {
     utils::NoiseMapBuilderPlane heightMapBuilder;
     heightMapBuilder.SetSourceModule(perlin);
     heightMapBuilder.SetDestNoiseMap(heightMap);
-    heightMapBuilder.SetDestSize(90,90);
+    heightMapBuilder.SetDestSize(256,256);
     heightMapBuilder.SetBounds(
-            position.x*4,(position.x+1)*4,
-            position.z*4,(position.z+1)*4
+            0, 10,
+            0, 10
     );
     heightMapBuilder.Build();
+}
+
+PerlinTerrainGenerator::~PerlinTerrainGenerator() {
+
+}
+
+
+VolumePtr PerlinTerrainGenerator::generateTerrain(Position position){
+    VolumePtr volume(new Volume());
+
+    std::cout << "-------------------------------W/H: " << this->heightMap.GetWidth() << "/" << this->heightMap.GetHeight() << std::endl;
+    std::cout << "+++++++++++++++++++++++++++++++Position: " << position.x << " " << position.y << " " << position.z << std::endl;
     
     for(int x = 0; x < Volume::XWIDTH; x++){
         for(int z = 0; z < Volume::ZWIDTH; z++){
-            float y = heightMap.GetValue(x, z);
+            float y = this->heightMap.GetValue(x + (position.x * Volume::XWIDTH), z + (position.z * Volume::ZWIDTH));
             y = (y+1.5)*4;
             if(y <= 0){
                 std::cout << "1 Ooops: " << heightMap.GetValue(x,z) + 1.5 << std::endl;

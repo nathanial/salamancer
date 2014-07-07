@@ -1,10 +1,10 @@
 #version 330 core
 
-in vec3 fragmentColor;
+smooth in vec4 interpColor;
 
-out vec3 vs_color;
+out vec4 vs_color;
 
 void main(void)
 {
-    vs_color = fragmentColor;
+    vs_color = interpColor;
 }
