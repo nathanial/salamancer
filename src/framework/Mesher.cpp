@@ -13,7 +13,6 @@
 
 #include "Mesher.h"
 #include "Volume.h"
-#include "util.h"
 
 bool float_equal(float a, float b){
     float diff = a - b;
@@ -51,7 +50,10 @@ void Mesher::close_off(MonotonePolygon *poly, float value){
 }
 
 
-std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume, int dims[3]){
+std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume){
+    
+    int dims[] = { Volume::XWIDTH, Volume::YWIDTH, Volume::ZWIDTH };
+    
     auto f = [&](int x, int y, int z){
         return volume->voxels[x][y][z];
     };

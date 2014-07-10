@@ -1,0 +1,13 @@
+include_directories(${PROJECT_SRC_DIR}/src)
+add_library(src 
+    BaseApplication.cpp 
+    SalamancerApplication.cpp
+    framework/Mesher.cpp
+    framework/terrain/PerlinTerrainGenerator.cpp
+    framework/terrain/TerrainGenerator.cpp
+    framework/terrain/noiseutils.cpp
+    framework/MeshLoader.cpp
+)
+ADD_DEFINITIONS(
+    -std=c++11
+)
