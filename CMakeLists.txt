@@ -100,3 +100,6 @@ install(FILES ${CMAKE_SOURCE_DIR}/dist/bin/plugins.cfg
 	CONFIGURATIONS Release RelWithDebInfo Debug
 )
 
+ADD_DEFINITIONS(
+    -std=c++11
+)
