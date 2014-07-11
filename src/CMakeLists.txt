@@ -6,6 +6,7 @@ add_library(src
     framework/terrain/PerlinTerrainGenerator.cpp
     framework/terrain/TerrainGenerator.cpp
     framework/terrain/noiseutils.cpp
+    framework/MeshLoader.cpp
 )
 ADD_DEFINITIONS(
     -std=c++11
