@@ -1,4 +1,6 @@
 #include "SalamancerApplication.h"
+#include "framework/terrain/PerlinTerrainGenerator.h"
+#include "framework/Position.h"
 
 using namespace Ogre;
 //-------------------------------------------------------------------------------------
@@ -13,13 +15,19 @@ SalamancerApplication::~SalamancerApplication(void)
 //-------------------------------------------------------------------------------------
 void SalamancerApplication::createScene(void)
 {
-    mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5f, 0.5f, 0.5f));
+    PerlinTerrainGenerator gen;
+
+    VolumePtr volume = gen.generate(Position(0,0,0));
     
-    auto ogreHead = mSceneMgr->createEntity("Head", "ogrehead.mesh");
-    auto headNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("HeadNode");
-    headNode->attachObject(ogreHead);
-    auto light = mSceneMgr->createLight("MainLight");
-    light->setPosition(20.0f, 80.0f, 50.0f);
+    
+    
+    
+//    mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5f, 0.5f, 0.5f));
+//    auto ogreHead = mSceneMgr->createEntity("Head", "ogrehead.mesh");
+//    auto headNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("HeadNode");
+//    headNode->attachObject(ogreHead);
+//    auto light = mSceneMgr->createLight("MainLight");
+//    light->setPosition(20.0f, 80.0f, 50.0f);
 }
 
 

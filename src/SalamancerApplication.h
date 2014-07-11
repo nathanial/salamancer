@@ -2,6 +2,7 @@
 #define __SalamancerApplication_h_
 
 #include "BaseApplication.h"
+#include "framework/Volume.h"
 
 class SalamancerApplication : public BaseApplication
 {
@@ -11,6 +12,10 @@ public:
 
 protected:
     virtual void createScene(void);
+    
+private:
+    Volume createVolume();
+        
 };
 
 #endif // #ifndef __TutorialApplication_h_

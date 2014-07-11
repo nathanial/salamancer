@@ -57,28 +57,21 @@ if (NOT OGRE_BUILD_PLATFORM_IPHONE)
 	set(OGRE_LIBRARIES ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 endif()
 
-set(HDRS 
-	./BaseApplication.h
-	./SalamancerApplication.h
-)
-
-set(SRCS
-	./BaseApplication.cpp
-	./SalamancerApplication.cpp
-)
-
 include_directories( ${OIS_INCLUDE_DIRS}
 	${OGRE_INCLUDE_DIRS}
 	${OGRE_SAMPLES_INCLUDEPATH}
 	${OGRE_Overlay_INCLUDE_DIRS}
 	${OGRE_VOLUME_INCLUDEPATH}
+        ./src
 )
 
-add_executable(Salamancer WIN32 ${HDRS} ${SRCS})
+add_subdirectory(src)
+
+add_executable(Salamancer src/SalamancerApplication.cpp)
 
 set_target_properties(Salamancer PROPERTIES DEBUG_POSTFIX _d)
 
-target_link_libraries(Salamancer ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Overlay_LIBRARIES})
+target_link_libraries(Salamancer ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Overlay_LIBRARIES} src)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/bin)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/media)
