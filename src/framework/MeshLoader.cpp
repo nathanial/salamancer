@@ -64,24 +64,6 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
         vertices[cursor++] = sqrt13 * (vertex[1] < 0 ? -1 : 1);
         vertices[cursor++] = sqrt13 * (vertex[2] < 0 ? -1 : 1);
     }
-//    {
-//            -100.0,100.0,-100.0,        //0 position
-//            -sqrt13,sqrt13,-sqrt13,     //0 normal
-//            100.0,100.0,-100.0,         //1 position
-//            sqrt13,sqrt13,-sqrt13,      //1 normal
-//            100.0,-100.0,-100.0,        //2 position
-//            sqrt13,-sqrt13,-sqrt13,     //2 normal
-//            -100.0,-100.0,-100.0,       //3 position
-//            -sqrt13,-sqrt13,-sqrt13,    //3 normal
-//            -100.0,100.0,100.0,         //4 position
-//            -sqrt13,sqrt13,sqrt13,      //4 normal
-//            100.0,100.0,100.0,          //5 position
-//            sqrt13,sqrt13,sqrt13,       //5 normal
-//            100.0,-100.0,100.0,         //6 position
-//            sqrt13,-sqrt13,sqrt13,      //6 normal
-//            -100.0,-100.0,100.0,        //7 position
-//            -sqrt13,-sqrt13,sqrt13,     //7 normal
-//    };
  
     RenderSystem* rs = Root::getSingleton().getRenderSystem();
     RGBA colours[nVertices];
@@ -108,20 +90,6 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
         faces[cursor++] = face[1];
         faces[cursor++] = face[2];
     }
-//    = {
-//            0,2,3,
-//            0,1,2,
-//            1,6,2,
-//            1,5,6,
-//            4,6,5,
-//            4,7,6,
-//            0,7,4,
-//            0,3,7,
-//            0,5,1,
-//            0,4,5,
-//            2,7,3,
-//            2,6,7
-//    };
  
     /// Create vertex data structure for 8 vertices shared between submeshes
     msh->sharedVertexData = new VertexData();
