@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 #include <tuple>
-#include "util.h"
 #include "Volume.h"
 
 namespace Mesher {

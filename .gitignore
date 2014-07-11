@@ -8,3 +8,4 @@ Makefile
 cmake_install.cmake
 nbproject/
 Ogre.log
+src/libsrc.a

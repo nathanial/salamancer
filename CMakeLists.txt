@@ -71,7 +71,7 @@ add_executable(Salamancer src/SalamancerApplication.cpp)
 
 set_target_properties(Salamancer PROPERTIES DEBUG_POSTFIX _d)
 
-target_link_libraries(Salamancer ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Overlay_LIBRARIES} src)
+target_link_libraries(Salamancer ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Overlay_LIBRARIES} src /usr/lib/libnoise.so)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/bin)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/media)

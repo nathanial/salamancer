@@ -13,7 +13,6 @@
 
 #include "Mesher.h"
 #include "Volume.h"
-#include "util.h"
 
 bool float_equal(float a, float b){
     float diff = a - b;
