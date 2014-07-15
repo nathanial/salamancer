@@ -7,7 +7,7 @@
 
 #include "MeshLoader.h"
 #include "framework/Volume.h"
-#include "framework/Mesher.h"
+#include "framework/meshers/Mesher.h"
 #include "framework/World.h"
 #include <functional>
 
@@ -35,8 +35,8 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
 //    PerlinTerrainGenerator gen;
 //    VolumePtr volume = gen.generate(Position(1,World::YCHUNKS -1,1));
 //    auto verticesAndFaces = Mesher::mesh(volume);
-    Mesher::Vertices voxVertices = std::get<0>(verticesAndFaces);
-    Mesher::Faces voxFaces = std::get<1>(verticesAndFaces);
+    Vertices voxVertices = std::get<0>(verticesAndFaces);
+    Faces voxFaces = std::get<1>(verticesAndFaces);
     
     /// Create the mesh via the MeshManager
     Ogre::MeshPtr msh = MeshManager::getSingleton().createManual(name, "General");
@@ -52,7 +52,7 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
     float vertices[vbufCount]; 
     for(int i = 0; i < nVertices; i++){
         int cursor = i*3*2;
-        Mesher::Vertex vertex = voxVertices.at(i);
+        Vertex vertex = voxVertices.at(i);
         
         //position
         vertices[cursor++] = vertex[0];
@@ -85,7 +85,7 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
     
     for(int i = 0; i < voxFaces.size(); i++){
         int cursor = i * 3;
-        Mesher::Face face = voxFaces[i];
+        Face face = voxFaces[i];
         faces[cursor++] = face[0];
         faces[cursor++] = face[1];
         faces[cursor++] = face[2];
@@ -151,4 +151,16 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
  
     /// Notify -Mesh object that it has been loaded
     msh->load();
+}
+
+void MeshLoader::loadMesh(ManualObject &manual, Quads quads){
+    manual.begin("BaseWhiteNoLighting", RenderOperation::OT_LINE_STRIP);
+
+    manual.position(-100.0, -100.0, 0.0);  // start position
+    manual.position( 100.0, -100.0, 0.0);  // draw first line
+    manual.position( 100.0,  100.0, 0.0);
+    manual.position(-100.0,  100.0, 0.0);
+    manual.position(-100.0, -100.0, 0.0);  // draw fourth line
+
+    manual.end();
 }

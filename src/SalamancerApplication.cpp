@@ -1,7 +1,8 @@
 #include "SalamancerApplication.h"
 #include "framework/terrain/PerlinTerrainGenerator.h"
 #include "framework/Position.h"
-#include "framework/Mesher.h"
+#include "framework/meshers/MonotoneMesher.h"
+#include "framework/meshers/GreedyMesher.h"
 #include "framework/World.h"
 #include "framework/MeshLoader.h"
 #include <functional>
@@ -52,7 +53,8 @@ void createColourCube(void)
     for(int x = 0; x < World::XCHUNKS; x++){
         for(int z = 0; z < World::ZCHUNKS; z++){
             VolumePtr volume = gen.generate(Position(x,World::YCHUNKS-1, z));
-            auto verticesAndFaces = Mesher::mesh(volume);
+            MonotoneMesher mesher;
+            auto verticesAndFaces = mesher.mesh(volume);
             MeshLoader::loadMesh("ColorCube"+std::to_string(x)+","+std::to_string(z), verticesAndFaces);
         }
     }

@@ -1,18 +1,12 @@
 /* 
- * File:   Mesher.cpp
+ * File:   MonotoneMesher.cpp
  * Author: nathan
  * 
- * Created on June 25, 2014, 2:12 AM
+ * Created on July 15, 2014, 12:12 AM
  */
 
-#include <memory>
-#include <iostream>
-#include <vector>
-#include <tuple>
+#include "MonotoneMesher.h"
 #include <assert.h>
-
-#include "Mesher.h"
-#include "Volume.h"
 
 bool float_equal(float a, float b){
     float diff = a - b;
@@ -23,7 +17,7 @@ bool float_equal(float a, float b){
     return equal;
 }
 
-void Mesher::merge_run(MonotonePolygon *polygon, float v, float u_l, float u_r){
+void MonotoneMesher::merge_run(MonotonePolygon *polygon, float v, float u_l, float u_r){
     assert(polygon->left.size() > 0);
     assert(polygon->right.size() > 0);
     
@@ -39,7 +33,7 @@ void Mesher::merge_run(MonotonePolygon *polygon, float v, float u_l, float u_r){
     }
 }
 
-void Mesher::close_off(MonotonePolygon *poly, float value){
+void MonotoneMesher::close_off(MonotonePolygon *poly, float value){
     assert(poly->left.size() > 0);
     assert(poly->right.size() > 0);
     
@@ -50,7 +44,7 @@ void Mesher::close_off(MonotonePolygon *poly, float value){
 }
 
 
-std::tuple<Mesher::Vertices, Mesher::Faces> Mesher::mesh(VolumePtr volume){
+std::tuple<Vertices, Faces> MonotoneMesher::mesh(VolumePtr volume){
     
     int dims[] = { Volume::XWIDTH, Volume::YWIDTH, Volume::ZWIDTH };
     
