@@ -7,7 +7,7 @@
 
 #include "MeshLoader.h"
 #include "framework/Volume.h"
-#include "framework/Mesher.h"
+#include "framework/meshers/Mesher.h"
 #include "framework/World.h"
 #include <functional>
 
@@ -35,8 +35,8 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
 //    PerlinTerrainGenerator gen;
 //    VolumePtr volume = gen.generate(Position(1,World::YCHUNKS -1,1));
 //    auto verticesAndFaces = Mesher::mesh(volume);
-    Mesher::Vertices voxVertices = std::get<0>(verticesAndFaces);
-    Mesher::Faces voxFaces = std::get<1>(verticesAndFaces);
+    Vertices voxVertices = std::get<0>(verticesAndFaces);
+    Faces voxFaces = std::get<1>(verticesAndFaces);
     
     /// Create the mesh via the MeshManager
     Ogre::MeshPtr msh = MeshManager::getSingleton().createManual(name, "General");
@@ -52,7 +52,7 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
     float vertices[vbufCount]; 
     for(int i = 0; i < nVertices; i++){
         int cursor = i*3*2;
-        Mesher::Vertex vertex = voxVertices.at(i);
+        Vertex vertex = voxVertices.at(i);
         
         //position
         vertices[cursor++] = vertex[0];
@@ -85,7 +85,7 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
     
     for(int i = 0; i < voxFaces.size(); i++){
         int cursor = i * 3;
-        Mesher::Face face = voxFaces[i];
+        Face face = voxFaces[i];
         faces[cursor++] = face[0];
         faces[cursor++] = face[1];
         faces[cursor++] = face[2];
@@ -151,4 +151,32 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
  
     /// Notify -Mesh object that it has been loaded
     msh->load();
+}
+
+void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
+    const float sqrt13 = 0.577350269f; /* sqrt(1/3) */
+    manual->begin("ColorTest", RenderOperation::OT_TRIANGLE_LIST);
+    Vertices vertices = std::get<0>(vf);
+    
+    float colors[][3] = {
+        {1.0, 0.0, 0.0},
+        {0.0, 1.0, 0.0},
+        {0.0, 0.0, 1.0},
+        {1.0, 1.0, 1.0},
+        {0.5, 0.5, 0.5}
+    };
+    
+    for(int i = 0; i < vertices.size(); i++){
+        Vertex vertex = vertices[i];
+        float *color = colors[i % 5];
+        manual->colour(color[0], color[1], color[2]);
+        manual->position(vertex[0], vertex[1], vertex[2]);
+    }
+    Faces faces = std::get<1>(vf);
+    for(int i = 0; i < faces.size(); i++){
+        Face face = faces[i];
+        manual->quad(face[0], face[1], face[2], face[3]);
+    }
+    
+    manual->end();
 }
