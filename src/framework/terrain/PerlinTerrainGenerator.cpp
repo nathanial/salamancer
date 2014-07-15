@@ -19,8 +19,6 @@ module::Perlin perlin;
 VolumePtr generateTerrain(Position position){
     VolumePtr volume(new Volume());
     
-    std::cout << "+++++++++++++++++++++++++++++++Position: " << position.x << " " << position.y << " " << position.z << std::endl;
-    
     utils::NoiseMap heightMap;
     utils::NoiseMapBuilderPlane heightMapBuilder;
     heightMapBuilder.SetSourceModule(perlin);

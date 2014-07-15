@@ -153,14 +153,30 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
     msh->load();
 }
 
-void MeshLoader::loadMesh(ManualObject &manual, Quads quads){
-    manual.begin("BaseWhiteNoLighting", RenderOperation::OT_LINE_STRIP);
-
-    manual.position(-100.0, -100.0, 0.0);  // start position
-    manual.position( 100.0, -100.0, 0.0);  // draw first line
-    manual.position( 100.0,  100.0, 0.0);
-    manual.position(-100.0,  100.0, 0.0);
-    manual.position(-100.0, -100.0, 0.0);  // draw fourth line
-
-    manual.end();
+void MeshLoader::loadMesh(ManualObject *manual, Quads quads){
+    const float sqrt13 = 0.577350269f; /* sqrt(1/3) */
+    for(int i = 0; i < quads.size(); i++){
+        Quad quad = quads.at(i);
+        assert(quad.size() == 4);
+        manual->begin("ColorTest", RenderOperation::OT_LINE_STRIP);
+        for(int i = 0; i < quad.size(); i++){
+            Vertex vertex = quad.at(i);
+            manual->colour(1.0, 0.0, 0.0);
+            manual->position(vertex[0], vertex[1], vertex[2]);
+//            manual->normal(
+//                    sqrt13 * (vertex[0] < 0 ? -1 : 1), 
+//                    sqrt13 * (vertex[1] < 0 ? -1 : 1),
+//                    sqrt13 * (vertex[2] < 0 ? -1 : 1));
+//            if(i == 0){
+//                manual->textureCoord(0,0);
+//            } else if(i == 1){
+//                manual->textureCoord(1,0);
+//            } else if(i == 2){
+//                manual->textureCoord(0,1);
+//            } else {
+//                manual->textureCoord(1,1);
+//            }
+        }
+        manual->end();
+    }
 }

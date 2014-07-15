@@ -34,7 +34,7 @@ namespace MeshLoader {
     typedef std::tuple<Vertices, Faces> VerticesAndFaces;
     
     void loadMesh(std::string name, VerticesAndFaces verticesAndFaces);
-    void loadMesh(Ogre::ManualObject &manual, Quads quads);
+    void loadMesh(Ogre::ManualObject *manual, Quads quads);
 };
 
 #endif	/* MESHLOADER_H */
