@@ -155,12 +155,12 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
 
 void MeshLoader::loadMesh(ManualObject *manual, Quads quads){
     const float sqrt13 = 0.577350269f; /* sqrt(1/3) */
+    manual->begin("ColorTest", RenderOperation::OT_TRIANGLE_LIST);
     for(int i = 0; i < quads.size(); i++){
         Quad quad = quads.at(i);
         assert(quad.size() == 4);
-        manual->begin("ColorTest", RenderOperation::OT_LINE_STRIP);
-        for(int i = 0; i < quad.size(); i++){
-            Vertex vertex = quad.at(i);
+        for(int j = 0; j < quad.size(); j++){
+            Vertex vertex = quad.at(j);
             manual->colour(1.0, 0.0, 0.0);
             manual->position(vertex[0], vertex[1], vertex[2]);
 //            manual->normal(
@@ -177,6 +177,9 @@ void MeshLoader::loadMesh(ManualObject *manual, Quads quads){
 //                manual->textureCoord(1,1);
 //            }
         }
-        manual->end();
+        int offset = i * 4;
+        manual->quad(offset, offset+1, offset+2, offset+3);
+        std::cout << std::endl;
     }
+    manual->end();
 }

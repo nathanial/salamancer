@@ -29,9 +29,9 @@ void SalamancerApplication::createScene(void)
     
     PerlinTerrainGenerator gen;
     
-    for(int x = 0; x < Volume::XWIDTH; x++){
-        for(int z = 0; z < Volume::ZWIDTH; z++){
-            VolumePtr volume = gen.generate(Position(x, World::YCHUNKS-1, z));
+    for(int x = 0; x < 1; x++){
+        for(int z = 0; z < 1; z++){
+            VolumePtr volume = gen.generate(Position(x, World::YCHUNKS-2, z));
             GreedyMesher mesher;
             Quads quads = mesher.mesh(volume);
             
