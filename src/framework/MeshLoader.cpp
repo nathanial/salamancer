@@ -31,152 +31,189 @@
 
 using namespace Ogre;
 
-void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
-//    PerlinTerrainGenerator gen;
-//    VolumePtr volume = gen.generate(Position(1,World::YCHUNKS -1,1));
-//    auto verticesAndFaces = Mesher::mesh(volume);
-    Vertices voxVertices = std::get<0>(verticesAndFaces);
-    Faces voxFaces = std::get<1>(verticesAndFaces);
-    
-    /// Create the mesh via the MeshManager
-    Ogre::MeshPtr msh = MeshManager::getSingleton().createManual(name, "General");
- 
-    /// Create one submesh
-    SubMesh* sub = msh->createSubMesh();
- 
-    const float sqrt13 = 0.577350269f; /* sqrt(1/3) */
- 
-    /// Define the vertices (8 vertices, each consisting of 2 groups of 3 floats
-    size_t nVertices = voxVertices.size();
-    size_t vbufCount = 3*2*nVertices;
-    float vertices[vbufCount]; 
-    for(int i = 0; i < nVertices; i++){
-        int cursor = i*3*2;
-        Vertex vertex = voxVertices.at(i);
-        
-        //position
-        vertices[cursor++] = vertex[0];
-        vertices[cursor++] = vertex[1];
-        vertices[cursor++] = vertex[2];
-        
-        //normal
-        vertices[cursor++] = sqrt13 * (vertex[0] < 0 ? -1 : 1);
-        vertices[cursor++] = sqrt13 * (vertex[1] < 0 ? -1 : 1);
-        vertices[cursor++] = sqrt13 * (vertex[2] < 0 ? -1 : 1);
+
+bool axisIsConstant(char axis, std::vector<Vertex> vertices){
+    if(axis == 'x'){
+        float value = vertices[0][0];
+        for(int i = 0; i < vertices.size(); i++){
+            if(value != vertices[i][0]){
+                return false;
+            }
+        }
+        return true;
+    } else if(axis == 'y'){
+        float value = vertices[0][1];
+        for(int i = 0; i < vertices.size(); i++){
+            if(value != vertices[i][1]){
+                return false;
+            }
+        }
+        return true;
+    } else if(axis == 'z'){
+        float value = vertices[0][2];
+        for(int i = 0; i < vertices.size(); i++){
+            if(value != vertices[i][2]){
+                return false;
+            }
+        }
+        return true;
+    } else {
+        throw "oops";
     }
- 
-    RenderSystem* rs = Root::getSingleton().getRenderSystem();
-    RGBA colours[nVertices];
-    RGBA *pColour = colours;
-    // Use render system to convert colour value since colour packing varies
-    rs->convertColourValue(ColourValue(1.0,0.0,0.0), pColour++); //0 colour
-    rs->convertColourValue(ColourValue(1.0,1.0,0.0), pColour++); //1 colour
-    rs->convertColourValue(ColourValue(0.0,1.0,0.0), pColour++); //2 colour
-    rs->convertColourValue(ColourValue(0.0,0.0,0.0), pColour++); //3 colour
-    rs->convertColourValue(ColourValue(1.0,0.0,1.0), pColour++); //4 colour
-    rs->convertColourValue(ColourValue(1.0,1.0,1.0), pColour++); //5 colour
-    rs->convertColourValue(ColourValue(0.0,1.0,1.0), pColour++); //6 colour
-    rs->convertColourValue(ColourValue(0.0,0.0,1.0), pColour++); //7 colour
- 
-    /// Define 12 triangles (two triangles per cube face)
-    /// The values in this table refer to vertices in the above table
-    size_t ibufCount = voxFaces.size() * 3;
-    unsigned short faces[ibufCount];
-    
-    for(int i = 0; i < voxFaces.size(); i++){
-        int cursor = i * 3;
-        Face face = voxFaces[i];
-        faces[cursor++] = face[0];
-        faces[cursor++] = face[1];
-        faces[cursor++] = face[2];
+}
+
+char constantAxis(Vertex v1, Vertex v2, Vertex v3, Vertex v4){
+    std::vector<Vertex> quad({v1,v2,v3,v4});
+    if(axisIsConstant('x', quad)){
+        return 'x';
+    } else if(axisIsConstant('y', quad)){
+        return 'y';
+    } else if(axisIsConstant('z', quad)){
+        return 'z';
+    } else {
+        throw "Could not find constant axis";
     }
- 
-    /// Create vertex data structure for 8 vertices shared between submeshes
-    msh->sharedVertexData = new VertexData();
-    msh->sharedVertexData->vertexCount = nVertices;
- 
-    /// Create declaration (memory format) of vertex data
-    VertexDeclaration* decl = msh->sharedVertexData->vertexDeclaration;
-    size_t offset = 0;
-    // 1st buffer
-    decl->addElement(0, offset, VET_FLOAT3, VES_POSITION);
-    offset += VertexElement::getTypeSize(VET_FLOAT3);
-    decl->addElement(0, offset, VET_FLOAT3, VES_NORMAL);
-    offset += VertexElement::getTypeSize(VET_FLOAT3);
-    /// Allocate vertex buffer of the requested number of vertices (vertexCount) 
-    /// and bytes per vertex (offset)
-    HardwareVertexBufferSharedPtr vbuf = 
-        HardwareBufferManager::getSingleton().createVertexBuffer(
-        offset, msh->sharedVertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
-    /// Upload the vertex data to the card
-    vbuf->writeData(0, vbuf->getSizeInBytes(), vertices, true);
- 
-    /// Set vertex buffer binding so buffer 0 is bound to our vertex buffer
-    VertexBufferBinding* bind = msh->sharedVertexData->vertexBufferBinding; 
-    bind->setBinding(0, vbuf);
- 
-    // 2nd buffer
-    offset = 0;
-    decl->addElement(1, offset, VET_COLOUR, VES_DIFFUSE);
-    offset += VertexElement::getTypeSize(VET_COLOUR);
-    /// Allocate vertex buffer of the requested number of vertices (vertexCount) 
-    /// and bytes per vertex (offset)
-    vbuf = HardwareBufferManager::getSingleton().createVertexBuffer(
-        offset, msh->sharedVertexData->vertexCount, HardwareBuffer::HBU_STATIC_WRITE_ONLY);
-    /// Upload the vertex data to the card
-    vbuf->writeData(0, vbuf->getSizeInBytes(), colours, true);
- 
-    /// Set vertex buffer binding so buffer 1 is bound to our colour buffer
-    bind->setBinding(1, vbuf);
- 
-    /// Allocate index buffer of the requested number of vertices (ibufCount) 
-    HardwareIndexBufferSharedPtr ibuf = HardwareBufferManager::getSingleton().
-        createIndexBuffer(
-        HardwareIndexBuffer::IT_16BIT, 
-        ibufCount, 
-        HardwareBuffer::HBU_STATIC_WRITE_ONLY);
- 
-    /// Upload the index data to the card
-    ibuf->writeData(0, ibuf->getSizeInBytes(), faces, true);
- 
-    /// Set parameters of the submesh
-    sub->useSharedVertices = true;
-    sub->indexData->indexBuffer = ibuf;
-    sub->indexData->indexCount = ibufCount;
-    sub->indexData->indexStart = 0;
- 
-    /// Set bounding information (for culling)
-    msh->_setBounds(AxisAlignedBox(-100,-100,-100,100,100,100));
-    msh->_setBoundingSphereRadius(Math::Sqrt(3*100*100));
- 
-    /// Notify -Mesh object that it has been loaded
-    msh->load();
+}
+
+float textureXScale(Vertex v1, Vertex v2, Vertex v3, Vertex v4){
+    std::vector<Vertex> quad({v1,v2,v3,v4});
+    if(axisIsConstant('x', quad)){
+        return std::abs(v1[2]-v3[2]);
+    } else if(axisIsConstant('y', quad)){
+        return std::abs(v1[0] - v3[0]);
+    } else if(axisIsConstant('z', quad)){
+        return std::abs(v1[0] - v3[0]);
+    } else {
+        throw "No Constant Axis";
+    }
+}
+
+float textureYScale(Vertex v1, Vertex v2, Vertex v3, Vertex v4){
+    std::vector<Vertex> quad({v1,v2,v3,v4});
+    if(axisIsConstant('x', quad)){
+        return std::abs(v1[1]-v3[1]);
+    } else if(axisIsConstant('y', quad)){
+        return std::abs(v1[2]-v3[2]);
+    } else if(axisIsConstant('z', quad)){
+        return std::abs(v1[1]-v3[1]);
+    } else {
+        throw "No Constant Axis";
+    }
 }
 
 void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
     const float sqrt13 = 0.577350269f; /* sqrt(1/3) */
-    manual->begin("ColorTest", RenderOperation::OT_TRIANGLE_LIST);
+    manual->begin("Dirt", RenderOperation::OT_TRIANGLE_LIST);
     Vertices vertices = std::get<0>(vf);
     
-    float colors[][3] = {
-        {1.0, 0.0, 0.0},
-        {0.0, 1.0, 0.0},
-        {0.0, 0.0, 1.0},
-        {1.0, 1.0, 1.0},
-        {0.5, 0.5, 0.5}
-    };
-    
-    for(int i = 0; i < vertices.size(); i++){
-        Vertex vertex = vertices[i];
-        float *color = colors[i % 5];
-        manual->colour(color[0], color[1], color[2]);
-        manual->position(vertex[0], vertex[1], vertex[2]);
-    }
+//    for(int i = 0; i < vertices.size(); i += 4){
+//        Vertex v1 = vertices[i];
+//        Vertex v2 = vertices[i+1];
+//        Vertex v3 = vertices[i+2];
+//        Vertex v4 = vertices[i+3];
+//        
+//        float xscale = textureXScale(v1,v2,v3,v4);
+//        float yscale = textureYScale(v1,v2,v3,v4);
+//        
+//        std::cout << "SCALES " << constantAxis(v1,v2,v3,v4) << ":" << xscale << " " << yscale << std::endl; 
+//        
+//        manual->position(v1[0], v1[1], v1[2]);
+//        manual->textureCoord(0, yscale);
+//        manual->position(v2[0], v2[1], v2[2]);
+//        manual->textureCoord(xscale, yscale);
+//        manual->position(v3[0], v3[1], v3[2]);
+//        manual->textureCoord(xscale, 0);
+//        manual->position(v4[0], v4[1], v4[2]);
+//        manual->textureCoord(0, 0);
+//    }
     Faces faces = std::get<1>(vf);
+    bool alreadyLoaded[vertices.size()] = {false};
+    
     for(int i = 0; i < faces.size(); i++){
         Face face = faces[i];
+        
+        Vertex v1 = vertices[face[0]];
+        Vertex v2 = vertices[face[1]];
+        Vertex v3 = vertices[face[2]];
+        Vertex v4 = vertices[face[3]];
+        
+        auto computeNormal = [&](){
+            Ogre::Vector3 ov1(v1[0], v1[1], v1[2]);
+            Ogre::Vector3 ov2(v2[0], v2[1], v2[2]);
+            Ogre::Vector3 ov3(v3[0], v3[1], v3[2]);
+            Ogre::Vector3 ov4(v4[0], v4[1], v4[2]);
+               
+            Ogre::Vector3 dir0 = ov3 - ov1;
+            Ogre::Vector3 dir1 = ov1 - ov2;
+            Ogre::Vector3 normal = dir0.crossProduct(dir1).normalisedCopy();
+            return normal;
+        };
+        
+        Ogre::Vector3 normal = computeNormal();
+        
+        
+        auto rightside = normal.x >= 1;
+        auto leftside = normal.x <= -1;
+        auto backside = normal.z <= -1;
+        auto frontside = normal.z >= 1;
+        
+        float frontXScale = std::abs(v1[0] - v3[0]);
+        float frontYScale = std::abs(v1[1] - v3[1]);
+        float leftXScale = std::abs(v1[2]-v3[2]);
+        float leftYScale = std::abs(v1[1]-v3[1]);
+        
+        manual->position(v1[0], v1[1], v1[2]);
+        if(leftside){           
+            manual->textureCoord(0, leftYScale);
+        } else if(frontside){
+            manual->textureCoord(0, frontYScale);
+        } else if(backside){
+            manual->textureCoord(frontXScale,frontYScale);
+        } else if(rightside){
+            manual->textureCoord(leftXScale, leftYScale);
+        } else {
+            manual->textureCoord(0,0);
+        }
+        
+        manual->position(v2[0], v2[1], v2[2]);
+        if(leftside){
+            manual->textureCoord(leftXScale, leftYScale);
+        } else if(frontside) {
+            manual->textureCoord(frontXScale, frontYScale);
+        } else if(backside){
+            manual->textureCoord(frontXScale,0);
+        } else if(rightside){
+            manual->textureCoord(leftXScale, 0);
+        } else {
+            manual->textureCoord(0,0);
+        }
+        
+        manual->position(v3[0], v3[1], v3[2]);
+        if(leftside){
+            manual->textureCoord(leftXScale, 0);
+        } else if(frontside){
+            manual->textureCoord(frontXScale, 0);
+        } else if(backside){
+            manual->textureCoord(0, 0);
+        } else if(rightside){
+            manual->textureCoord(0, 0);
+        }  else {
+            manual->textureCoord(0,0);
+        }
+
+        manual->position(v4[0], v4[1], v4[2]);
+        if(backside){
+            manual->textureCoord(0, frontYScale);
+        } else if(rightside){
+            manual->textureCoord(0, leftYScale);
+        } else {
+            manual->textureCoord(0,0);
+        }
+
         manual->quad(face[0], face[1], face[2], face[3]);
     }
+    
+    assert(manual->getCurrentVertexCount() == vertices.size());
     
     manual->end();
 }

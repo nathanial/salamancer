@@ -21,8 +21,8 @@ VerticesAndFaces GreedyMesher::mesh(VolumePtr volume) {
         int i, j, k, l, w, h
                 , u = (d + 1) % 3
                 , v = (d + 2) % 3;
-        int x[3] = {0};
-        int q[3] = {0};
+        float x[3] = {0};
+        float q[3] = {0};
         Int32Array mask(dims[u] * dims[v]);
         q[d] = 1;
         for (x[d] = -1; x[d] < dims[d];) {
@@ -50,7 +50,7 @@ VerticesAndFaces GreedyMesher::mesh(VolumePtr volume) {
                     int c = mask[n];
                     if (!!c) {
                         //Compute width
-                        for (w = 1; mask[n + w] && i + w < dims[u]; ++w) {
+                        for (w = 1; c == mask[n+w] && i+w<dims[u]; ++w){
                         }
                         //Compute height (this is slightly awkward
                         bool done = false;
@@ -68,8 +68,8 @@ VerticesAndFaces GreedyMesher::mesh(VolumePtr volume) {
                         //Add quad
                         x[u] = i;
                         x[v] = j;
-                        int du[3] = {0};
-                        int dv[3] = {0};
+                        float du[3] = {0};
+                        float dv[3] = {0};
                         
                         if(c > 0){
                             dv[v] = h;
@@ -89,7 +89,7 @@ VerticesAndFaces GreedyMesher::mesh(VolumePtr volume) {
                         //Zero-out mask
                         for (l = 0; l < h; ++l)
                             for (k = 0; k < w; ++k) {
-                                mask[n + k + l * dims[u]] = false;
+                                mask[n + k + l * dims[u]] = 0;
                             }
                         //Increment counters and continue
                         i += w;

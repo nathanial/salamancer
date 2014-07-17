@@ -1,0 +1,10 @@
+material ColorTest
+{
+    technique
+    {
+        pass
+        {
+            ambient vertexcolour
+        }
+    }
+}

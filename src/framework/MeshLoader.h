@@ -31,7 +31,6 @@
 #include <SdkCameraMan.h>
 
 namespace MeshLoader {    
-    void loadMesh(std::string name, VerticesAndFaces verticesAndFaces);
     void loadMesh(Ogre::ManualObject *manual, VerticesAndFaces quads);
 };
 

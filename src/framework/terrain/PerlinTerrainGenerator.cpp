@@ -38,9 +38,9 @@ VolumePtr generateTerrain(Position position){
                 std::cout << "1 Ooops: " << heightMap.GetValue(x,z) + 1.5 << std::endl;
                 y = 0;
             }
-            if(y >= 16){
+            if(y >= Volume::YWIDTH){
                 std::cout << "2 Ooops: " << heightMap.GetValue(x,z) + 1.5 << std::endl;
-                y = 15;
+                y = Volume::YWIDTH-1;
             }
             volume->voxels[x][(int)y][z] = 1;
             for(int height = y; height >= 0; height--){

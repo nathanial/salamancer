@@ -1,0 +1,16 @@
+material Dirt
+{
+   technique
+   {
+      pass
+      {
+         lighting off
+         texture_unit
+         {  
+            tex_address_mode wrap
+            texture grass_side.png
+         }
+      }
+
+   }
+}
