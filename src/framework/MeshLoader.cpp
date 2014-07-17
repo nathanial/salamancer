@@ -153,33 +153,30 @@ void MeshLoader::loadMesh(std::string name, VerticesAndFaces verticesAndFaces){
     msh->load();
 }
 
-void MeshLoader::loadMesh(ManualObject *manual, Quads quads){
+void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
     const float sqrt13 = 0.577350269f; /* sqrt(1/3) */
     manual->begin("ColorTest", RenderOperation::OT_TRIANGLE_LIST);
-    for(int i = 0; i < quads.size(); i++){
-        Quad quad = quads.at(i);
-        assert(quad.size() == 4);
-        for(int j = 0; j < quad.size(); j++){
-            Vertex vertex = quad.at(j);
-            manual->colour(1.0, 0.0, 0.0);
-            manual->position(vertex[0], vertex[1], vertex[2]);
-//            manual->normal(
-//                    sqrt13 * (vertex[0] < 0 ? -1 : 1), 
-//                    sqrt13 * (vertex[1] < 0 ? -1 : 1),
-//                    sqrt13 * (vertex[2] < 0 ? -1 : 1));
-//            if(i == 0){
-//                manual->textureCoord(0,0);
-//            } else if(i == 1){
-//                manual->textureCoord(1,0);
-//            } else if(i == 2){
-//                manual->textureCoord(0,1);
-//            } else {
-//                manual->textureCoord(1,1);
-//            }
-        }
-        int offset = i * 4;
-        manual->quad(offset, offset+1, offset+2, offset+3);
-        std::cout << std::endl;
+    Vertices vertices = std::get<0>(vf);
+    
+    float colors[][3] = {
+        {1.0, 0.0, 0.0},
+        {0.0, 1.0, 0.0},
+        {0.0, 0.0, 1.0},
+        {1.0, 1.0, 1.0},
+        {0.5, 0.5, 0.5}
+    };
+    
+    for(int i = 0; i < vertices.size(); i++){
+        Vertex vertex = vertices[i];
+        float *color = colors[i % 5];
+        manual->colour(color[0], color[1], color[2]);
+        manual->position(vertex[0], vertex[1], vertex[2]);
     }
+    Faces faces = std::get<1>(vf);
+    for(int i = 0; i < faces.size(); i++){
+        Face face = faces[i];
+        manual->quad(face[0], face[1], face[2], face[3]);
+    }
+    
     manual->end();
 }

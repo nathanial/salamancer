@@ -29,14 +29,14 @@ void SalamancerApplication::createScene(void)
     
     PerlinTerrainGenerator gen;
     
-    for(int x = 0; x < 1; x++){
-        for(int z = 0; z < 1; z++){
-            VolumePtr volume = gen.generate(Position(x, World::YCHUNKS-2, z));
+    for(int x = 0; x < World::XCHUNKS; x++){
+        for(int z = 0; z < World::ZCHUNKS; z++){
+            VolumePtr volume = gen.generate(Position(x, World::YCHUNKS-1, z));
             GreedyMesher mesher;
-            Quads quads = mesher.mesh(volume);
+            VerticesAndFaces vf = mesher.mesh(volume);
             
             ManualObject* manual = mSceneMgr->createManualObject("cc"+std::to_string(x) + ","+ std::to_string(z));
-            MeshLoader::loadMesh(manual, quads);
+            MeshLoader::loadMesh(manual, vf);
             
             SceneNode* thisSceneNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
             thisSceneNode->setPosition(x * 16,0,z * 16 - 100);
@@ -55,7 +55,7 @@ void createColourCube(void)
     PerlinTerrainGenerator gen;
     for(int x = 0; x < World::XCHUNKS; x++){
         for(int z = 0; z < World::ZCHUNKS; z++){
-            VolumePtr volume = gen.generate(Position(x,World::YCHUNKS-1, z));
+            VolumePtr volume = gen.generate(Position(x,World::YCHUNKS-2, z));
             MonotoneMesher mesher;
             auto verticesAndFaces = mesher.mesh(volume);
             MeshLoader::loadMesh("ColorCube"+std::to_string(x)+","+std::to_string(z), verticesAndFaces);

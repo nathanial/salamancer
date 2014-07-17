@@ -37,6 +37,8 @@ typedef std::vector<Face> Faces;
 
 typedef std::vector<int> Int32Array;
 
+typedef std::tuple<Vertices, Faces> VerticesAndFaces;
+
 
 #endif	/* MESHER_H */
 

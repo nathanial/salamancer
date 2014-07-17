@@ -10,12 +10,9 @@
 
 #include "Mesher.h"
 
-typedef std::vector<Vertex> Quad;
-typedef std::vector<Quad> Quads;
-
 class GreedyMesher {
 public:
-    virtual Quads mesh(VolumePtr volume);
+    VerticesAndFaces mesh(VolumePtr volume);
 };
 
 #endif	/* GREEDYMESHER_H */
