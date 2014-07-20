@@ -6,7 +6,11 @@
 #include "framework/World.h"
 #include "framework/MeshLoader.h"
 #include <functional>
-#include "BrowserApp.h"
+#include "include/cef_app.h"
+#include "include/cef_client.h"
+#include "include/cef_render_handler.h"
+#include "cef/BrowserClient.h"
+#include "cef/RenderHandler.h"
 
 using namespace Ogre;
 
@@ -42,38 +46,75 @@ void SalamancerApplication::createScene(void)
             }
         }
     }
+    this->createBrowser();
     
-    //mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5f, 0.5f, 0.5f));
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
+}
+
+void SalamancerApplication::createBrowser(){
+    Ogre::TexturePtr renderTexture = Ogre::TextureManager::getSingleton().createManual(
+                "texture",
+                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                Ogre::TEX_TYPE_2D, 1024, 768, 0, Ogre::PF_A8R8G8B8, Ogre::TU_DYNAMIC_WRITE_ONLY);
+
+    Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("material", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CULL_NONE); // print both sides of the polygones
+    material->getTechnique(0)->getPass(0)->createTextureUnitState("texture");
+    
+    Ogre::MeshPtr mesh = Ogre::MeshManager::getSingletonPtr()->createPlane("mesh", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                                                                                 Ogre::Plane(Ogre::Vector3::UNIT_Z, 0), 3, 2);
+    Ogre::Entity* entity = mSceneMgr->createEntity(mesh);
+    entity->setMaterial(material);
+
+    Ogre::SceneNode *renderNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("node", Ogre::Vector3(0., 0., -3.));
+
+    renderNode->attachObject(entity);
+
+    RenderHandler *renderHandler = new RenderHandler(renderTexture, renderNode);
+    
+    
+    this->windowInfo.SetAsWindowless(0, false);
+    
+    this->browserClient = new BrowserClient(renderHandler);
+    
+    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(), "http://www.google.com", browserSettings, NULL);
+    
+    mRoot->addFrameListener(renderHandler);
 }
 
 int main(int argc, char *argv[])
 {
-    // Create application object
-//    SalamancerApplication app;
-//
-//    try {
-//        app.go();
-//    } catch( Ogre::Exception& e ) {
-//        std::cerr << "An exception has occured: " <<
-//            e.getFullDescription().c_str() << std::endl;
-//    }
     
-    CefMainArgs main_args(argc, argv);
-    CefRefPtr<BrowserApp> app(new BrowserApp);
-    
-    int exit_code = CefExecuteProcess(main_args, app.get(), NULL);
-    if(exit_code >= 0){
-        return exit_code;
+    CefMainArgs args(argc, argv);
+
+    int result = CefExecuteProcess(args, nullptr, nullptr);
+    // checkout CefApp, derive it and set it as second parameter, for more control on
+    // command args and resources.
+    if (result >= 0) // child proccess has endend, so exit.
+    {
+        return result;
+    }
+
+    CefSettings settings;
+    result = CefInitialize(args, settings, nullptr, nullptr);
+    if (!result)
+    {
+        return -1;
     }
     
-    CefSettings settings;
-    
-    CefInitialize(main_args, settings, app.get(), NULL);
-    
-    CefRunMessageLoop();
+    // Create application object
+    SalamancerApplication app;
+
+    try {
+        app.go();
+    } catch( Ogre::Exception& e ) {
+        std::cerr << "An exception has occured: " <<
+            e.getFullDescription().c_str() << std::endl;
+    }
     
     CefShutdown();
     
+
     
     return 0;
 }
