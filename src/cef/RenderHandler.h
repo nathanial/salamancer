@@ -22,10 +22,9 @@
 class RenderHandler : public Ogre::FrameListener, public CefRenderHandler {
     public:
         Ogre::TexturePtr renderTexture;
-        Ogre::SceneNode *renderNode;
         
-        RenderHandler(Ogre::TexturePtr texture, Ogre::SceneNode *renderNode)
-        : renderTexture(texture), renderNode(renderNode)
+        RenderHandler(Ogre::TexturePtr texture)
+        : renderTexture(texture)
         {
         }
         

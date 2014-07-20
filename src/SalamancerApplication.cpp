@@ -55,29 +55,43 @@ void SalamancerApplication::createBrowser(){
     Ogre::TexturePtr renderTexture = Ogre::TextureManager::getSingleton().createManual(
                 "texture",
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                Ogre::TEX_TYPE_2D, 1024, 768, 0, Ogre::PF_A8R8G8B8, Ogre::TU_DYNAMIC_WRITE_ONLY);
+                Ogre::TEX_TYPE_2D, mWindow->getWidth() / 2, mWindow->getHeight(), 0, Ogre::PF_A8R8G8B8, Ogre::TU_DYNAMIC_WRITE_ONLY);
 
-    Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("material", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("BrowserMaterial", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CULL_NONE); // print both sides of the polygones
     material->getTechnique(0)->getPass(0)->createTextureUnitState("texture");
     
     Ogre::MeshPtr mesh = Ogre::MeshManager::getSingletonPtr()->createPlane("mesh", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                                                                                                  Ogre::Plane(Ogre::Vector3::UNIT_Z, 0), 3, 2);
-    Ogre::Entity* entity = mSceneMgr->createEntity(mesh);
-    entity->setMaterial(material);
+    
+    Ogre::Overlay *overlay = Ogre::OverlayManager::getSingletonPtr()->create("BrowserOverlay");
+    Ogre::OverlayContainer* panel = static_cast<OverlayContainer*>(Ogre::OverlayManager::getSingletonPtr()->createOverlayElement("Panel", "BrowserPanel"));
+    
+    panel->setPosition(0.0, 0.0);
+    panel->setDimensions(0.5, 1.0);
+    panel->setMaterialName("BrowserMaterial");
+    overlay->add2D(panel);
+    
+    overlay->show();
+    
+    //    Ogre::SceneNode *renderNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("node", Ogre::Vector3(0., 0., 0.));
+//    Ogre::BillboardSet *mySet = mSceneMgr->createBillboardSet("mySet");
+//    mySet->setBillboardOrigin(BillboardOrigin::BBO_CENTER);
+//    mySet->setRenderQueueGroup(Ogre::RenderQueueGroupID::RENDER_QUEUE_OVERLAY);
+//    mySet->setBillboardsInWorldSpace(false);
+//    Ogre::Billboard *billboard = mySet->createBillboard(Ogre::Vector3(0, 0, 0));
+//    renderNode->attachObject(mySet);
+    
+    
 
-    Ogre::SceneNode *renderNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("node", Ogre::Vector3(0., 0., -3.));
-
-    renderNode->attachObject(entity);
-
-    RenderHandler *renderHandler = new RenderHandler(renderTexture, renderNode);
+    RenderHandler *renderHandler = new RenderHandler(renderTexture);
     
     
     this->windowInfo.SetAsWindowless(0, false);
     
     this->browserClient = new BrowserClient(renderHandler);
     
-    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(), "http://www.google.com", browserSettings, NULL);
+    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(), "http://www.theverge.com", browserSettings, NULL);
     
     mRoot->addFrameListener(renderHandler);
 }
