@@ -2,6 +2,7 @@ include_directories(${PROJECT_SRC_DIR}/src)
 add_library(src 
     BaseApplication.cpp 
     SalamancerApplication.cpp
+    cef/RenderHandler.cpp
     framework/meshers/GreedyMesher.cpp
     framework/meshers/MonotoneMesher.cpp
     framework/terrain/PerlinTerrainGenerator.cpp

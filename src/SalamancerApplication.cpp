@@ -6,6 +6,11 @@
 #include "framework/World.h"
 #include "framework/MeshLoader.h"
 #include <functional>
+#include "include/cef_app.h"
+#include "include/cef_client.h"
+#include "include/cef_render_handler.h"
+#include "cef/BrowserClient.h"
+#include "cef/RenderHandler.h"
 
 using namespace Ogre;
 
@@ -41,12 +46,100 @@ void SalamancerApplication::createScene(void)
             }
         }
     }
+    this->createBrowser();
     
-    //mSceneMgr->setAmbientLight(Ogre::ColourValue(0.5f, 0.5f, 0.5f));
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
+}
+
+void SalamancerApplication::createBrowser(){
+    Ogre::TexturePtr renderTexture = Ogre::TextureManager::getSingleton().createManual(
+                "texture",
+                Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                Ogre::TEX_TYPE_2D, mWindow->getWidth(), mWindow->getHeight(), 0, Ogre::PF_A8R8G8B8, Ogre::TU_DYNAMIC_WRITE_ONLY);
+
+    Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("BrowserMaterial", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+    material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CULL_NONE); // print both sides of the polygones
+    material->getTechnique(0)->getPass(0)->createTextureUnitState("texture");
+    material->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);
+    
+    Ogre::Overlay *overlay = Ogre::OverlayManager::getSingletonPtr()->create("BrowserOverlay");
+    Ogre::OverlayContainer* panel = static_cast<OverlayContainer*>(Ogre::OverlayManager::getSingletonPtr()->createOverlayElement("Panel", "BrowserPanel"));
+    
+    panel->setPosition(0.0, 0.0);
+    panel->setDimensions(1.0, 1.0);
+    panel->setMaterialName("BrowserMaterial");
+    overlay->add2D(panel);
+    
+    overlay->show();
+    
+    RenderHandler *renderHandler = new RenderHandler(renderTexture);
+    
+    this->windowInfo.SetAsWindowless(0, true);
+    
+    this->browserClient = new BrowserClient(renderHandler);
+    
+    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(),
+            "file:///home/nathan/Projects/salamancer/dist/bin/hud/index.html",
+            browserSettings, 
+            NULL);
+    
+    mRoot->addFrameListener(renderHandler);
+}
+
+
+void SalamancerApplication::onMouseMoved(const OIS::MouseEvent& arg){
+    CefMouseEvent mouseEvent;
+    mouseEvent.x = arg.state.X.abs;
+    mouseEvent.y = arg.state.Y.abs;
+    this->browser->GetHost()->SendMouseMoveEvent(mouseEvent, false);
+}
+
+void SalamancerApplication::onMousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id){
+    CefMouseEvent mouseEvent;
+    mouseEvent.x = arg.state.X.abs;
+    mouseEvent.y = arg.state.Y.abs;
+    CefBrowserHost::MouseButtonType mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
+    if(id == OIS::MouseButtonID::MB_Left){
+        mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
+    } else if(id == OIS::MouseButtonID::MB_Right){
+        mbt = CefBrowserHost::MouseButtonType::MBT_RIGHT;
+    } 
+    this->browser->GetHost()->SendMouseClickEvent(mouseEvent, mbt, false, 1);
+}
+
+void SalamancerApplication::onMouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id){
+    CefMouseEvent mouseEvent;
+    mouseEvent.x = arg.state.X.abs;
+    mouseEvent.y = arg.state.Y.abs;
+    CefBrowserHost::MouseButtonType mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
+    if(id == OIS::MouseButtonID::MB_Left){
+        mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
+    } else if(id == OIS::MouseButtonID::MB_Right){
+        mbt = CefBrowserHost::MouseButtonType::MBT_RIGHT;
+    }
+    this->browser->GetHost()->SendMouseClickEvent(mouseEvent, mbt, true, 1);
 }
 
 int main(int argc, char *argv[])
 {
+    
+    CefMainArgs args(argc, argv);
+
+    int result = CefExecuteProcess(args, nullptr, nullptr);
+    // checkout CefApp, derive it and set it as second parameter, for more control on
+    // command args and resources.
+    if (result >= 0) // child proccess has endend, so exit.
+    {
+        return result;
+    }
+
+    CefSettings settings;
+    result = CefInitialize(args, settings, nullptr, nullptr);
+    if (!result)
+    {
+        return -1;
+    }
+    
     // Create application object
     SalamancerApplication app;
 
@@ -56,6 +149,10 @@ int main(int argc, char *argv[])
         std::cerr << "An exception has occured: " <<
             e.getFullDescription().c_str() << std::endl;
     }
+    
+    CefShutdown();
+    
+
+    
     return 0;
 }
-

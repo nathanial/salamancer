@@ -53,26 +53,26 @@ bool BaseApplication::configure(void)
     // Show the configuration dialog and initialise the system
     // You can skip this and use root.restoreConfig() to load configuration
     // settings if you were sure there are valid ones saved in ogre.cfg
-    if(mRoot->showConfigDialog())
-    {
+    if(mRoot->showConfigDialog()){
         // If returned true, user clicked OK so initialise
         // Here we choose to let the system create a default rendering window by passing 'true'
         mWindow = mRoot->initialise(true, "TutorialApplication Render Window");
-
         return true;
-    }
-    else
-    {
+    } else {
         return false;
     }
+//
+//    mWindow = mRoot->initialise(true, "TutorialApplication Render Window");
+//    return true;
 }
+
 //-------------------------------------------------------------------------------------
 void BaseApplication::chooseSceneManager(void)
 {
     // Get the SceneManager, in this case a generic one
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
-	mOverlaySystem = new Ogre::OverlaySystem();
-	mSceneMgr->addRenderQueueListener(mOverlaySystem);
+    mOverlaySystem = new Ogre::OverlaySystem();
+    mSceneMgr->addRenderQueueListener(mOverlaySystem);
 }
 //-------------------------------------------------------------------------------------
 void BaseApplication::createCamera(void)
@@ -99,6 +99,10 @@ void BaseApplication::createFrameListener(void)
     mWindow->getCustomAttribute("WINDOW", &windowHnd);
     windowHndStr << windowHnd;
     pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
+    pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
+    pl.insert(std::make_pair(std::string("x11_mouse_hide"), std::string("false")));
+    pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
+    pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
 
     mInputManager = OIS::InputManager::createInputSystem( pl );
 
@@ -376,22 +380,25 @@ bool BaseApplication::keyReleased( const OIS::KeyEvent &arg )
 
 bool BaseApplication::mouseMoved( const OIS::MouseEvent &arg )
 {
-    if (mTrayMgr->injectMouseMove(arg)) return true;
-    mCameraMan->injectMouseMove(arg);
+//    if (mTrayMgr->injectMouseMove(arg)) return true;
+//    mCameraMan->injectMouseMove(arg);
+    this->onMouseMoved(arg);
     return true;
 }
 
 bool BaseApplication::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if (mTrayMgr->injectMouseDown(arg, id)) return true;
-    mCameraMan->injectMouseDown(arg, id);
+//    if (mTrayMgr->injectMouseDown(arg, id)) return true;
+//    mCameraMan->injectMouseDown(arg, id);
+    this->onMousePressed(arg, id);
     return true;
 }
 
 bool BaseApplication::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if (mTrayMgr->injectMouseUp(arg, id)) return true;
-    mCameraMan->injectMouseUp(arg, id);
+//    if (mTrayMgr->injectMouseUp(arg, id)) return true;
+//    mCameraMan->injectMouseUp(arg, id);
+    this->onMouseReleased(arg, id);
     return true;
 }
 
@@ -422,4 +429,16 @@ void BaseApplication::windowClosed(Ogre::RenderWindow* rw)
             mInputManager = 0;
         }
     }
+}
+
+void BaseApplication::onMouseMoved(const OIS::MouseEvent& arg){
+    
+}
+
+void BaseApplication::onMousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id){
+    
+}
+
+void BaseApplication::onMouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id){
+    
 }

@@ -18,6 +18,7 @@ endif ()
  
 set(CMAKE_DEBUG_POSTFIX "_d")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/dist")
+set(CEF3_DIRECTORY "/home/nathan/Sources/cef_binary_3.2078.1761_linux64")
 
 find_package(OGRE REQUIRED)
 
@@ -57,11 +58,14 @@ if (NOT OGRE_BUILD_PLATFORM_IPHONE)
 	set(OGRE_LIBRARIES ${OGRE_LIBRARIES} ${Boost_LIBRARIES})
 endif()
 
+add_definitions(-DOS_LINUX)
+
 include_directories( ${OIS_INCLUDE_DIRS}
 	${OGRE_INCLUDE_DIRS}
 	${OGRE_SAMPLES_INCLUDEPATH}
 	${OGRE_Overlay_INCLUDE_DIRS}
 	${OGRE_VOLUME_INCLUDEPATH}
+        ${CEF3_DIRECTORY}
         ./src
 )
 
@@ -71,7 +75,16 @@ add_executable(Salamancer src/SalamancerApplication.cpp)
 
 set_target_properties(Salamancer PROPERTIES DEBUG_POSTFIX _d)
 
-target_link_libraries(Salamancer ${OGRE_LIBRARIES} ${OIS_LIBRARIES} ${OGRE_Overlay_LIBRARIES} src /usr/lib/libnoise.so)
+target_link_libraries(
+    Salamancer
+    ${OGRE_LIBRARIES} 
+    ${OIS_LIBRARIES} 
+    ${OGRE_Overlay_LIBRARIES} 
+    src 
+    /usr/lib/libnoise.so
+    ${CEF3_DIRECTORY}/out/Release/libcef.so 
+    ${CEF3_DIRECTORY}/out/Release/obj.target/libcef_dll_wrapper.a
+)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/bin)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/media)
