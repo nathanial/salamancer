@@ -6,6 +6,7 @@
 #include "framework/World.h"
 #include "framework/MeshLoader.h"
 #include <functional>
+#include "BrowserApp.h"
 
 using namespace Ogre;
 
@@ -48,14 +49,32 @@ void SalamancerApplication::createScene(void)
 int main(int argc, char *argv[])
 {
     // Create application object
-    SalamancerApplication app;
-
-    try {
-        app.go();
-    } catch( Ogre::Exception& e ) {
-        std::cerr << "An exception has occured: " <<
-            e.getFullDescription().c_str() << std::endl;
+//    SalamancerApplication app;
+//
+//    try {
+//        app.go();
+//    } catch( Ogre::Exception& e ) {
+//        std::cerr << "An exception has occured: " <<
+//            e.getFullDescription().c_str() << std::endl;
+//    }
+    
+    CefMainArgs main_args(argc, argv);
+    CefRefPtr<BrowserApp> app(new BrowserApp);
+    
+    int exit_code = CefExecuteProcess(main_args, app.get(), NULL);
+    if(exit_code >= 0){
+        return exit_code;
     }
+    
+    CefSettings settings;
+    
+    CefInitialize(main_args, settings, app.get(), NULL);
+    
+    CefRunMessageLoop();
+    
+    CefShutdown();
+    
+    
     return 0;
 }
 
