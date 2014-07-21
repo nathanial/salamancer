@@ -1,37 +1,102 @@
 #ifndef __SalamancerApplication_h_
 #define __SalamancerApplication_h_
 
-#include "BaseApplication.h"
 #include "framework/Volume.h"
 #include "cef/BrowserClient.h"
 #include "include/cef_app.h"
 #include "include/cef_client.h"
 #include "include/cef_render_handler.h"
 
-class SalamancerApplication : public BaseApplication
+#include <OgreCamera.h>
+#include <OgreEntity.h>
+#include <OgreLogManager.h>
+#include <OgreRoot.h>
+#include <OgreViewport.h>
+#include <OgreSceneManager.h>
+#include <OgreRenderWindow.h>
+#include <OgreConfigFile.h>
+
+#include <OISEvents.h>
+#include <OISInputManager.h>
+#include <OISKeyboard.h>
+#include <OISMouse.h>
+
+#include <SdkTrays.h>
+#include <SdkCameraMan.h>
+
+
+class SalamancerApplication : 
+        public Ogre::FrameListener, 
+        public Ogre::WindowEventListener, 
+        public OIS::KeyListener, 
+        public OIS::MouseListener, 
+        OgreBites::SdkTrayListener
 {
 public:
     SalamancerApplication(void);
-    virtual ~SalamancerApplication(void);
+    ~SalamancerApplication(void);
+    
+    void go(void);
 
-protected:
-    virtual void createScene(void);
-    
-    virtual void onMouseMoved(const OIS::MouseEvent& arg);
-    virtual void onMousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
-    virtual void onMouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
-    
 private:
     Volume createVolume();
-    
     void createBrowser();
+
+    bool setup();
+    bool configure(void);
+    void chooseSceneManager(void);
+    void createCamera(void);
+    void createFrameListener(void);
+    void createScene(void);
+    void destroyScene(void);
+    void createViewports(void);
+    void setupResources(void);
+    void createResourceListener(void);
+    void loadResources(void);
+
+    // Ogre::FrameListener
+    virtual bool frameRenderingQueued(const Ogre::FrameEvent& evt) OVERRIDE;
+
+    // OIS::KeyListener
+    virtual bool keyPressed( const OIS::KeyEvent &arg ) OVERRIDE;
+    virtual bool keyReleased( const OIS::KeyEvent &arg ) OVERRIDE;
+    // OIS::MouseListener
+    virtual bool mouseMoved( const OIS::MouseEvent &arg ) OVERRIDE;
+    virtual bool mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id ) OVERRIDE;
+    virtual bool mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id ) OVERRIDE;
+
+    // Ogre::WindowEventListener
+    //Adjust mouse clipping area
+    virtual void windowResized(Ogre::RenderWindow* rw) OVERRIDE;
+    //Unattach OIS before window shutdown (very important under Linux)
+    virtual void windowClosed(Ogre::RenderWindow* rw) OVERRIDE;
     
+        
     CefRefPtr<CefBrowser> browser;
     CefRefPtr<BrowserClient> browserClient;
     
     CefWindowInfo windowInfo;
     CefBrowserSettings browserSettings;
-        
+    
+    Ogre::Root *mRoot;
+    Ogre::Camera* mCamera;
+    Ogre::SceneManager* mSceneMgr;
+    Ogre::RenderWindow* mWindow;
+    Ogre::String mResourcesCfg;
+    Ogre::String mPluginsCfg;
+    Ogre::OverlaySystem *mOverlaySystem;
+
+    // OgreBites
+    OgreBites::SdkTrayManager* mTrayMgr;
+    OgreBites::SdkCameraMan* mCameraMan;       // basic camera controller
+    OgreBites::ParamsPanel* mDetailsPanel;     // sample details panel
+    bool mCursorWasVisible;                    // was cursor visible before dialog appeared
+    bool mShutDown;
+
+    //OIS Input devices
+    OIS::InputManager* mInputManager;
+    OIS::Mouse*    mMouse;
+    OIS::Keyboard* mKeyboard;
 };
 
 #endif // #ifndef __TutorialApplication_h_
