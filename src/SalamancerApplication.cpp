@@ -74,24 +74,16 @@ void SalamancerApplication::createBrowser(){
     
     overlay->show();
     
-    //    Ogre::SceneNode *renderNode = mSceneMgr->getRootSceneNode()->createChildSceneNode("node", Ogre::Vector3(0., 0., 0.));
-//    Ogre::BillboardSet *mySet = mSceneMgr->createBillboardSet("mySet");
-//    mySet->setBillboardOrigin(BillboardOrigin::BBO_CENTER);
-//    mySet->setRenderQueueGroup(Ogre::RenderQueueGroupID::RENDER_QUEUE_OVERLAY);
-//    mySet->setBillboardsInWorldSpace(false);
-//    Ogre::Billboard *billboard = mySet->createBillboard(Ogre::Vector3(0, 0, 0));
-//    renderNode->attachObject(mySet);
-    
-    
-
     RenderHandler *renderHandler = new RenderHandler(renderTexture);
-    
     
     this->windowInfo.SetAsWindowless(0, true);
     
     this->browserClient = new BrowserClient(renderHandler);
     
-    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(), "http://www.cnet.com", browserSettings, NULL);
+    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(),
+            "file:///home/nathan/Projects/salamancer/dist/bin/hud/index.html",
+            browserSettings, 
+            NULL);
     
     mRoot->addFrameListener(renderHandler);
 }

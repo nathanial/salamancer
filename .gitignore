@@ -1,6 +1,5 @@
 .dep.inc
 build/
-dist/bin/
 nbproject/private/
 CMakeFiles/
 CMakeCache.txt
