@@ -45,7 +45,7 @@ VerticesAndFaces GreedyMesher::mesh(VolumePtr volume) {
             ++x[d];
             //Generate mesh for mask using lexicographic ordering
             n = 0;
-            for (j = 0; j < dims[v]; ++j)
+            for (j = 0; j < dims[v]; ++j){
                 for (i = 0; i < dims[u];) {
                     int c = mask[n];
                     if (!!c) {
@@ -99,6 +99,7 @@ VerticesAndFaces GreedyMesher::mesh(VolumePtr volume) {
                         ++n;
                     }
                 }
+            }
         }
     }
     
