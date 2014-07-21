@@ -4,14 +4,30 @@
         <title>HUD</title>
         <style>
             body {
-                background: rgba(200, 54, 54, 0.5); 
+                background: transparent;
+                margin: 0;
+                padding: 0;
             }
-            h1 {
-                color: white;
+            .topbar {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                height: 50px;
+                background: cadetblue;
+            }
+            .topbar-title {
+                color: black;
+                font-family: sans-serif;
+                font-size: 22px;
+                line-height: 50px;
+                margin-left: 10px;
             }
         </style>
     </head>
     <body>
-        <h1>The HUD</h1>
+        <div class="topbar">
+            <span class="topbar-title">Topbar</span>
+        </div>
     </body>
 </html>
