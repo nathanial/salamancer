@@ -71,6 +71,12 @@ protected:
     virtual void windowResized(Ogre::RenderWindow* rw);
     //Unattach OIS before window shutdown (very important under Linux)
     virtual void windowClosed(Ogre::RenderWindow* rw);
+    
+    virtual void onMouseMoved(const OIS::MouseEvent &arg);
+    
+    virtual void onMousePressed(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
+    
+    virtual void onMouseReleased(const OIS::MouseEvent &arg, OIS::MouseButtonID id);
 
     Ogre::Root *mRoot;
     Ogre::Camera* mCamera;

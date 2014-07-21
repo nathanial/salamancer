@@ -17,6 +17,10 @@ public:
 protected:
     virtual void createScene(void);
     
+    virtual void onMouseMoved(const OIS::MouseEvent& arg);
+    virtual void onMousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
+    virtual void onMouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
+    
 private:
     Volume createVolume();
     

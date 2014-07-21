@@ -55,7 +55,7 @@ void SalamancerApplication::createBrowser(){
     Ogre::TexturePtr renderTexture = Ogre::TextureManager::getSingleton().createManual(
                 "texture",
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                Ogre::TEX_TYPE_2D, mWindow->getWidth() / 2, mWindow->getHeight(), 0, Ogre::PF_A8R8G8B8, Ogre::TU_DYNAMIC_WRITE_ONLY);
+                Ogre::TEX_TYPE_2D, mWindow->getWidth(), mWindow->getHeight(), 0, Ogre::PF_A8R8G8B8, Ogre::TU_DYNAMIC_WRITE_ONLY);
 
     Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("BrowserMaterial", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CULL_NONE); // print both sides of the polygones
@@ -68,7 +68,7 @@ void SalamancerApplication::createBrowser(){
     Ogre::OverlayContainer* panel = static_cast<OverlayContainer*>(Ogre::OverlayManager::getSingletonPtr()->createOverlayElement("Panel", "BrowserPanel"));
     
     panel->setPosition(0.0, 0.0);
-    panel->setDimensions(0.5, 1.0);
+    panel->setDimensions(1.0, 1.0);
     panel->setMaterialName("BrowserMaterial");
     overlay->add2D(panel);
     
@@ -87,13 +87,47 @@ void SalamancerApplication::createBrowser(){
     RenderHandler *renderHandler = new RenderHandler(renderTexture);
     
     
-    this->windowInfo.SetAsWindowless(0, false);
+    this->windowInfo.SetAsWindowless(0, true);
     
     this->browserClient = new BrowserClient(renderHandler);
     
-    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(), "http://www.theverge.com", browserSettings, NULL);
+    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(), "http://www.cnet.com", browserSettings, NULL);
     
     mRoot->addFrameListener(renderHandler);
+}
+
+
+void SalamancerApplication::onMouseMoved(const OIS::MouseEvent& arg){
+    CefMouseEvent mouseEvent;
+    mouseEvent.x = arg.state.X.abs;
+    mouseEvent.y = arg.state.Y.abs;
+    this->browser->GetHost()->SendMouseMoveEvent(mouseEvent, false);
+}
+
+void SalamancerApplication::onMousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id){
+    CefMouseEvent mouseEvent;
+    mouseEvent.x = arg.state.X.abs;
+    mouseEvent.y = arg.state.Y.abs;
+    CefBrowserHost::MouseButtonType mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
+    if(id == OIS::MouseButtonID::MB_Left){
+        mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
+    } else if(id == OIS::MouseButtonID::MB_Right){
+        mbt = CefBrowserHost::MouseButtonType::MBT_RIGHT;
+    } 
+    this->browser->GetHost()->SendMouseClickEvent(mouseEvent, mbt, false, 1);
+}
+
+void SalamancerApplication::onMouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id){
+    CefMouseEvent mouseEvent;
+    mouseEvent.x = arg.state.X.abs;
+    mouseEvent.y = arg.state.Y.abs;
+    CefBrowserHost::MouseButtonType mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
+    if(id == OIS::MouseButtonID::MB_Left){
+        mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
+    } else if(id == OIS::MouseButtonID::MB_Right){
+        mbt = CefBrowserHost::MouseButtonType::MBT_RIGHT;
+    }
+    this->browser->GetHost()->SendMouseClickEvent(mouseEvent, mbt, true, 1);
 }
 
 int main(int argc, char *argv[])
@@ -132,4 +166,3 @@ int main(int argc, char *argv[])
     
     return 0;
 }
-
