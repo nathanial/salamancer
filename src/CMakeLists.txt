@@ -4,7 +4,6 @@ add_library(src
     cef/RenderHandler.cpp
     framework/meshers/GreedyMesher.cpp
     framework/terrain/PerlinTerrainGenerator.cpp
-    framework/terrain/TerrainGenerator.cpp
     framework/terrain/noiseutils.cpp
     framework/MeshLoader.cpp
 )

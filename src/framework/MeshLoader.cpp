@@ -105,26 +105,6 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
     manual->begin("Dirt", RenderOperation::OT_TRIANGLE_LIST);
     Vertices vertices = std::get<0>(vf);
     
-//    for(int i = 0; i < vertices.size(); i += 4){
-//        Vertex v1 = vertices[i];
-//        Vertex v2 = vertices[i+1];
-//        Vertex v3 = vertices[i+2];
-//        Vertex v4 = vertices[i+3];
-//        
-//        float xscale = textureXScale(v1,v2,v3,v4);
-//        float yscale = textureYScale(v1,v2,v3,v4);
-//        
-//        std::cout << "SCALES " << constantAxis(v1,v2,v3,v4) << ":" << xscale << " " << yscale << std::endl; 
-//        
-//        manual->position(v1[0], v1[1], v1[2]);
-//        manual->textureCoord(0, yscale);
-//        manual->position(v2[0], v2[1], v2[2]);
-//        manual->textureCoord(xscale, yscale);
-//        manual->position(v3[0], v3[1], v3[2]);
-//        manual->textureCoord(xscale, 0);
-//        manual->position(v4[0], v4[1], v4[2]);
-//        manual->textureCoord(0, 0);
-//    }
     Faces faces = std::get<1>(vf);
     bool alreadyLoaded[vertices.size()] = {false};
     
