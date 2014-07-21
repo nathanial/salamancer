@@ -10,9 +10,9 @@
 
 class World {
 public:
-    static const int XCHUNKS = 1;
-    static const int YCHUNKS = 1;
-    static const int ZCHUNKS = 1;
+    static const int XCHUNKS = 32;
+    static const int YCHUNKS = 2;
+    static const int ZCHUNKS = 32;
 };
 
 #endif	/* WORLD_H */

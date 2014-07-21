@@ -8,7 +8,6 @@
 #ifndef MESHLOADER_H
 #define	MESHLOADER_H
 
-#include "meshers/Mesher.h"
 #include "meshers/GreedyMesher.h"
 #include <functional>
 #include <string>

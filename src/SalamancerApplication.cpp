@@ -1,7 +1,6 @@
 #include "SalamancerApplication.h"
 #include "framework/terrain/PerlinTerrainGenerator.h"
 #include "framework/Position.h"
-#include "framework/meshers/MonotoneMesher.h"
 #include "framework/meshers/GreedyMesher.h"
 #include "framework/World.h"
 #include "framework/MeshLoader.h"
