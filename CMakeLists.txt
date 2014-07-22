@@ -77,6 +77,9 @@ set_target_properties(Salamancer PROPERTIES DEBUG_POSTFIX _d)
 
 target_link_libraries(
     Salamancer
+    X11
+    ICE
+    SM
     ${OGRE_LIBRARIES} 
     ${OIS_LIBRARIES} 
     ${OGRE_Overlay_LIBRARIES} 

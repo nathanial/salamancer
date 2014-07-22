@@ -8,3 +8,4 @@ cmake_install.cmake
 nbproject/
 Ogre.log
 src/libsrc.a
+dist/bin/hud/bower_components/

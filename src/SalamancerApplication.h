@@ -24,6 +24,8 @@
 #include <SdkTrays.h>
 #include <SdkCameraMan.h>
 
+#include "cef/RenderHandler.h"
+
 
 class SalamancerApplication : 
         public Ogre::FrameListener, 
@@ -78,6 +80,7 @@ private:
     CefWindowInfo windowInfo;
     CefBrowserSettings browserSettings;
     
+    RenderHandler *renderHandler;
     Ogre::Root *mRoot;
     Ogre::Camera* mCamera;
     Ogre::SceneManager* mSceneMgr;
@@ -85,7 +88,6 @@ private:
     Ogre::String mResourcesCfg;
     Ogre::String mPluginsCfg;
     Ogre::OverlaySystem *mOverlaySystem;
-
     // OgreBites
     OgreBites::SdkTrayManager* mTrayMgr;
     OgreBites::SdkCameraMan* mCameraMan;       // basic camera controller

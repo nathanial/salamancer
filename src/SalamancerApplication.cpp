@@ -66,9 +66,7 @@ void SalamancerApplication::createScene(void)
             }
         }
     }
-    this->createBrowser();
-    
-    mSceneMgr->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
+    //mSceneMgr->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
 }
 
 void SalamancerApplication::createBrowser(){
@@ -78,9 +76,10 @@ void SalamancerApplication::createBrowser(){
                 Ogre::TEX_TYPE_2D, mWindow->getWidth(), mWindow->getHeight(), 0, Ogre::PF_A8R8G8B8, Ogre::TU_DYNAMIC_WRITE_ONLY);
 
     Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("BrowserMaterial", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-    material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CULL_NONE); // print both sides of the polygones
+    material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CULL_CLOCKWISE); // print both sides of the polygones
     material->getTechnique(0)->getPass(0)->createTextureUnitState("texture");
     material->getTechnique(0)->getPass(0)->setSceneBlending(SBT_TRANSPARENT_ALPHA);
+    material->getTechnique(0)->getPass(0)->setLightingEnabled(false);
     
     Ogre::Overlay *overlay = Ogre::OverlayManager::getSingletonPtr()->create("BrowserOverlay");
     Ogre::OverlayContainer* panel = static_cast<OverlayContainer*>(Ogre::OverlayManager::getSingletonPtr()->createOverlayElement("Panel", "BrowserPanel"));
@@ -92,7 +91,7 @@ void SalamancerApplication::createBrowser(){
     
     overlay->show();
     
-    RenderHandler *renderHandler = new RenderHandler(renderTexture);
+    this->renderHandler = new RenderHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse);
     
     this->windowInfo.SetAsWindowless(0, true);
     
@@ -103,10 +102,11 @@ void SalamancerApplication::createBrowser(){
             browserSettings, 
             NULL);
     
+    this->renderHandler->SetBrowser(this->browser);
+    
     mRoot->addFrameListener(renderHandler);
+    
 }
-
-
 
 int main(int argc, char *argv[])
 {
@@ -204,6 +204,7 @@ void SalamancerApplication::createFrameListener(void)
     pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
 
     mInputManager = OIS::InputManager::createInputSystem( pl );
+    
 
     mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
     mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
@@ -217,12 +218,11 @@ void SalamancerApplication::createFrameListener(void)
     //Register as a Window listener
     Ogre::WindowEventUtilities::addWindowEventListener(mWindow, this);
 
-	OgreBites::InputContext inputContext;
-	inputContext.mMouse = mMouse; 
-	inputContext.mKeyboard = mKeyboard;
+    OgreBites::InputContext inputContext;
+    inputContext.mMouse = mMouse; 
+    inputContext.mKeyboard = mKeyboard;
     mTrayMgr = new OgreBites::SdkTrayManager("InterfaceName", mWindow, inputContext, this);
-    mTrayMgr->showFrameStats(OgreBites::TL_BOTTOMLEFT);
-    mTrayMgr->showLogo(OgreBites::TL_BOTTOMRIGHT);
+    mTrayMgr->showFrameStats(OgreBites::TL_BOTTOMRIGHT);
     mTrayMgr->hideCursor();
 
     // create a params panel for displaying sample details
@@ -245,6 +245,14 @@ void SalamancerApplication::createFrameListener(void)
     mDetailsPanel->hide();
 
     mRoot->addFrameListener(this);
+    
+    this->createBrowser();
+
+    Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(Ogre::TFO_NONE);
+    Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(1);
+    
+    RenderWindow* window = mRoot->getAutoCreatedWindow();
+    std::cout << "Window Name: " << window->getName() << std::endl;
 }
 //-------------------------------------------------------------------------------------
 void SalamancerApplication::destroyScene(void)
@@ -380,145 +388,43 @@ bool SalamancerApplication::frameRenderingQueued(const Ogre::FrameEvent& evt)
 bool SalamancerApplication::keyPressed( const OIS::KeyEvent &arg )
 {
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
-
-    if (arg.key == OIS::KC_F)   // toggle visibility of advanced frame stats
-    {
-        mTrayMgr->toggleAdvancedFrameStats();
-    }
-    else if (arg.key == OIS::KC_G)   // toggle visibility of even rarer debugging details
-    {
-        if (mDetailsPanel->getTrayLocation() == OgreBites::TL_NONE)
-        {
-            mTrayMgr->moveWidgetToTray(mDetailsPanel, OgreBites::TL_TOPRIGHT, 0);
-            mDetailsPanel->show();
-        }
-        else
-        {
-            mTrayMgr->removeWidgetFromTray(mDetailsPanel);
-            mDetailsPanel->hide();
-        }
-    }
-    else if (arg.key == OIS::KC_T)   // cycle polygon rendering mode
-    {
-        Ogre::String newVal;
-        Ogre::TextureFilterOptions tfo;
-        unsigned int aniso;
-
-        switch (mDetailsPanel->getParamValue(9).asUTF8()[0])
-        {
-        case 'B':
-            newVal = "Trilinear";
-            tfo = Ogre::TFO_TRILINEAR;
-            aniso = 1;
-            break;
-        case 'T':
-            newVal = "Anisotropic";
-            tfo = Ogre::TFO_ANISOTROPIC;
-            aniso = 8;
-            break;
-        case 'A':
-            newVal = "None";
-            tfo = Ogre::TFO_NONE;
-            aniso = 1;
-            break;
-        default:
-            newVal = "Bilinear";
-            tfo = Ogre::TFO_BILINEAR;
-            aniso = 1;
-        }
-
-        Ogre::MaterialManager::getSingleton().setDefaultTextureFiltering(tfo);
-        Ogre::MaterialManager::getSingleton().setDefaultAnisotropy(aniso);
-        mDetailsPanel->setParamValue(9, newVal);
-    }
-    else if (arg.key == OIS::KC_R)   // cycle polygon rendering mode
-    {
-        Ogre::String newVal;
-        Ogre::PolygonMode pm;
-
-        switch (mCamera->getPolygonMode())
-        {
-        case Ogre::PM_SOLID:
-            newVal = "Wireframe";
-            pm = Ogre::PM_WIREFRAME;
-            break;
-        case Ogre::PM_WIREFRAME:
-            newVal = "Points";
-            pm = Ogre::PM_POINTS;
-            break;
-        default:
-            newVal = "Solid";
-            pm = Ogre::PM_SOLID;
-        }
-
-        mCamera->setPolygonMode(pm);
-        mDetailsPanel->setParamValue(10, newVal);
-    }
-    else if(arg.key == OIS::KC_F5)   // refresh all textures
-    {
-        Ogre::TextureManager::getSingleton().reloadAll();
-    }
-    else if (arg.key == OIS::KC_SYSRQ)   // take a screenshot
-    {
-        mWindow->writeContentsToTimestampedFile("screenshot", ".jpg");
-    }
-    else if (arg.key == OIS::KC_ESCAPE)
-    {
+    if(arg.key == OIS::KC_ESCAPE){
         mShutDown = true;
+    } else if(this->browser != 0 && this->renderHandler != 0) {
+        return this->renderHandler->keyPressed(arg);
     }
-
-    mCameraMan->injectKeyDown(arg);
     return true;
 }
 
 bool SalamancerApplication::keyReleased( const OIS::KeyEvent &arg )
 {
-    mCameraMan->injectKeyUp(arg);
+    if(this->browser != 0 && this->renderHandler != 0){
+        return this->renderHandler->keyReleased(arg);
+    }
     return true;
 }
 
 bool SalamancerApplication::mouseMoved( const OIS::MouseEvent &arg )
 {
-//    if (mTrayMgr->injectMouseMove(arg)) return true;
-//    mCameraMan->injectMouseMove(arg);
-    CefMouseEvent mouseEvent;
-    mouseEvent.x = arg.state.X.abs;
-    mouseEvent.y = arg.state.Y.abs;
-    this->browser->GetHost()->SendMouseMoveEvent(mouseEvent, false);
+    if(this->browser != 0 && this->renderHandler != 0){
+        this->renderHandler->mouseMoved(arg);
+    }
     return true;
 }
 
 bool SalamancerApplication::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-//    if (mTrayMgr->injectMouseDown(arg, id)) return true;
-//    mCameraMan->injectMouseDown(arg, id);
-    CefMouseEvent mouseEvent;
-    mouseEvent.x = arg.state.X.abs;
-    mouseEvent.y = arg.state.Y.abs;
-    CefBrowserHost::MouseButtonType mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
-    if(id == OIS::MouseButtonID::MB_Left){
-        mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
-    } else if(id == OIS::MouseButtonID::MB_Right){
-        mbt = CefBrowserHost::MouseButtonType::MBT_RIGHT;
-    } 
-    this->browser->GetHost()->SendMouseClickEvent(mouseEvent, mbt, false, 1);
+    if(this->browser != 0 && this->renderHandler != 0){
+        return this->renderHandler->mousePressed(arg, id);
+    }
     return true;
 }
 
 bool SalamancerApplication::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-//    if (mTrayMgr->injectMouseUp(arg, id)) return true;
-//    mCameraMan->injectMouseUp(arg, id);
-    CefMouseEvent mouseEvent;
-    mouseEvent.x = arg.state.X.abs;
-    mouseEvent.y = arg.state.Y.abs;
-    CefBrowserHost::MouseButtonType mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
-    if(id == OIS::MouseButtonID::MB_Left){
-        mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
-    } else if(id == OIS::MouseButtonID::MB_Right){
-        mbt = CefBrowserHost::MouseButtonType::MBT_RIGHT;
+    if(this->browser != 0 && this->renderHandler != 0){
+        return this->renderHandler->mouseReleased(arg, id);
     }
-    this->browser->GetHost()->SendMouseClickEvent(mouseEvent, mbt, true, 1);
     return true;
 }
 
