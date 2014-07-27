@@ -73,7 +73,7 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type
 }
 
 void RenderHandler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor){
-    ::Display* xDisplay;// = cef_get_xdisplay();
+    ::Display* xDisplay;
     XID xid;
     this->window->getCustomAttribute("XDISPLAY", &xDisplay);
     this->window->getCustomAttribute("WINDOW", &xid);
@@ -477,7 +477,7 @@ bool RenderHandler::keyPressed( const OIS::KeyEvent &arg ){
     keyEvent.unmodified_character = arg.text;
     keyEvent.character = arg.text;
     this->browser->GetHost()->SendKeyEvent(keyEvent);
-    if(code != VKEY_BACK){
+    if(code != VKEY_BACK && code != VKEY_DELETE){
         keyEvent.type = KEYEVENT_CHAR;
         this->browser->GetHost()->SendKeyEvent(keyEvent);
     }

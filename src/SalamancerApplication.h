@@ -25,6 +25,7 @@
 #include <SdkCameraMan.h>
 
 #include "cef/RenderHandler.h"
+#include "ois/linux/CustomLinuxInputManager.h"
 
 
 class SalamancerApplication : 
@@ -73,6 +74,8 @@ private:
     //Unattach OIS before window shutdown (very important under Linux)
     virtual void windowClosed(Ogre::RenderWindow* rw) OVERRIDE;
     
+    void toggleHud();
+    
         
     CefRefPtr<CefBrowser> browser;
     CefRefPtr<BrowserClient> browserClient;
@@ -96,9 +99,11 @@ private:
     bool mShutDown;
 
     //OIS Input devices
-    OIS::InputManager* mInputManager;
+    OIS::CustomLinuxInputManager* mInputManager;
     OIS::Mouse*    mMouse;
     OIS::Keyboard* mKeyboard;
+    
+    bool hudVisible = true;
 };
 
 #endif // #ifndef __TutorialApplication_h_

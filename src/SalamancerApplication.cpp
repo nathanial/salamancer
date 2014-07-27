@@ -11,6 +11,16 @@
 #include "cef/BrowserClient.h"
 #include "cef/RenderHandler.h"
 
+#include <OIS/OIS.h>
+
+#include <X11/Xcursor/Xcursor.h>
+#include <X11/keysym.h>
+#include <X11/XF86keysym.h>
+
+#include "ois/linux/CustomLinuxInputManager.h"
+#include "ois/linux/CustomLinuxMouse.h"
+
+
 using namespace Ogre;
 
 void createColourCube(void);
@@ -202,13 +212,13 @@ void SalamancerApplication::createFrameListener(void)
     pl.insert(std::make_pair(std::string("x11_mouse_hide"), std::string("false")));
     pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
     pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
-
-    mInputManager = OIS::InputManager::createInputSystem( pl );
     
+    mInputManager = new OIS::CustomLinuxInputManager();
+    mInputManager->_initialize(pl);
 
     mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
     mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
-
+    
     mMouse->setEventCallback(this);
     mKeyboard->setEventCallback(this);
 
@@ -390,40 +400,54 @@ bool SalamancerApplication::keyPressed( const OIS::KeyEvent &arg )
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
     if(arg.key == OIS::KC_ESCAPE){
         mShutDown = true;
-    } else if(this->browser != 0 && this->renderHandler != 0) {
+    } else if(arg.key == OIS::KC_LMENU || arg.key == OIS::KC_RMENU){
+        this->toggleHud();
+        return true;
+    } else if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible) {
         return this->renderHandler->keyPressed(arg);
+    } else {
+        this->mCameraMan->injectKeyDown(arg);
     }
     return true;
 }
 
 bool SalamancerApplication::keyReleased( const OIS::KeyEvent &arg )
 {
-    if(this->browser != 0 && this->renderHandler != 0){
+    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
         return this->renderHandler->keyReleased(arg);
+    } else {
+        this->mCameraMan->injectKeyUp(arg);
     }
     return true;
 }
 
 bool SalamancerApplication::mouseMoved( const OIS::MouseEvent &arg )
 {
-    if(this->browser != 0 && this->renderHandler != 0){
+    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
         this->renderHandler->mouseMoved(arg);
+    } else {
+        this->mCameraMan->injectMouseMove(arg);
     }
     return true;
 }
 
 bool SalamancerApplication::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if(this->browser != 0 && this->renderHandler != 0){
+    if(this->browser != 0 && this->renderHandler != 0  && this->hudVisible){
         return this->renderHandler->mousePressed(arg, id);
+    } else {
+        this->mCameraMan->injectMouseDown(arg, id);
     }
+    
     return true;
 }
 
 bool SalamancerApplication::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if(this->browser != 0 && this->renderHandler != 0){
+    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
         return this->renderHandler->mouseReleased(arg, id);
+    } else {
+        this->mCameraMan->injectMouseUp(arg, id);
     }
     return true;
 }
@@ -454,5 +478,19 @@ void SalamancerApplication::windowClosed(Ogre::RenderWindow* rw)
             OIS::InputManager::destroyInputSystem(mInputManager);
             mInputManager = 0;
         }
+    }
+}
+
+void SalamancerApplication::toggleHud(){
+    OIS::CustomLinuxMouse *linuxMouse = static_cast<OIS::CustomLinuxMouse*>(this->mMouse);
+    
+    if(hudVisible){
+        hudVisible = false;
+        linuxMouse->hide(true);
+        linuxMouse->grab(true);
+    } else {
+        hudVisible = true;                
+        linuxMouse->hide(false);
+        linuxMouse->grab(false);
     }
 }
