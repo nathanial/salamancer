@@ -205,13 +205,12 @@ void SalamancerApplication::createFrameListener(void)
     mWindow->getCustomAttribute("WINDOW", &windowHnd);
     windowHndStr << windowHnd;
     pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
-    pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
-    pl.insert(std::make_pair(std::string("x11_mouse_hide"), std::string("false")));
+//    pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
+//    pl.insert(std::make_pair(std::string("x11_mouse_hide"), std::string("false")));
     pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
     pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
 
     mInputManager = OIS::InputManager::createInputSystem( pl );
-    
 
     mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
     mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
@@ -400,40 +399,51 @@ bool SalamancerApplication::keyPressed( const OIS::KeyEvent &arg )
     } else if(arg.key == OIS::KC_LMENU || arg.key == OIS::KC_RMENU){
         this->toggleHud();
         return true;
-    } else if(this->browser != 0 && this->renderHandler != 0) {
+    } else if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible) {
         return this->renderHandler->keyPressed(arg);
+    } else {
+        this->mCameraMan->injectKeyDown(arg);
     }
     return true;
 }
 
 bool SalamancerApplication::keyReleased( const OIS::KeyEvent &arg )
 {
-    if(this->browser != 0 && this->renderHandler != 0){
+    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
         return this->renderHandler->keyReleased(arg);
+    } else {
+        this->mCameraMan->injectKeyUp(arg);
     }
     return true;
 }
 
 bool SalamancerApplication::mouseMoved( const OIS::MouseEvent &arg )
 {
-    if(this->browser != 0 && this->renderHandler != 0){
+    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
         this->renderHandler->mouseMoved(arg);
+    } else {
+        this->mCameraMan->injectMouseMove(arg);
     }
     return true;
 }
 
 bool SalamancerApplication::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if(this->browser != 0 && this->renderHandler != 0){
+    if(this->browser != 0 && this->renderHandler != 0  && this->hudVisible){
         return this->renderHandler->mousePressed(arg, id);
+    } else {
+        this->mCameraMan->injectMouseDown(arg, id);
     }
+    
     return true;
 }
 
 bool SalamancerApplication::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if(this->browser != 0 && this->renderHandler != 0){
+    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
         return this->renderHandler->mouseReleased(arg, id);
+    } else {
+        this->mCameraMan->injectMouseUp(arg, id);
     }
     return true;
 }
