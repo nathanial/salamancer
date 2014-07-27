@@ -18,6 +18,7 @@
 #include <X11/XF86keysym.h>
 
 #include "ois/linux/LinuxInputManager.h"
+#include "ois/linux/LinuxMouse.h"
 
 
 using namespace Ogre;
@@ -481,30 +482,15 @@ void SalamancerApplication::windowClosed(Ogre::RenderWindow* rw)
 }
 
 void SalamancerApplication::toggleHud(){
-    ::Display* display;
-    XID window;
-    Ogre::RenderWindow *renderWindow = this->mRoot->getAutoCreatedWindow();
-    renderWindow->getCustomAttribute("XDISPLAY", &display);
-    renderWindow->getCustomAttribute("WINDOW", &window);
+    OIS::LinuxMouse *linuxMouse = static_cast<OIS::LinuxMouse*>(this->mMouse);
     
     if(hudVisible){
         hudVisible = false;
-        XGrabPointer(display, window, true, 0, true, true, window, 0L, 0L);
-        
-        Pixmap bm_no;
-	XColor black, dummy;
-	Colormap colormap;
-	static char no_data[] = { 0,0,0,0,0,0,0,0 };
-
-	colormap = DefaultColormap( display, DefaultScreen(display) );
-	XAllocNamedColor( display, colormap, "black", &black, &dummy );
-	bm_no = XCreateBitmapFromData( display, window, no_data, 8, 8 );
-	Cursor cursor = XCreatePixmapCursor( display, bm_no, bm_no, &black, &black, 0, 0 );
-        
-        XDefineCursor(display, window, cursor);
+        linuxMouse->hide(true);
+        linuxMouse->grab(true);
     } else {
         hudVisible = true;                
-        XUngrabPointer(display, 0L);
-        XUndefineCursor(display, window);
+        linuxMouse->hide(false);
+        linuxMouse->grab(false);
     }
 }
