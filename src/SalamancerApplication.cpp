@@ -17,6 +17,8 @@
 #include <X11/keysym.h>
 #include <X11/XF86keysym.h>
 
+#include "ois/linux/LinuxInputManager.h"
+
 
 using namespace Ogre;
 
@@ -209,8 +211,9 @@ void SalamancerApplication::createFrameListener(void)
 //    pl.insert(std::make_pair(std::string("x11_mouse_hide"), std::string("false")));
     pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
     pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
-
-    mInputManager = OIS::InputManager::createInputSystem( pl );
+    
+    mInputManager = new OIS::LinuxInputManager();
+    mInputManager->_initialize(pl);
 
     mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
     mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
