@@ -6,9 +6,9 @@ add_library(src
     framework/terrain/PerlinTerrainGenerator.cpp
     framework/terrain/noiseutils.cpp
     framework/MeshLoader.cpp
-    ois/linux/LinuxKeyboard.cpp
-    ois/linux/LinuxMouse.cpp
-    ois/linux/LinuxInputManager.cpp
+    ois/linux/CustomLinuxKeyboard.cpp
+    ois/linux/CustomLinuxMouse.cpp
+    ois/linux/CustomLinuxInputManager.cpp
 )
 ADD_DEFINITIONS(
     -std=c++11

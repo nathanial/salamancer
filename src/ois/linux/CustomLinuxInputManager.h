@@ -23,7 +23,7 @@ restrictions:
 #ifndef OIS_LinuxInputManager_H
 #define OIS_LinuxInputManager_H
 
-#include "LinuxPrereqs.h"
+#include "CustomLinuxPrereqs.h"
 #include <OISFactoryCreator.h>
 #include <OISInputManager.h>
 #include <X11/Xlib.h>
@@ -33,11 +33,11 @@ namespace OIS
 	/**
 		Linux X11 InputManager specialization - Using lowlevel joys
 	*/
-	class LinuxInputManager : public InputManager, public FactoryCreator
+	class CustomLinuxInputManager : public InputManager, public FactoryCreator
 	{
 	public:
-		LinuxInputManager();
-		virtual ~LinuxInputManager();
+		CustomLinuxInputManager();
+		virtual ~CustomLinuxInputManager();
 
 		//InputManager Overrides
 		/** @copydoc InputManager::_initialize */

@@ -20,15 +20,16 @@ restrictions:
 
     3. This notice may not be removed or altered friosom any source distribution.
 */
-#include "LinuxMouse.h"
-#include "LinuxInputManager.h"
+#include "CustomLinuxMouse.h"
+#include "CustomLinuxInputManager.h"
 #include "OISException.h"
 #include "OISEvents.h"
+#include <iostream>
 
 using namespace OIS;
 
 //-------------------------------------------------------------------//
-LinuxMouse::LinuxMouse(InputManager* creator, bool buffered, bool grab, bool hide)
+CustomLinuxMouse::CustomLinuxMouse(InputManager* creator, bool buffered, bool grab, bool hide)
 	: Mouse(creator->inputSystemName(), buffered, 0, creator)
 {
 	display = 0;
@@ -37,12 +38,12 @@ LinuxMouse::LinuxMouse(InputManager* creator, bool buffered, bool grab, bool hid
 
 	grabMouse = grab;
 	hideMouse = hide;
-
-	static_cast<LinuxInputManager*>(mCreator)->_setMouseUsed(true);
+        
+	static_cast<CustomLinuxInputManager*>(mCreator)->_setMouseUsed(true);
 }
 
 //-------------------------------------------------------------------//
-void LinuxMouse::_initialize()
+void CustomLinuxMouse::_initialize()
 {
 	//Clear old state
 	mState.clear();
@@ -55,7 +56,7 @@ void LinuxMouse::_initialize()
 
 	if( display ) XCloseDisplay(display);
 	display = 0;
-	window = static_cast<LinuxInputManager*>(mCreator)->_getWindow();
+	window = static_cast<CustomLinuxInputManager*>(mCreator)->_getWindow();
 
 	//Create our local X mListener connection
 	if( !(display = XOpenDisplay(0)) )
@@ -86,7 +87,7 @@ void LinuxMouse::_initialize()
 }
 
 //-------------------------------------------------------------------//
-LinuxMouse::~LinuxMouse()
+CustomLinuxMouse::~CustomLinuxMouse()
 {
 	if( display )
 	{
@@ -96,17 +97,17 @@ LinuxMouse::~LinuxMouse()
 		XCloseDisplay(display);
 	}
 
-	static_cast<LinuxInputManager*>(mCreator)->_setMouseUsed(false);
+	static_cast<CustomLinuxInputManager*>(mCreator)->_setMouseUsed(false);
 }
 
 //-------------------------------------------------------------------//
-void LinuxMouse::setBuffered(bool buffered)
+void CustomLinuxMouse::setBuffered(bool buffered)
 {
 	mBuffered = buffered;
 }
 
 //-------------------------------------------------------------------//
-void LinuxMouse::capture()
+void CustomLinuxMouse::capture()
 {
 	//Clear out last frames values
 	mState.X.rel = 0;
@@ -128,7 +129,7 @@ void LinuxMouse::capture()
 	//Check for losing/gaining mouse grab focus (alt-tab, etc)
 	if( grabMouse )
 	{
-		if( static_cast<LinuxInputManager*>(mCreator)->_getGrabState() )
+		if( static_cast<CustomLinuxInputManager*>(mCreator)->_getGrabState() )
 		{
 			if( mouseFocusLost )	//We just regained mouse grab focus
 			{
@@ -150,7 +151,7 @@ void LinuxMouse::capture()
 }
 
 //-------------------------------------------------------------------//
-void LinuxMouse::_processXEvents()
+void CustomLinuxMouse::_processXEvents()
 {
 	//X11 Button Events: 1=left 2=middle 3=right; Our Bit Postion: 1=Left 2=Right 3=Middle
 	char mask[4] = {0,1,4,2};
@@ -212,7 +213,7 @@ void LinuxMouse::_processXEvents()
 		}
 		else if( event.type == ButtonPress )
 		{	//Button down
-			static_cast<LinuxInputManager*>(mCreator)->_setGrabState(true);
+			static_cast<CustomLinuxInputManager*>(mCreator)->_setGrabState(true);
 
 			if( event.xbutton.button < 4 )
 			{
@@ -252,19 +253,22 @@ void LinuxMouse::_processXEvents()
 }
 
 //-------------------------------------------------------------------//
-void LinuxMouse::grab(bool grab)
+void CustomLinuxMouse::grab(bool grab)
 {
-	if( grab )
-		XGrabPointer(display, window, True, 0, GrabModeAsync, GrabModeAsync, window, None, CurrentTime);
-	else
-		XUngrabPointer(display, CurrentTime);
+    this->grabMouse = grab;
+    if( grab ){
+        XGrabPointer(display, window, True, 0, GrabModeAsync, GrabModeAsync, window, None, CurrentTime);
+    } else {
+        XUngrabPointer(display, CurrentTime);
+    }
 }
 
 //-------------------------------------------------------------------//
-void LinuxMouse::hide(bool hide)
+void CustomLinuxMouse::hide(bool hide)
 {
-	if( hide )
-		XDefineCursor(display, window, cursor);
-	else
-		XUndefineCursor(display, window);
+    if( hide ){
+        XDefineCursor(display, window, cursor);
+    } else {
+        XUndefineCursor(display, window);
+    }
 }

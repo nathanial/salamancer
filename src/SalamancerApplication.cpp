@@ -17,8 +17,8 @@
 #include <X11/keysym.h>
 #include <X11/XF86keysym.h>
 
-#include "ois/linux/LinuxInputManager.h"
-#include "ois/linux/LinuxMouse.h"
+#include "ois/linux/CustomLinuxInputManager.h"
+#include "ois/linux/CustomLinuxMouse.h"
 
 
 using namespace Ogre;
@@ -208,12 +208,12 @@ void SalamancerApplication::createFrameListener(void)
     mWindow->getCustomAttribute("WINDOW", &windowHnd);
     windowHndStr << windowHnd;
     pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
-//    pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
-//    pl.insert(std::make_pair(std::string("x11_mouse_hide"), std::string("false")));
+    pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
+    pl.insert(std::make_pair(std::string("x11_mouse_hide"), std::string("false")));
     pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
     pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
     
-    mInputManager = new OIS::LinuxInputManager();
+    mInputManager = new OIS::CustomLinuxInputManager();
     mInputManager->_initialize(pl);
 
     mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
@@ -482,7 +482,7 @@ void SalamancerApplication::windowClosed(Ogre::RenderWindow* rw)
 }
 
 void SalamancerApplication::toggleHud(){
-    OIS::LinuxMouse *linuxMouse = static_cast<OIS::LinuxMouse*>(this->mMouse);
+    OIS::CustomLinuxMouse *linuxMouse = static_cast<OIS::CustomLinuxMouse*>(this->mMouse);
     
     if(hudVisible){
         hudVisible = false;

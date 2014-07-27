@@ -35,12 +35,12 @@ restrictions:
 
 namespace OIS
 {
-	class LinuxInputManager;
-	class LinuxKeyboard;
-	class LinuxJoyStick;
-	class LinuxMouse;
+	class CustomLinuxInputManager;
+	class CustomLinuxKeyboard;
+	class CustomLinuxJoyStick;
+	class CustomLinuxMouse;
 	
-	class LinuxForceFeedback;
+	class CustomLinuxForceFeedback;
 
 	class Range
 	{

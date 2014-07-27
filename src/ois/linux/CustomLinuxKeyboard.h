@@ -23,18 +23,18 @@ restrictions:
 #ifndef _LINUX_KEYBOARD_H_EADER_
 #define _LINUX_KEYBOARD_H_EADER_
 
-#include "LinuxPrereqs.h"
+#include "CustomLinuxPrereqs.h"
 #include "OISKeyboard.h"
 #include <X11/Xlib.h>
 
 namespace OIS
 {
 	/** Linux implementation of Keyboard object - uses x11 */
-	class LinuxKeyboard : public OIS::Keyboard
+	class CustomLinuxKeyboard : public OIS::Keyboard
 	{
 	public:
-		LinuxKeyboard(InputManager* creator, bool buffered, bool grab, bool useXRepeat );
-		virtual ~LinuxKeyboard();
+		CustomLinuxKeyboard(InputManager* creator, bool buffered, bool grab, bool useXRepeat );
+		virtual ~CustomLinuxKeyboard();
 
 		/** @copydoc Keyboard::isKeyDown */
 		virtual bool isKeyDown( KeyCode key ) const;

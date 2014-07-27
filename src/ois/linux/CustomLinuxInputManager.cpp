@@ -20,18 +20,19 @@ restrictions:
 
     3. This notice may not be removed or altered from any source distribution.
 */
-#include "LinuxInputManager.h"
-#include "LinuxKeyboard.h"
-#include "LinuxMouse.h"
+#include "CustomLinuxInputManager.h"
+#include "CustomLinuxKeyboard.h"
+#include "CustomLinuxMouse.h"
 #include "OISException.h"
 #include <cstdlib>
 
 #include <cstdlib>
+#include <iostream>
 
 using namespace OIS;
 
 //--------------------------------------------------------------------------------//
-LinuxInputManager::LinuxInputManager() : InputManager("X11InputManager")
+CustomLinuxInputManager::CustomLinuxInputManager() : InputManager("X11InputManager")
 {
 	window = 0;
 
@@ -48,13 +49,13 @@ LinuxInputManager::LinuxInputManager() : InputManager("X11InputManager")
 }
 
 //--------------------------------------------------------------------------------//
-LinuxInputManager::~LinuxInputManager()
+CustomLinuxInputManager::~CustomLinuxInputManager()
 {
 	//Close all joysticks
 }
 
 //--------------------------------------------------------------------------------//
-void LinuxInputManager::_initialize( ParamList &paramList )
+void CustomLinuxInputManager::_initialize( ParamList &paramList )
 {
 	_parseConfigSettings( paramList );
 
@@ -63,7 +64,7 @@ void LinuxInputManager::_initialize( ParamList &paramList )
 }
 
 //--------------------------------------------------------------------------------//
-void LinuxInputManager::_parseConfigSettings( ParamList &paramList )
+void CustomLinuxInputManager::_parseConfigSettings( ParamList &paramList )
 {
 	ParamList::iterator i = paramList.find("WINDOW");
 	if( i == paramList.end() ) 
@@ -96,14 +97,14 @@ void LinuxInputManager::_parseConfigSettings( ParamList &paramList )
 }
 
 //--------------------------------------------------------------------------------//
-void LinuxInputManager::_enumerateDevices()
+void CustomLinuxInputManager::_enumerateDevices()
 {
 	//Enumerate all attached devices
 	joySticks = unusedJoyStickList.size();
 }
 
 //----------------------------------------------------------------------------//
-DeviceList LinuxInputManager::freeDeviceList()
+DeviceList CustomLinuxInputManager::freeDeviceList()
 {
 	DeviceList ret;
 
@@ -120,7 +121,7 @@ DeviceList LinuxInputManager::freeDeviceList()
 }
 
 //----------------------------------------------------------------------------//
-int LinuxInputManager::totalDevices(Type iType)
+int CustomLinuxInputManager::totalDevices(Type iType)
 {
 	switch(iType)
 	{
@@ -132,7 +133,7 @@ int LinuxInputManager::totalDevices(Type iType)
 }
 
 //----------------------------------------------------------------------------//
-int LinuxInputManager::freeDevices(Type iType)
+int CustomLinuxInputManager::freeDevices(Type iType)
 {
 	switch(iType)
 	{
@@ -144,7 +145,7 @@ int LinuxInputManager::freeDevices(Type iType)
 }
 
 //----------------------------------------------------------------------------//
-bool LinuxInputManager::vendorExist(Type iType, const std::string & vendor)
+bool CustomLinuxInputManager::vendorExist(Type iType, const std::string & vendor)
 {
 	if( (iType == OISKeyboard || iType == OISMouse) && vendor == mInputSystemName )
 	{
@@ -161,22 +162,23 @@ bool LinuxInputManager::vendorExist(Type iType, const std::string & vendor)
 }
 
 //----------------------------------------------------------------------------//
-Object* LinuxInputManager::createObject(InputManager *creator, Type iType, bool bufferMode, const std::string & vendor)
+Object* CustomLinuxInputManager::createObject(InputManager *creator, Type iType, bool bufferMode, const std::string & vendor)
 {
 	Object *obj = 0;
-
+        
 	switch(iType)
 	{
 	case OISKeyboard:
 	{
 		if( keyboardUsed == false )
-			obj = new LinuxKeyboard(this, bufferMode, grabKeyboard, useXRepeat);
+			obj = new CustomLinuxKeyboard(this, bufferMode, grabKeyboard, useXRepeat);
 		break;
 	}
 	case OISMouse:
 	{
-		if( mouseUsed == false )
-			obj = new LinuxMouse(this, bufferMode, grabMouse, hideMouse);
+		if( mouseUsed == false ){
+                    obj = new CustomLinuxMouse(this, bufferMode, grabMouse, hideMouse);
+                }
 		break;
 	}
 	default:
@@ -190,7 +192,7 @@ Object* LinuxInputManager::createObject(InputManager *creator, Type iType, bool 
 }
 
 //----------------------------------------------------------------------------//
-void LinuxInputManager::destroyObject( Object* obj )
+void CustomLinuxInputManager::destroyObject( Object* obj )
 {
 	if( obj )
 	{

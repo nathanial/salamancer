@@ -23,17 +23,17 @@ restrictions:
 #ifndef _LINUX_MOUSE_H_EADER_
 #define _LINUX_MOUSE_H_EADER_
 
-#include "LinuxPrereqs.h"
+#include "CustomLinuxPrereqs.h"
 #include "OISMouse.h"
 #include <X11/Xlib.h>
 
 namespace OIS
 {
-	class LinuxMouse : public Mouse
+	class CustomLinuxMouse : public Mouse
 	{
 	public:
-		LinuxMouse(InputManager* creator, bool buffered, bool grab, bool hide);
-		virtual ~LinuxMouse();
+		CustomLinuxMouse(InputManager* creator, bool buffered, bool grab, bool hide);
+		virtual ~CustomLinuxMouse();
 
 		/** @copydoc Object::setBuffered */
 		virtual void setBuffered(bool buffered);

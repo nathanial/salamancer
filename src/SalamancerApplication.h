@@ -25,7 +25,7 @@
 #include <SdkCameraMan.h>
 
 #include "cef/RenderHandler.h"
-#include "ois/linux/LinuxInputManager.h"
+#include "ois/linux/CustomLinuxInputManager.h"
 
 
 class SalamancerApplication : 
@@ -99,7 +99,7 @@ private:
     bool mShutDown;
 
     //OIS Input devices
-    OIS::LinuxInputManager* mInputManager;
+    OIS::CustomLinuxInputManager* mInputManager;
     OIS::Mouse*    mMouse;
     OIS::Keyboard* mKeyboard;
     

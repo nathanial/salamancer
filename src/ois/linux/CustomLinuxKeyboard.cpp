@@ -20,8 +20,8 @@ restrictions:
 
     3. This notice may not be removed or altered from any source distribution.
 */
-#include "LinuxInputManager.h"
-#include "LinuxKeyboard.h"
+#include "CustomLinuxInputManager.h"
+#include "CustomLinuxKeyboard.h"
 #include "OISException.h"
 #include "OISEvents.h"
 
@@ -33,7 +33,7 @@ using namespace OIS;
 #include <iostream>
 #include <cstring>
 //-------------------------------------------------------------------//
-LinuxKeyboard::LinuxKeyboard(InputManager* creator, bool buffered, bool grab, bool useXRepeat)
+CustomLinuxKeyboard::CustomLinuxKeyboard(InputManager* creator, bool buffered, bool grab, bool useXRepeat)
 	: Keyboard(creator->inputSystemName(), buffered, 0, creator)
 {
 	display = 0;
@@ -185,11 +185,11 @@ LinuxKeyboard::LinuxKeyboard(InputManager* creator, bool buffered, bool grab, bo
 	keyConversion.insert(XtoOIS_KeyMap::value_type(XK_Super_R, KC_RWIN));
 	keyConversion.insert(XtoOIS_KeyMap::value_type(XK_Menu, KC_APPS));
 
-	static_cast<LinuxInputManager*>(mCreator)->_setKeyboardUsed(true);
+	static_cast<CustomLinuxInputManager*>(mCreator)->_setKeyboardUsed(true);
 }
 
 //-------------------------------------------------------------------//
-void LinuxKeyboard::_initialize()
+void CustomLinuxKeyboard::_initialize()
 {
 	//Clear our keyboard state buffer
 	memset( &KeyBuffer, 0, 256 );
@@ -197,7 +197,7 @@ void LinuxKeyboard::_initialize()
 
 	if( display ) XCloseDisplay(display);
 	display = 0;
-	window = static_cast<LinuxInputManager*>(mCreator)->_getWindow();
+	window = static_cast<CustomLinuxInputManager*>(mCreator)->_getWindow();
 
 	//Create our local X mListener connection
 	if( !(display = XOpenDisplay(0)) )
@@ -228,7 +228,7 @@ void LinuxKeyboard::_initialize()
 }
 
 //-------------------------------------------------------------------//
-LinuxKeyboard::~LinuxKeyboard()
+CustomLinuxKeyboard::~CustomLinuxKeyboard()
 {
 	if( display )
 	{
@@ -241,21 +241,21 @@ LinuxKeyboard::~LinuxKeyboard()
 		XCloseDisplay(display);
 	}
 
-	static_cast<LinuxInputManager*>(mCreator)->_setKeyboardUsed(true);
+	static_cast<CustomLinuxInputManager*>(mCreator)->_setKeyboardUsed(true);
 }
 
 //-------------------------------------------------------------------//
-bool LinuxKeyboard::isKeyDown( KeyCode key ) const
+bool CustomLinuxKeyboard::isKeyDown( KeyCode key ) const
 {
 	return (KeyBuffer[key]);
 }
 
 //-------------------------------------------------------------------//
-void LinuxKeyboard::capture()
+void CustomLinuxKeyboard::capture()
 {
 	KeySym key;
 	XEvent event;
-	LinuxInputManager* linMan = static_cast<LinuxInputManager*>(mCreator);
+	CustomLinuxInputManager* linMan = static_cast<CustomLinuxInputManager*>(mCreator);
 
 	while( XPending(display) > 0 )
 	{
@@ -321,13 +321,13 @@ void LinuxKeyboard::capture()
 }
 
 //-------------------------------------------------------------------//
-void LinuxKeyboard::setBuffered(bool buffered)
+void CustomLinuxKeyboard::setBuffered(bool buffered)
 {
 	mBuffered = buffered;
 }
 
 //-------------------------------------------------------------------//
-bool LinuxKeyboard::_injectKeyDown( KeySym key, int text )
+bool CustomLinuxKeyboard::_injectKeyDown( KeySym key, int text )
 {
 	KeyCode kc = keyConversion[key];
 	KeyBuffer[kc] = 1;
@@ -347,7 +347,7 @@ bool LinuxKeyboard::_injectKeyDown( KeySym key, int text )
 }
 
 //-------------------------------------------------------------------//
-bool LinuxKeyboard::_injectKeyUp( KeySym key )
+bool CustomLinuxKeyboard::_injectKeyUp( KeySym key )
 {
 	KeyCode kc = keyConversion[key];
 	KeyBuffer[kc] = 0;
@@ -367,7 +367,7 @@ bool LinuxKeyboard::_injectKeyUp( KeySym key )
 }
 
 //-------------------------------------------------------------------//
-const std::string& LinuxKeyboard::getAsString( KeyCode kc )
+const std::string& CustomLinuxKeyboard::getAsString( KeyCode kc )
 {
 	mGetString = "Unknown";
 	char *temp = 0;
@@ -390,7 +390,7 @@ const std::string& LinuxKeyboard::getAsString( KeyCode kc )
 }
 
 //-------------------------------------------------------------------//
-void LinuxKeyboard::copyKeyStates( char keys[256] ) const
+void CustomLinuxKeyboard::copyKeyStates( char keys[256] ) const
 {
 	memcpy( keys, KeyBuffer, 256 );
 }
