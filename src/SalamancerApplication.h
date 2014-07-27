@@ -73,6 +73,8 @@ private:
     //Unattach OIS before window shutdown (very important under Linux)
     virtual void windowClosed(Ogre::RenderWindow* rw) OVERRIDE;
     
+    void toggleHud();
+    
         
     CefRefPtr<CefBrowser> browser;
     CefRefPtr<BrowserClient> browserClient;
@@ -99,6 +101,8 @@ private:
     OIS::InputManager* mInputManager;
     OIS::Mouse*    mMouse;
     OIS::Keyboard* mKeyboard;
+    
+    bool hudVisible = true;
 };
 
 #endif // #ifndef __TutorialApplication_h_

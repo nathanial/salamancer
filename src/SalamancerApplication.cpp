@@ -11,6 +11,13 @@
 #include "cef/BrowserClient.h"
 #include "cef/RenderHandler.h"
 
+#include <OIS/OIS.h>
+
+#include <X11/Xcursor/Xcursor.h>
+#include <X11/keysym.h>
+#include <X11/XF86keysym.h>
+
+
 using namespace Ogre;
 
 void createColourCube(void);
@@ -208,7 +215,7 @@ void SalamancerApplication::createFrameListener(void)
 
     mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
     mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
-
+    
     mMouse->setEventCallback(this);
     mKeyboard->setEventCallback(this);
 
@@ -390,6 +397,9 @@ bool SalamancerApplication::keyPressed( const OIS::KeyEvent &arg )
     if (mTrayMgr->isDialogVisible()) return true;   // don't process any more keys if dialog is up
     if(arg.key == OIS::KC_ESCAPE){
         mShutDown = true;
+    } else if(arg.key == OIS::KC_LMENU || arg.key == OIS::KC_RMENU){
+        this->toggleHud();
+        return true;
     } else if(this->browser != 0 && this->renderHandler != 0) {
         return this->renderHandler->keyPressed(arg);
     }
@@ -454,5 +464,34 @@ void SalamancerApplication::windowClosed(Ogre::RenderWindow* rw)
             OIS::InputManager::destroyInputSystem(mInputManager);
             mInputManager = 0;
         }
+    }
+}
+
+void SalamancerApplication::toggleHud(){
+    ::Display* display;
+    XID window;
+    Ogre::RenderWindow *renderWindow = this->mRoot->getAutoCreatedWindow();
+    renderWindow->getCustomAttribute("XDISPLAY", &display);
+    renderWindow->getCustomAttribute("WINDOW", &window);
+    
+    if(hudVisible){
+        hudVisible = false;
+        XGrabPointer(display, window, true, 0, true, true, window, 0L, 0L);
+        
+        Pixmap bm_no;
+	XColor black, dummy;
+	Colormap colormap;
+	static char no_data[] = { 0,0,0,0,0,0,0,0 };
+
+	colormap = DefaultColormap( display, DefaultScreen(display) );
+	XAllocNamedColor( display, colormap, "black", &black, &dummy );
+	bm_no = XCreateBitmapFromData( display, window, no_data, 8, 8 );
+	Cursor cursor = XCreatePixmapCursor( display, bm_no, bm_no, &black, &black, 0, 0 );
+        
+        XDefineCursor(display, window, cursor);
+    } else {
+        hudVisible = true;                
+        XUngrabPointer(display, 0L);
+        XUndefineCursor(display, window);
     }
 }
