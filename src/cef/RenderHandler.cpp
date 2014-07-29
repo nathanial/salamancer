@@ -485,6 +485,11 @@ bool RenderHandler::keyPressed( const OIS::KeyEvent &arg ){
     return true;
 }
 bool RenderHandler::keyReleased( const OIS::KeyEvent &arg ){
+    if(arg.key == OIS::KeyCode::KC_F1){
+        return true;
+    }
+
+    
     keyEvent.native_key_code = arg.key;
     keyEvent.windows_key_code = KeyboardCodeFromKeyCode(arg.key);
     keyEvent.type = KEYEVENT_KEYUP;

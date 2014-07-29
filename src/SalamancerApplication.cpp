@@ -132,6 +132,7 @@ int main(int argc, char *argv[])
     }
 
     CefSettings settings;
+    settings.remote_debugging_port = 9999;
     result = CefInitialize(args, settings, nullptr, nullptr);
     if (!result)
     {

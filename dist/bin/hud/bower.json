@@ -13,6 +13,8 @@
   "dependencies": {
     "codemirror": "~4.4.0",
     "jquery": "~2.1.1",
-    "angular": "~1.2.20"
+    "angular": "~1.2.20",
+    "jquery-ui": "~1.11.0",
+    "jquery.transit": "~0.9.12"
   }
 }
