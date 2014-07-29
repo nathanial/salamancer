@@ -38,7 +38,7 @@ class RenderHandler : public Ogre::FrameListener, public CefRenderHandler {
         
         bool hasKeyBeenPressed = false;
         bool repeatStarted = false;
-        
+
         CefKeyEvent keyEvent;
         
         RenderHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse)
