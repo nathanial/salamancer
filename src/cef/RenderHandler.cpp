@@ -24,6 +24,8 @@
 
 #include <ctime>
 
+#include "API.h"
+
 namespace {
     enum CURSORS {
         POINTER = 6,
@@ -44,9 +46,6 @@ bool RenderHandler::frameStarted(const Ogre::FrameEvent &evt){
         return false;
     }
     
-    CefDoMessageLoopWork();
-    
-
     if(this->hasKeyBeenPressed){
         if(this->repeatStarted && this->keyTimer->getMilliseconds() > 10){
             this->browser->GetHost()->SendKeyEvent(this->keyEvent);
@@ -57,6 +56,9 @@ bool RenderHandler::frameStarted(const Ogre::FrameEvent &evt){
             this->keyTimer->reset();
         } 
     }
+    
+    CefDoMessageLoopWork();
+    
     return true;
 }
 
@@ -466,6 +468,8 @@ KeyboardCode KeyboardCodeFromKeyCode(OIS::KeyCode keycode) {
 
 
 bool RenderHandler::keyPressed( const OIS::KeyEvent &arg ){
+    
+    
     KeyboardCode code = KeyboardCodeFromKeyCode(arg.key);
     keyEvent.native_key_code = arg.key;
     keyEvent.windows_key_code = code;
@@ -485,6 +489,11 @@ bool RenderHandler::keyPressed( const OIS::KeyEvent &arg ){
     return true;
 }
 bool RenderHandler::keyReleased( const OIS::KeyEvent &arg ){
+    if(arg.key == OIS::KeyCode::KC_F1){
+        return true;
+    }
+
+    
     keyEvent.native_key_code = arg.key;
     keyEvent.windows_key_code = KeyboardCodeFromKeyCode(arg.key);
     keyEvent.type = KEYEVENT_KEYUP;
@@ -499,10 +508,8 @@ bool RenderHandler::mouseMoved( const OIS::MouseEvent &arg ){
     CefMouseEvent mouseEvent;
     mouseEvent.x = arg.state.X.abs;
     mouseEvent.y = arg.state.Y.abs;
+    mouseEvent.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
     this->browser->GetHost()->SendMouseMoveEvent(mouseEvent, false);
-    
-    CefDoMessageLoopWork();
-    
     return true;
 }
 
@@ -513,12 +520,13 @@ bool RenderHandler::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID
     CefBrowserHost::MouseButtonType mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
     if(id == OIS::MouseButtonID::MB_Left){
         mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
+        mouseEvent.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
     } else if(id == OIS::MouseButtonID::MB_Right){
         mbt = CefBrowserHost::MouseButtonType::MBT_RIGHT;
+        mouseEvent.modifiers = EVENTFLAG_RIGHT_MOUSE_BUTTON;
     } 
-    this->browser->GetHost()->SendMouseClickEvent(mouseEvent, mbt, false, 1);
     
-    CefDoMessageLoopWork();
+    this->browser->GetHost()->SendMouseClickEvent(mouseEvent, mbt, false, 1);
     
     return true;
 }
@@ -527,15 +535,16 @@ bool RenderHandler::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonI
     CefMouseEvent mouseEvent;
     mouseEvent.x = arg.state.X.abs;
     mouseEvent.y = arg.state.Y.abs;
+    mouseEvent.modifiers = 0;
     CefBrowserHost::MouseButtonType mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
     if(id == OIS::MouseButtonID::MB_Left){
         mbt = CefBrowserHost::MouseButtonType::MBT_LEFT;
+        mouseEvent.modifiers = EVENTFLAG_LEFT_MOUSE_BUTTON;
     } else if(id == OIS::MouseButtonID::MB_Right){
         mbt = CefBrowserHost::MouseButtonType::MBT_RIGHT;
+        mouseEvent.modifiers = EVENTFLAG_RIGHT_MOUSE_BUTTON;
     }
     this->browser->GetHost()->SendMouseClickEvent(mouseEvent, mbt, true, 1);
-    
-    CefDoMessageLoopWork();
     
     return true;
 }

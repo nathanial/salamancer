@@ -11,6 +11,7 @@
 #include "include/cef_app.h"
 #include "include/cef_client.h"
 #include "include/cef_render_handler.h"
+#include "include/cef_render_process_handler.h"
 
 #include <OgreEntity.h>
 #include <OgreHardwarePixelBuffer.h>
@@ -38,7 +39,7 @@ class RenderHandler : public Ogre::FrameListener, public CefRenderHandler {
         
         bool hasKeyBeenPressed = false;
         bool repeatStarted = false;
-        
+
         CefKeyEvent keyEvent;
         
         RenderHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse)

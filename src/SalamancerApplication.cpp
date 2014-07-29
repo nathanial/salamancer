@@ -10,6 +10,7 @@
 #include "include/cef_render_handler.h"
 #include "cef/BrowserClient.h"
 #include "cef/RenderHandler.h"
+#include "cef/App.h"
 
 #include <OIS/OIS.h>
 
@@ -19,6 +20,7 @@
 
 #include "ois/linux/CustomLinuxInputManager.h"
 #include "ois/linux/CustomLinuxMouse.h"
+
 
 
 using namespace Ogre;
@@ -83,7 +85,7 @@ void SalamancerApplication::createBrowser(){
     Ogre::TexturePtr renderTexture = Ogre::TextureManager::getSingleton().createManual(
                 "texture",
                 Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                Ogre::TEX_TYPE_2D, mWindow->getWidth(), mWindow->getHeight(), 0, Ogre::PF_A8R8G8B8, Ogre::TU_DYNAMIC_WRITE_ONLY);
+                Ogre::TEX_TYPE_2D, mWindow->getWidth(), mWindow->getHeight(), 0, Ogre::PF_A8R8G8B8, Ogre::TU_WRITE_ONLY);
 
     Ogre::MaterialPtr material = Ogre::MaterialManager::getSingletonPtr()->create("BrowserMaterial", Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
     material->getTechnique(0)->getPass(0)->setCullingMode(Ogre::CULL_CLOCKWISE); // print both sides of the polygones
@@ -123,7 +125,8 @@ int main(int argc, char *argv[])
     
     CefMainArgs args(argc, argv);
 
-    int result = CefExecuteProcess(args, nullptr, nullptr);
+    CefRefPtr<CefApp> cefApp = new App();
+    int result = CefExecuteProcess(args, cefApp, nullptr);
     // checkout CefApp, derive it and set it as second parameter, for more control on
     // command args and resources.
     if (result >= 0) // child proccess has endend, so exit.
@@ -132,7 +135,9 @@ int main(int argc, char *argv[])
     }
 
     CefSettings settings;
-    result = CefInitialize(args, settings, nullptr, nullptr);
+    settings.remote_debugging_port = 9999;
+    settings.windowless_rendering_enabled = true;
+    result = CefInitialize(args, settings, cefApp, nullptr);
     if (!result)
     {
         return -1;
