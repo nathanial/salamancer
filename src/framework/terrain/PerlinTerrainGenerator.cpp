@@ -29,9 +29,12 @@ VolumePtr PerlinTerrainGenerator::generateTerrain(Position position){
     
     std::cout << "Terrain Count: " << (TerrainCount++) << std::endl;
     
+    double chunkRatio = 1.0 / World::XCHUNKS;
+    chunkRatio *= 20;
+    
     heightMapBuilder.SetBounds(
-            position.x, position.x +(NoiseSize/ (1.0 *Volume::XWIDTH)),
-            position.z, position.z + (NoiseSize/ (1.0 *Volume::ZWIDTH))
+            position.x * chunkRatio, (position.x + 1) * chunkRatio,
+            position.z * chunkRatio, (position.z + 1) * chunkRatio
     );
     heightMapBuilder.Build();
     
