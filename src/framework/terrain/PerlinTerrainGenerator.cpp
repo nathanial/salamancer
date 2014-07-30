@@ -14,19 +14,24 @@
 using namespace noise;
 
 
+static const int NoiseSize = 32;
+
+static int TerrainCount = 0;
 
 void PerlinTerrainGenerator::init(){
     heightMapBuilder.SetSourceModule(perlin);
     heightMapBuilder.SetDestNoiseMap(heightMap);
-    heightMapBuilder.SetDestSize(32*20,32*20);
+    heightMapBuilder.SetDestSize(NoiseSize,NoiseSize);
 }
 
 VolumePtr PerlinTerrainGenerator::generateTerrain(Position position){
     VolumePtr volume(new Volume());
-
+    
+    std::cout << "Terrain Count: " << (TerrainCount++) << std::endl;
+    
     heightMapBuilder.SetBounds(
-            position.x*32,(position.x+1)*32,
-            position.z*32,(position.z+1)*32
+            position.x, position.x +(NoiseSize/ (1.0 *Volume::XWIDTH)),
+            position.z, position.z + (NoiseSize/ (1.0 *Volume::ZWIDTH))
     );
     heightMapBuilder.Build();
     
@@ -36,7 +41,6 @@ VolumePtr PerlinTerrainGenerator::generateTerrain(Position position){
             y += 2.0;
             y *= 10;
             y = round(y);
-            std::cout << "Y: " << y << std::endl;
             if(y <= 0){
                 y = 0;
             }
