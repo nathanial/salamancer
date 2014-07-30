@@ -13,33 +13,34 @@
 
 using namespace noise;
 
-module::Perlin perlin;
 
 
-VolumePtr generateTerrain(Position position){
-    VolumePtr volume(new Volume());
-    
-    utils::NoiseMap heightMap;
-    utils::NoiseMapBuilderPlane heightMapBuilder;
+void PerlinTerrainGenerator::init(){
     heightMapBuilder.SetSourceModule(perlin);
     heightMapBuilder.SetDestNoiseMap(heightMap);
-    heightMapBuilder.SetDestSize(90,90);
+    heightMapBuilder.SetDestSize(32*20,32*20);
+}
+
+VolumePtr PerlinTerrainGenerator::generateTerrain(Position position){
+    VolumePtr volume(new Volume());
+
     heightMapBuilder.SetBounds(
-            position.x*4,(position.x+1)*4,
-            position.z*4,(position.z+1)*4
+            position.x*32,(position.x+1)*32,
+            position.z*32,(position.z+1)*32
     );
     heightMapBuilder.Build();
     
     for(int x = 0; x < Volume::XWIDTH; x++){
         for(int z = 0; z < Volume::ZWIDTH; z++){
             float y = heightMap.GetValue(x, z);
-            y = (y+1.5)*4;
+            y += 2.0;
+            y *= 10;
+            y = round(y);
+            std::cout << "Y: " << y << std::endl;
             if(y <= 0){
-                std::cout << "1 Ooops: " << heightMap.GetValue(x,z) + 1.5 << std::endl;
                 y = 0;
             }
             if(y >= Volume::YWIDTH){
-                std::cout << "2 Ooops: " << heightMap.GetValue(x,z) + 1.5 << std::endl;
                 y = Volume::YWIDTH-1;
             }
             volume->voxels[x][(int)y][z] = 1;
@@ -51,7 +52,7 @@ VolumePtr generateTerrain(Position position){
     return volume;
 }
 
-VolumePtr generateBlock(){
+VolumePtr PerlinTerrainGenerator::generateBlock(){
     VolumePtr volume(new Volume());
     for(int i = 0; i < Volume::XWIDTH; i++){
         for(int j = 0; j < Volume::YWIDTH; j++){
@@ -65,8 +66,8 @@ VolumePtr generateBlock(){
 
 VolumePtr PerlinTerrainGenerator::generate(Position position) {
     if((int)position.y == World::YCHUNKS -1){
-        return generateTerrain(position);
+        return this->generateTerrain(position);
     } else {
-        return generateBlock();
+        return this->generateBlock();
     }
 }
