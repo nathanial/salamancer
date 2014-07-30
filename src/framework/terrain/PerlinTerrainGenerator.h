@@ -8,12 +8,23 @@
 #ifndef PERINTERRAINGENERATOR_H
 #define	PERINTERRAINGENERATOR_H
 
-#include "TerrainGenerator.h"
+#include "framework/Position.h"
 #include "framework/Volume.h"
+#include "noise/noise.h"
+#include "noiseutils.h"
 
-class PerlinTerrainGenerator : public TerrainGenerator {
+class PerlinTerrainGenerator  {
 public:
-    virtual VolumePtr generate(Position chunk);
+    void init();
+    VolumePtr generate(Position chunk);
+
+private:    
+    noise::module::Perlin perlin;
+    noise::utils::NoiseMap heightMap;
+    noise::utils::NoiseMapBuilderPlane heightMapBuilder;
+    
+    VolumePtr generateTerrain(Position position);
+    VolumePtr generateBlock();
 };
 
 #endif	/* PERINTERRAINGENERATOR_H */

@@ -61,6 +61,7 @@ SalamancerApplication::~SalamancerApplication(void)
 void SalamancerApplication::createScene(void)
 {
     PerlinTerrainGenerator gen;
+    gen.init();
     
     for(int x = 0; x < World::XCHUNKS; x++){
         for(int y = 0; y < World::YCHUNKS; y++){

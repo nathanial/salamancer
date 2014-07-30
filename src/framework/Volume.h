@@ -12,9 +12,9 @@
 
 class Volume {
 public:
-    static const int XWIDTH = 16;
-    static const int YWIDTH = 16;
-    static const int ZWIDTH = 16;
+    static const int XWIDTH = 32;
+    static const int YWIDTH = 32;
+    static const int ZWIDTH = 32;
     unsigned char voxels[XWIDTH][YWIDTH][ZWIDTH];
 };
 

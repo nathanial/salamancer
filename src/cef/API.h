@@ -20,14 +20,31 @@ namespace API {
                              const CefV8ValueList& arguments,
                              CefRefPtr<CefV8Value>& retval,
                              CefString& exception) OVERRIDE {
-          if (name == "createVoxel") {
-            // Return my string value.
-            retval = CefV8Value::CreateString("Make a Voxel");
-            return true;
-          }
+            
+            if (name == "createVoxel") {
+                if(arguments.size() < 4){
+                    exception = "Insufficient Arguments";
+                    return false;
+                }
+                for(int i = 0 ; i < 4; i++){
+                    if(!arguments[i]->IsInt()){
+                        exception = "Arguments must be integers";
+                        return false;
+                    }
+                }
+                int x = arguments[0]->GetIntValue();
+                int y = arguments[1]->GetIntValue();
+                int z = arguments[2]->GetIntValue();
+                int type = arguments[3]->GetIntValue();
 
-          // Function does not exist.
+                this->CreateVoxel(type, x, y, z);
+                return true;
+          }
           return false;
+        }
+        
+        void CreateVoxel(int type, int x, int y, int z){
+            
         }
 
         // Provide the reference counting implementation for this class.
