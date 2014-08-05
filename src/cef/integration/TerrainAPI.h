@@ -23,6 +23,9 @@ namespace API {
                              CefString& exception) OVERRIDE; 
         
         IMPLEMENT_REFCOUNTING(TerrainRenderFunction);
+        
+    private:
+        CefRefPtr<CefV8Value> renderTerrain();
     };
 };
 

@@ -7,6 +7,8 @@
 
 #include "TerrainAPI.h"
 #include <iostream>
+#include "noise/noise.h"
+#include "framework/terrain/noiseutils.h"
 
 using namespace API;
 
@@ -18,8 +20,22 @@ bool TerrainRenderFunction::Execute(
     CefString& exception)
 {
     if (name == "renderTerrain") {
-        std::cout << "Render Terrain" << std::endl;
+        if(arguments.size() <= 0){
+            exception = "Not enough arguments";
+            return true;
+        }
+        if(!arguments[0]->IsObject()){
+            exception = "First argument to renderTerrain must be an object.";
+            return true;
+        }
+        CefRefPtr<CefV8Value> options = arguments[0];
+        
+        retval = renderTerrain();
         return true;
     }
     return false;
+}
+
+CefRefPtr<CefV8Value> TerrainRenderFunction::renderTerrain(){
+    return CefV8Value::CreateString("http://indervilla.com/home/2013/01/Frog-After-Diner-HD.jpg");
 }
