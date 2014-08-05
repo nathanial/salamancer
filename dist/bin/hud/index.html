@@ -25,11 +25,11 @@
             #preview {
                 position: absolute;
                 left: 0;
-                width: 50%;
-                bottom: 0;
                 top: 0;
+                width: 50%;
+                height: 100%;
                 border: 1px solid #ddd;
-                background: wheat;
+                display: table;
             }
             .CodeMirror {
                 height: 100% !important;
@@ -60,6 +60,10 @@
                 height: 80px;
                 border: 1px solid #ddd;
             }
+            .image-container {
+                display: table-cell;
+                vertical-align: middle;
+            }
         </style>
         <link rel="stylesheet" href="bower_components/jquery-ui/themes/base/all.css"/>
         <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -74,7 +78,11 @@
         <div class="terrain-tool">
             <div class="handle"></div>
             <div class="editor-panel">
-                <div id="preview"></div>
+                <div id="preview">
+                    <div class="image-container">
+                        <img id="preview-img">
+                    </div>
+                </div>
                 <div id="editor"></div>
             </div>
             <div id="drafts-panel"></div>
@@ -95,6 +103,8 @@
                 $(".terrain-tool").draggable({
                     handle: '.handle'
                 }).resizable();
+                
+                $("#preview-img").attr('src', Native.renderTerrain({}));
             });
         </script>
     </body>

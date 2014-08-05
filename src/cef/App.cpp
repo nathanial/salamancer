@@ -9,7 +9,7 @@
 #include "include/cef_v8.h"
 #include <iostream>
 
-#include "cef/integration/TerrainAPI.h"
+#include "framework/terrain/TerrainAPI.h"
 
     
 void App::OnContextCreated(CefRefPtr<CefBrowser> browser,

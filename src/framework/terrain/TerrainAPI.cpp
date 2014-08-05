@@ -8,7 +8,7 @@
 #include "TerrainAPI.h"
 #include <iostream>
 #include "noise/noise.h"
-#include "framework/terrain/noiseutils.h"
+#include "noiseutils.h"
 
 using namespace API;
 
@@ -37,5 +37,24 @@ bool TerrainRenderFunction::Execute(
 }
 
 CefRefPtr<CefV8Value> TerrainRenderFunction::renderTerrain(){
-    return CefV8Value::CreateString("http://indervilla.com/home/2013/01/Frog-After-Diner-HD.jpg");
+    module::Perlin perlin;
+    utils::NoiseMap heightMap;
+    utils::NoiseMapBuilderPlane heightMapBuilder;
+    heightMapBuilder.SetSourceModule(perlin);
+    heightMapBuilder.SetDestNoiseMap(heightMap);
+    heightMapBuilder.SetDestSize(256, 256);
+    heightMapBuilder.SetBounds(2.0, 6.0, 1.0, 5.0);
+    heightMapBuilder.Build();
+    
+    utils::RendererImage renderer;
+    utils::Image image;
+    renderer.SetSourceNoiseMap(heightMap);
+    renderer.SetDestImage(image);
+    renderer.Render();
+    
+    utils::WriterBMP writer;
+    writer.SetSourceImage(image);
+    writer.SetDestFilename("/home/nathan/Projects/salamancer/dist/bin/terrain.bmp");
+    writer.WriteDestFile();
+    return CefV8Value::CreateString("../terrain.bmp");
 }
