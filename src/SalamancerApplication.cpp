@@ -21,8 +21,6 @@
 #include "ois/linux/CustomLinuxInputManager.h"
 #include "ois/linux/CustomLinuxMouse.h"
 
-
-
 using namespace Ogre;
 
 void createColourCube(void);

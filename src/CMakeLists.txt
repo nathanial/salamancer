@@ -3,6 +3,7 @@ add_library(src
     SalamancerApplication.cpp
     cef/RenderHandler.cpp
     cef/App.cpp
+    cef/integration/TerrainAPI.cpp
     framework/meshers/GreedyMesher.cpp
     framework/terrain/PerlinTerrainGenerator.cpp
     framework/terrain/noiseutils.cpp

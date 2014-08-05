@@ -8,49 +8,57 @@
                 margin: 0;
                 padding: 0;
             }
-            #editor-panel {
-                position: absolute;
-                left: 0;
-                top: 0;
-                bottom: 0;
-                width: 500px;
-                margin: 10px;
-            }
-            #editor-panel .handle {
-                position: absolute;
-                left: 0;
-                top: 0;
-                right: 0;
-                height: 20px;
-                background: gray;
-                -webkit-user-select: false;
-            }
-            #editor-panel .controls {
-                position: absolute;
-                top: 20px;
-                left: 0;
-                right: 0;
-                height: 50px;
-                background: lightgray;
-            }
-            #editor-panel .controls > button {
-                display:inline-block;
-                width: 100px;
+            .handle {
+                width: 100%;
                 height: 30px;
-                margin-top: 10px;
-                margin-left: 10px;
+                background: #ddd;
+                -webkit-user-select: false;
             }
             #editor {
                 position: absolute;
-                left: 0;
-                top: 70px;
+                width: 50%;
+                top: 0;
                 bottom: 0;
                 right: 0;
+                border: 1px solid #ddd;
+            }
+            #preview {
+                position: absolute;
+                left: 0;
+                width: 50%;
+                bottom: 0;
+                top: 0;
+                border: 1px solid #ddd;
+                background: wheat;
             }
             .CodeMirror {
                 height: 100% !important;
                 font-family: monospace;
                 font-size: 16px;
+            }
+            .terrain-tool {
+                position: absolute;
+                left: 10px;
+                top: 10px;
+                width: 500px;
+                height: 500px;
+                background: white;
+                border: 1px solid #ddd;
+            }
+            .editor-panel {
+                position: absolute;
+                left: 10px;
+                top: 40px;
+                right: 10px;
+                bottom: 100px;
+            }
+            #drafts-panel {
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+                right: 10px;
+                height: 80px;
+                border: 1px solid #ddd;
             }
         </style>
         <link rel="stylesheet" href="bower_components/jquery-ui/themes/base/all.css"/>
@@ -63,12 +71,13 @@
         <script src="bower_components/codemirror/mode/javascript/javascript.js"></script>
     </head>
     <body>
-<!--        <div id="editor-panel">
-            <div class="controls">
-                <button id="run">Run</button>
-            </div>
+        <div class="terrain-tool">
             <div class="handle"></div>
-            <div id="editor"></div>
+            <div class="editor-panel">
+                <div id="preview"></div>
+                <div id="editor"></div>
+            </div>
+            <div id="drafts-panel"></div>
         </div>
         <script>
             $(function(){
@@ -76,17 +85,17 @@
                     mode: "javascript",
                     lineNumbers: true
                 });
+                if(localStorage.getItem('editor-value')){
+                    editor.setValue(localStorage.getItem('editor-value'));
+                }
                 editor.focus();
-                
-                $("#editor-panel").draggable({
+                editor.on("change", function(){
+                    console.log("CHANGE:" +  editor.getValue());
+                });
+                $(".terrain-tool").draggable({
                     handle: '.handle'
                 }).resizable();
-                
-                $("#run").click(function(){
-                    var code = editor.getValue();
-                    eval(code);
-                });
             });
-        </script>-->
+        </script>
     </body>
 </html>

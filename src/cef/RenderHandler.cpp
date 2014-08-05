@@ -24,8 +24,6 @@
 
 #include <ctime>
 
-#include "API.h"
-
 namespace {
     enum CURSORS {
         POINTER = 6,
