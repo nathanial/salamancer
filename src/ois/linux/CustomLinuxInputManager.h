@@ -23,6 +23,8 @@ restrictions:
 #ifndef OIS_LinuxInputManager_H
 #define OIS_LinuxInputManager_H
 
+#ifdef __linux__
+
 #include "CustomLinuxPrereqs.h"
 #include <OISFactoryCreator.h>
 #include <OISInputManager.h>
@@ -105,4 +107,7 @@ namespace OIS
 		bool useXRepeat;
 	};
 }
+
+#endif
+
 #endif

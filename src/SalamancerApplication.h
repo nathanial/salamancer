@@ -98,12 +98,15 @@ private:
     bool mCursorWasVisible;                    // was cursor visible before dialog appeared
     bool mShutDown;
 
-    //OIS Input devices
-    OIS::CustomLinuxInputManager* mInputManager;
+    //OIS Input devices    
     OIS::Mouse*    mMouse;
     OIS::Keyboard* mKeyboard;
     
     bool hudVisible = true;
+
+#ifdef __linux__
+	OIS::CustomLinuxInputManager* mInputManager;
+#endif
 };
 
 #endif // #ifndef __TutorialApplication_h_

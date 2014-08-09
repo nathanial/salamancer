@@ -14,10 +14,6 @@
 
 #include <OIS/OIS.h>
 
-#include <X11/Xcursor/Xcursor.h>
-#include <X11/keysym.h>
-#include <X11/XF86keysym.h>
-
 #include "ois/linux/CustomLinuxInputManager.h"
 #include "ois/linux/CustomLinuxMouse.h"
 
@@ -219,8 +215,10 @@ void SalamancerApplication::createFrameListener(void)
     pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));
     pl.insert(std::make_pair(std::string("XAutoRepeatOn"), std::string("true")));
     
+#ifdef __linux__
     mInputManager = new OIS::CustomLinuxInputManager();
     mInputManager->_initialize(pl);
+#endif
 
     mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject( OIS::OISKeyboard, true ));
     mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject( OIS::OISMouse, true ));
@@ -473,6 +471,7 @@ void SalamancerApplication::windowResized(Ogre::RenderWindow* rw)
 //Unattach OIS before window shutdown (very important under Linux)
 void SalamancerApplication::windowClosed(Ogre::RenderWindow* rw)
 {
+#ifdef __linux__
     //Only close for window that created OIS (the main window in these demos)
     if( rw == mWindow )
     {
@@ -485,9 +484,11 @@ void SalamancerApplication::windowClosed(Ogre::RenderWindow* rw)
             mInputManager = 0;
         }
     }
+#endif
 }
 
 void SalamancerApplication::toggleHud(){
+#ifdef __linux__
     OIS::CustomLinuxMouse *linuxMouse = static_cast<OIS::CustomLinuxMouse*>(this->mMouse);
     
     if(hudVisible){
@@ -499,4 +500,5 @@ void SalamancerApplication::toggleHud(){
         linuxMouse->hide(false);
         linuxMouse->grab(false);
     }
+#endif
 }

@@ -20,6 +20,9 @@ restrictions:
 
     3. This notice may not be removed or altered friosom any source distribution.
 */
+
+#ifdef __linux__
+
 #include "CustomLinuxMouse.h"
 #include "CustomLinuxInputManager.h"
 #include "OISException.h"
@@ -272,3 +275,5 @@ void CustomLinuxMouse::hide(bool hide)
         XUndefineCursor(display, window);
     }
 }
+
+#endif

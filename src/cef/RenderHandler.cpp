@@ -9,7 +9,13 @@
 
 #include <iostream>
 #include "RenderHandler.h"
+
+#ifdef __linux__
 #include "include/internal/cef_linux.h"
+#include <X11/Xcursor/Xcursor.h>
+#include <X11/keysym.h>
+#include <X11/XF86keysym.h>
+#endif
 
 #include "include/cef_app.h"
 #include "include/cef_client.h"
@@ -18,9 +24,6 @@
 #include <OISInputManager.h>
 #include <OISKeyboard.h>
 #include <OISMouse.h>
-#include <X11/Xcursor/Xcursor.h>
-#include <X11/keysym.h>
-#include <X11/XF86keysym.h>
 
 #include <ctime>
 
@@ -75,11 +78,13 @@ void RenderHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type
 }
 
 void RenderHandler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor){
+#ifdef __linux__
     ::Display* xDisplay;
     XID xid;
     this->window->getCustomAttribute("XDISPLAY", &xDisplay);
     this->window->getCustomAttribute("WINDOW", &xid);
     XDefineCursor(xDisplay, xid, cursor);
+#endif
 }
 
 enum KeyboardCode {
@@ -468,8 +473,6 @@ KeyboardCode KeyboardCodeFromKeyCode(OIS::KeyCode keycode) {
 
 
 bool RenderHandler::keyPressed( const OIS::KeyEvent &arg ){
-    
-    
     KeyboardCode code = KeyboardCodeFromKeyCode(arg.key);
     keyEvent.native_key_code = arg.key;
     keyEvent.windows_key_code = code;

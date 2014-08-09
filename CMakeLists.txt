@@ -2,23 +2,43 @@ cmake_minimum_required(VERSION 2.6)
 
 project(Salamancer)
 
-if(EXISTS "/usr/lib/OGRE/cmake")
-	set(CMAKE_MODULE_PATH "/usr/lib/OGRE/cmake/;${CMAKE_MODULE_PATH}")
-	set(OGRE_SAMPLES_INCLUDEPATH "/usr/share/OGRE/samples/Common/include/")
-	set(OGRE_VOLUME_INCLUDEPATH "/usr/include/OGRE/Volume/")
-else()
-	message(SEND_ERROR "Failed to find module path.")
-endif(EXISTS "/usr/lib/OGRE")
+if(WIN32)
+  set(CEF3_DIRECTORY "C:/Users/nathanial/Libraries/cef_binary_3.2078.1780_windows64")
+  set(Boost_INCLUDE_DIR "C:/Users/nathanial/Libraries/boost_1_56_0")
+	set(OGRE_HOME "C:/Users/nathanial/Libraries/OgreSDK_vc11_v1-9-0")
+	set(CMAKE_MODULE_PATH "${OGRE_HOME}/CMake/;${CMAKE_MODULE_PATH}")
+	set(OGRE_SAMPLES_INCLUDEPATH ${OGRE_HOME}/Samples/include)
+	set(LIBNOISE_LIBRARY "C:/Users/nathanial/Libraries/libnoisedll-1.0.0/bin/libnoise.dll")
+	set(CEF3_LIBCEF ${CEF3_DIRECTORY}/Release/libcef.dll)
+	set(CEF3_LIBCEF_DLL_WRAPPER "")
+	set(LIBNOISE_INCLUDE_DIR "C:/Users/nathanial/Libraries/libnoiseheaders-1.0.0/include")
+endif(WIN32)
+
+if(UNIX)
+	set(CEF3_DIRECTORY "/home/nathan/Sources/cef_binary_3.2078.1761_linux64")
+
+	if(EXISTS "/usr/lib/OGRE/cmake")
+		set(CMAKE_MODULE_PATH "/usr/lib/OGRE/cmake/;${CMAKE_MODULE_PATH}")
+		set(OGRE_SAMPLES_INCLUDEPATH "/usr/share/OGRE/samples/Common/include/")
+		set(OGRE_VOLUME_INCLUDEPATH "/usr/include/OGRE/Volume/")
+	else()
+		message(SEND_ERROR "Failed to find module path.")
+	endif(EXISTS "/usr/lib/OGRE")
+
+	set(LIBNOISE_LIBRARY "/usr/lib/libnoise.so")
+
+	set(CEF3_LIBCEF ${CEF3_DIRECTORY}/out/Release/libcef.so)
+	set(CEF3_LIBCEF_DLL_WRAPPER ${CEF3_DIRECTORY}/out/Release/obj.target/libcef_dll_wrapper.a)
+endif(UNIX)
 
 if (CMAKE_BUILD_TYPE STREQUAL "")
   # CMake defaults to leaving CMAKE_BUILD_TYPE empty. This screws up
   # differentiation between debug and release builds.
   set(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build, options are: None (CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel." FORCE)
 endif ()
- 
+
 set(CMAKE_DEBUG_POSTFIX "_d")
 set(CMAKE_INSTALL_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/dist")
-set(CEF3_DIRECTORY "/home/nathan/Sources/cef_binary_3.2078.1761_linux64")
 
 find_package(OGRE REQUIRED)
 
@@ -51,7 +71,7 @@ if (NOT OGRE_BUILD_PLATFORM_IPHONE)
 		find_package(Boost COMPONENTS ${OGRE_BOOST_COMPONENTS} QUIET)
 	endif()
 	find_package(Boost QUIET)
- 
+
 	# Set up referencing of Boost
 	include_directories(${Boost_INCLUDE_DIR})
 	add_definitions(-DBOOST_ALL_NO_LIB)
@@ -65,8 +85,9 @@ include_directories( ${OIS_INCLUDE_DIRS}
 	${OGRE_SAMPLES_INCLUDEPATH}
 	${OGRE_Overlay_INCLUDE_DIRS}
 	${OGRE_VOLUME_INCLUDEPATH}
-        ${CEF3_DIRECTORY}
-        ./src
+  ${CEF3_DIRECTORY}
+	${LIBNOISE_INCLUDE_DIR}
+  ./src
 )
 
 add_subdirectory(src)
@@ -80,13 +101,13 @@ target_link_libraries(
     X11
     ICE
     SM
-    ${OGRE_LIBRARIES} 
-    ${OIS_LIBRARIES} 
-    ${OGRE_Overlay_LIBRARIES} 
-    src 
-    /usr/lib/libnoise.so
-    ${CEF3_DIRECTORY}/out/Release/libcef.so 
-    ${CEF3_DIRECTORY}/out/Release/obj.target/libcef_dll_wrapper.a
+    ${OGRE_LIBRARIES}
+    ${OIS_LIBRARIES}
+    ${OGRE_Overlay_LIBRARIES}
+    src
+		${LIBNOISE_LIBRARY}
+		${CEF3_LIBCEF}
+		${CEF3_LIBCEF_DLL_WRAPPER}
 )
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/bin)

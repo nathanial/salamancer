@@ -23,6 +23,8 @@ restrictions:
 #ifndef _LINUX_MOUSE_H_EADER_
 #define _LINUX_MOUSE_H_EADER_
 
+#ifdef __linux__
+
 #include "CustomLinuxPrereqs.h"
 #include "OISMouse.h"
 #include <X11/Xlib.h>
@@ -71,5 +73,7 @@ namespace OIS
 		bool mouseFocusLost;//Has the mouse just lost focus?
 	};
 }
+
+#endif
 
 #endif //_LINUX_MOUSE_H_EADER_
