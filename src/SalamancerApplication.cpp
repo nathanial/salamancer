@@ -120,7 +120,7 @@ void SalamancerApplication::createBrowser(){
 int main(int argc, char *argv[])
 {
     
-    CefMainArgs args(argc, argv);
+    CefMainArgs args;
 
     CefRefPtr<CefApp> cefApp = new App();
     int result = CefExecuteProcess(args, cefApp, nullptr);

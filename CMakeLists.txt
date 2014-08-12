@@ -8,8 +8,8 @@ if(WIN32)
 	set(OGRE_HOME "C:/Users/nathanial/Libraries/OgreSDK_vc11_v1-9-0")
 	set(CMAKE_MODULE_PATH "${OGRE_HOME}/CMake/;${CMAKE_MODULE_PATH}")
 	set(OGRE_SAMPLES_INCLUDEPATH ${OGRE_HOME}/Samples/include)
-	set(LIBNOISE_LIBRARY "C:/Users/nathanial/Libraries/libnoisedll-1.0.0/bin/libnoise.dll")
-	set(CEF3_LIBCEF ${CEF3_DIRECTORY}/Release/libcef.dll)
+	set(LIBNOISE_LIBRARY "")
+	set(CEF3_LIBCEF ${CEF3_DIRECTORY}/Release/libcef.lib)
 	set(CEF3_LIBCEF_DLL_WRAPPER "")
 	set(LIBNOISE_INCLUDE_DIR "C:/Users/nathanial/Libraries/libnoiseheaders-1.0.0/include")
 endif(WIN32)
@@ -96,19 +96,33 @@ add_executable(Salamancer src/SalamancerApplication.cpp)
 
 set_target_properties(Salamancer PROPERTIES DEBUG_POSTFIX _d)
 
-target_link_libraries(
-    Salamancer
-    X11
-    ICE
-    SM
-    ${OGRE_LIBRARIES}
-    ${OIS_LIBRARIES}
-    ${OGRE_Overlay_LIBRARIES}
-    src
-		${LIBNOISE_LIBRARY}
-		${CEF3_LIBCEF}
-		${CEF3_LIBCEF_DLL_WRAPPER}
-)
+if(UNIX)
+  target_link_libraries(
+      Salamancer
+      X11
+      ICE
+      SM
+      ${OGRE_LIBRARIES}
+      ${OIS_LIBRARIES}
+      ${OGRE_Overlay_LIBRARIES}
+      ${LIBNOISE_LIBRARY}
+      ${CEF3_LIBCEF}
+      ${CEF3_LIBCEF_DLL_WRAPPER}
+      src
+  )
+endif(UNIX)
+if(WIN32)
+  target_link_libraries(
+      Salamancer
+      ${OGRE_LIBRARIES}
+      ${OIS_LIBRARIES}
+      ${OGRE_Overlay_LIBRARIES}
+      ${LIBNOISE_LIBRARY}
+      ${CEF3_LIBCEF}
+      ${CEF3_LIBCEF_DLL_WRAPPER}
+      src
+  )
+endif()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/bin)
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dist/media)

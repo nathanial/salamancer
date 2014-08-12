@@ -106,7 +106,6 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
     Vertices vertices = std::get<0>(vf);
     
     Faces faces = std::get<1>(vf);
-    bool alreadyLoaded[vertices.size()] = {false};
     
     for(int i = 0; i < faces.size(); i++){
         Face face = faces[i];

@@ -10,6 +10,7 @@
 
 #include <vector>
 #include "../Volume.h"
+#include <tuple>
 
 typedef int Color;
 

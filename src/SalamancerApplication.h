@@ -104,9 +104,7 @@ private:
     
     bool hudVisible = true;
 
-#ifdef __linux__
-	OIS::CustomLinuxInputManager* mInputManager;
-#endif
+	OIS::InputManager *mInputManager;
 };
 
 #endif // #ifndef __TutorialApplication_h_
