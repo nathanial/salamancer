@@ -10,6 +10,8 @@
 
 #include "include/cef_client.h"
 
+#include <iostream>
+
 namespace API {
     class CreateVoxelFunction : public CefV8Handler {
     public:
@@ -49,6 +51,41 @@ namespace API {
 
         // Provide the reference counting implementation for this class.
         IMPLEMENT_REFCOUNTING(CreateVoxelFunction);
+    };
+    
+    
+    class ToggleWireframeFunction : public CefV8Handler {
+    public:
+        
+        ToggleWireframeFunction() {}
+        
+        virtual bool Execute(const CefString& name,
+                             CefRefPtr<CefV8Value> object, 
+                             const CefV8ValueList& arguments, 
+                             CefRefPtr<CefV8Value>& retval, 
+                             CefString& exception) OVERRIDE {
+            if (name == "toggleWireframe"){
+                if(arguments.size() < 1){
+                    exception = "Insufficient Arguments";
+                    return false;
+                }
+                if(!arguments[0]->IsBool()){
+                    exception = "First argument must be a boolean";
+                    return false;
+                }
+                
+                bool enabled = arguments[0]->GetBoolValue();
+                
+                this->ToggleWireframe(enabled);
+                return true;
+            }
+        }
+        
+        void ToggleWireframe(bool enabled){
+            std::cout << "Toggle Thy Wireframe" << std::endl;
+        }
+        
+        IMPLEMENT_REFCOUNTING(ToggleWireframeFunction);
     };
     
     
