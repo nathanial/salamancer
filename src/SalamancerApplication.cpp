@@ -201,7 +201,8 @@ void SalamancerApplication::createCamera(void)
     mCamera->lookAt(Ogre::Vector3(0,0,-300));
     mCamera->setNearClipDistance(5);
 
-    mCameraMan = new OgreBites::SdkCameraMan(mCamera);   // create a default camera controller
+    mCameraMan = new OgreBites::SdkCameraMan(mCamera);   // create a default camera controller    
+    mCamera->setPolygonMode(Ogre::PM_WIREFRAME);
 }
 //-------------------------------------------------------------------------------------
 void SalamancerApplication::createFrameListener(void)
@@ -427,8 +428,7 @@ bool SalamancerApplication::keyReleased( const OIS::KeyEvent &arg )
     return true;
 }
 
-bool SalamancerApplication::mouseMoved( const OIS::MouseEvent &arg )
-{
+bool SalamancerApplication::mouseMoved( const OIS::MouseEvent &arg ) {
     if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
         this->renderHandler->mouseMoved(arg);
     } else {
