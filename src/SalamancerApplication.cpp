@@ -1,5 +1,4 @@
 #include "SalamancerApplication.h"
-#include "framework/terrain/PerlinTerrainGenerator.h"
 #include "framework/Position.h"
 #include "framework/meshers/GreedyMesher.h"
 #include "framework/World.h"
@@ -8,8 +7,7 @@
 #include "include/cef_app.h"
 #include "include/cef_client.h"
 #include "include/cef_render_handler.h"
-#include "cef/BrowserClient.h"
-#include "cef/RenderHandler.h"
+#include "cef/ClientHandler.h"
 #include "cef/App.h"
 
 #include <OIS/OIS.h>
@@ -28,7 +26,7 @@ using namespace Ogre;
 void createColourCube(void);
 
 //-------------------------------------------------------------------------------------
-SalamancerApplication::SalamancerApplication(void) 
+SalamancerApplication::SalamancerApplication(CefRefPtr<CefApp> cefApp) 
     : mRoot(0),
     mCamera(0),
     mSceneMgr(0),
@@ -42,7 +40,8 @@ SalamancerApplication::SalamancerApplication(void)
     mShutDown(false),
     mInputManager(0),
     mMouse(0),
-    mKeyboard(0)
+    mKeyboard(0),
+    cefApp(cefApp)
 {
 }
 //-------------------------------------------------------------------------------------
@@ -58,28 +57,8 @@ SalamancerApplication::~SalamancerApplication(void)
 }
 
 //---------SalamancerApplication----------------------------------------------------------------------------
-void SalamancerApplication::createScene(void)
-{
-    PerlinTerrainGenerator gen;
-    gen.init();
-    
-    for(int x = 0; x < World::XCHUNKS; x++){
-        for(int y = 0; y < World::YCHUNKS; y++){
-            for(int z = 0; z < World::ZCHUNKS; z++){
-                VolumePtr volume = gen.generate(Position(x, y, z));
-                GreedyMesher mesher;
-                VerticesAndFaces vf = mesher.mesh(volume);
-
-                ManualObject* manual = mSceneMgr->createManualObject("cc"+std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z));
-                MeshLoader::loadMesh(manual, vf);
-
-                SceneNode* thisSceneNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-                thisSceneNode->setPosition(x * Volume::XWIDTH,y * Volume::YWIDTH,z * Volume::ZWIDTH - 100);
-                thisSceneNode->attachObject(manual);
-            }
-        }
-    }
-    //mSceneMgr->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
+void SalamancerApplication::createScene(void) {
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
 }
 
 void SalamancerApplication::createBrowser(){
@@ -104,20 +83,18 @@ void SalamancerApplication::createBrowser(){
     
     overlay->show();
     
-    this->renderHandler = new RenderHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse);
-    
     this->windowInfo.SetAsWindowless(0, true);
     
-    this->browserClient = new BrowserClient(renderHandler);
+    this->clientHandler = new ClientHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse, this->mCamera, this->mSceneMgr, this->world);
     
-    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(),
+    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, this->clientHandler.get(),
             "file:///home/nathan/Projects/salamancer/dist/bin/hud/index.html",
             browserSettings, 
             NULL);
     
-    this->renderHandler->SetBrowser(this->browser);
+    this->clientHandler->SetBrowser(this->browser);
     
-    mRoot->addFrameListener(renderHandler);
+    mRoot->addFrameListener(this->clientHandler.get());
     
 }
 
@@ -138,6 +115,7 @@ int main(int argc, char *argv[])
     CefSettings settings;
     settings.remote_debugging_port = 9999;
     settings.windowless_rendering_enabled = true;
+    settings.no_sandbox = true;
     result = CefInitialize(args, settings, cefApp, nullptr);
     if (!result)
     {
@@ -145,7 +123,7 @@ int main(int argc, char *argv[])
     }
     
     // Create application object
-    SalamancerApplication app;
+    SalamancerApplication app(cefApp);
 
     try {
         app.go();
@@ -188,20 +166,22 @@ void SalamancerApplication::chooseSceneManager(void)
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
     mOverlaySystem = new Ogre::OverlaySystem();
     mSceneMgr->addRenderQueueListener(mOverlaySystem);
+    world = WorldPtr(new World(mSceneMgr));
 }
 //-------------------------------------------------------------------------------------
 void SalamancerApplication::createCamera(void)
 {
     // Create the camera
     mCamera = mSceneMgr->createCamera("PlayerCam");
-
+    
     // Position it at 500 in Z direction
     mCamera->setPosition(Ogre::Vector3(0,0,80));
     // Look back along -Z
     mCamera->lookAt(Ogre::Vector3(0,0,-300));
     mCamera->setNearClipDistance(5);
 
-    mCameraMan = new OgreBites::SdkCameraMan(mCamera);   // create a default camera controller
+    mCameraMan = new OgreBites::SdkCameraMan(mCamera);   // create a default camera controller    
+    mCamera->setPolygonMode(Ogre::PM_WIREFRAME);
 }
 //-------------------------------------------------------------------------------------
 void SalamancerApplication::createFrameListener(void)
@@ -409,8 +389,8 @@ bool SalamancerApplication::keyPressed( const OIS::KeyEvent &arg )
     } else if(arg.key == OIS::KC_LMENU || arg.key == OIS::KC_RMENU){
         this->toggleHud();
         return true;
-    } else if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible) {
-        return this->renderHandler->keyPressed(arg);
+    } else if(this->browser != 0 && this->hudVisible) {
+        return this->clientHandler->keyPressed(arg);
     } else {
         this->mCameraMan->injectKeyDown(arg);
     }
@@ -419,18 +399,17 @@ bool SalamancerApplication::keyPressed( const OIS::KeyEvent &arg )
 
 bool SalamancerApplication::keyReleased( const OIS::KeyEvent &arg )
 {
-    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
-        return this->renderHandler->keyReleased(arg);
+    if(this->browser != 0  && this->hudVisible){
+        return this->clientHandler->keyReleased(arg);
     } else {
         this->mCameraMan->injectKeyUp(arg);
     }
     return true;
 }
 
-bool SalamancerApplication::mouseMoved( const OIS::MouseEvent &arg )
-{
-    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
-        this->renderHandler->mouseMoved(arg);
+bool SalamancerApplication::mouseMoved( const OIS::MouseEvent &arg ) {
+    if(this->browser != 0  && this->hudVisible){
+        this->clientHandler->mouseMoved(arg);
     } else {
         this->mCameraMan->injectMouseMove(arg);
     }
@@ -439,8 +418,8 @@ bool SalamancerApplication::mouseMoved( const OIS::MouseEvent &arg )
 
 bool SalamancerApplication::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if(this->browser != 0 && this->renderHandler != 0  && this->hudVisible){
-        return this->renderHandler->mousePressed(arg, id);
+    if(this->browser != 0  && this->hudVisible){
+        return this->clientHandler->mousePressed(arg, id);
     } else {
         this->mCameraMan->injectMouseDown(arg, id);
     }
@@ -450,8 +429,8 @@ bool SalamancerApplication::mousePressed( const OIS::MouseEvent &arg, OIS::Mouse
 
 bool SalamancerApplication::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
-        return this->renderHandler->mouseReleased(arg, id);
+    if(this->browser != 0 && this->hudVisible){
+        return this->clientHandler->mouseReleased(arg, id);
     } else {
         this->mCameraMan->injectMouseUp(arg, id);
     }

@@ -8,12 +8,35 @@
 #ifndef WORLD_H
 #define	WORLD_H
 
+#include <memory>
+#include <unordered_map>
+
+#include "Position.h"
+#include "Volume.h"
+
+namespace Ogre {
+    class SceneManager;
+    class ManualObject;
+}
+
 class World {
+private:
+    Ogre::SceneManager *sceneManager;
+    
+    std::unordered_map<Position, VolumePtr> volumes;
+    std::unordered_map<Position, Ogre::ManualObject*> manuals;
+    
+    VolumePtr findOrCreateVolume(Position p);
+    Position toVolumePosition(Position p);
+    Position toVoxelPosition(Position p);
+    VolumePtr createVolume(Position volumePosition);
+    Ogre::ManualObject* findOrCreateManualObject(Position volumePosition);
 public:
-    static const int XCHUNKS = 100;
-    static const int YCHUNKS = 1;
-    static const int ZCHUNKS = 100;
+    World(Ogre::SceneManager* sceneManager);
+    void createVoxel(int type, int x, int y, int z);
 };
+
+typedef std::shared_ptr<World> WorldPtr;
 
 #endif	/* WORLD_H */
 

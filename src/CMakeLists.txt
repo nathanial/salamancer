@@ -1,11 +1,14 @@
 include_directories(${PROJECT_SRC_DIR}/src)
 add_library(src 
     SalamancerApplication.cpp
-    cef/RenderHandler.cpp
+    cef/ClientHandler.cpp
+    cef/AutoFunctionForwarder.cpp
+    cef/handlers/ToggleWireframeHandler.cpp
+    cef/handlers/CreateVoxelHandler.cpp
     cef/App.cpp
+    framework/World.cpp
+    framework/Volume.cpp
     framework/meshers/GreedyMesher.cpp
-    framework/terrain/PerlinTerrainGenerator.cpp
-    framework/terrain/noiseutils.cpp
     framework/MeshLoader.cpp
     ois/linux/CustomLinuxKeyboard.cpp
     ois/linux/CustomLinuxMouse.cpp

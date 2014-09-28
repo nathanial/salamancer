@@ -2,7 +2,7 @@
 #define __SalamancerApplication_h_
 
 #include "framework/Volume.h"
-#include "cef/BrowserClient.h"
+#include "cef/ClientHandler.h"
 #include "include/cef_app.h"
 #include "include/cef_client.h"
 #include "include/cef_render_handler.h"
@@ -24,8 +24,10 @@
 #include <SdkTrays.h>
 #include <SdkCameraMan.h>
 
-#include "cef/RenderHandler.h"
 #include "ois/linux/CustomLinuxInputManager.h"
+
+#include "cef/App.h"
+#include "framework/World.h"
 
 
 class SalamancerApplication : 
@@ -36,7 +38,7 @@ class SalamancerApplication :
         OgreBites::SdkTrayListener
 {
 public:
-    SalamancerApplication(void);
+    SalamancerApplication(CefRefPtr<CefApp> cefApp);
     ~SalamancerApplication(void);
     
     void go(void);
@@ -76,14 +78,15 @@ private:
     
     void toggleHud();
     
-        
+    
     CefRefPtr<CefBrowser> browser;
-    CefRefPtr<BrowserClient> browserClient;
+    CefRefPtr<ClientHandler> clientHandler;
+    CefRefPtr<CefApp> cefApp;
     
     CefWindowInfo windowInfo;
     CefBrowserSettings browserSettings;
     
-    RenderHandler *renderHandler;
+    WorldPtr world;
     Ogre::Root *mRoot;
     Ogre::Camera* mCamera;
     Ogre::SceneManager* mSceneMgr;
