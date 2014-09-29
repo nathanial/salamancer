@@ -10,6 +10,7 @@
 #include "include/cef_render_handler.h"
 #include "cef/BrowserClient.h"
 #include "cef/RenderHandler.h"
+#include "cef/LifeSpanHandler.h"
 #include "cef/App.h"
 
 #include <OIS/OIS.h>
@@ -109,7 +110,7 @@ void SalamancerApplication::createBrowser(){
     
     this->windowInfo.SetAsWindowless(0, true);
     
-    this->browserClient = new BrowserClient(renderHandler);
+    this->browserClient = new BrowserClient(renderHandler, new LifeSpanHandler());
     
     this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(),
             "file:///home/nathan/Projects/salamancer/dist/bin/hud/index.html",
@@ -139,6 +140,7 @@ int main(int argc, char *argv[])
     CefSettings settings;
     settings.remote_debugging_port = 9999;
     settings.windowless_rendering_enabled = true;
+    settings.no_sandbox = true;
     result = CefInitialize(args, settings, cefApp, nullptr);
     if (!result)
     {

@@ -10,17 +10,24 @@
 
 #include "include/cef_client.h"
 #include "RenderHandler.h"
+#include "LifeSpanHandler.h"
 
 class BrowserClient : public CefClient {
 public: 
-    BrowserClient(RenderHandler *renderHandler) : renderHandler(renderHandler) {
+    BrowserClient(RenderHandler *renderHandler, LifeSpanHandler *lifespanHandler) : renderHandler(renderHandler), lifespanHandler(lifespanHandler) {
     }
     
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() {
         return renderHandler;
     }
     
+    virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() {
+        return lifespanHandler;
+    }
+
+    
     CefRefPtr<CefRenderHandler> renderHandler;
+    CefRefPtr<CefLifeSpanHandler> lifespanHandler;
     
     IMPLEMENT_REFCOUNTING(BrowserClient);
 };

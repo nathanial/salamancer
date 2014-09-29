@@ -14,6 +14,7 @@
 void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefFrame> frame,
                            CefRefPtr<CefV8Context> context) {
+    
     std::cout << "On Context Created" << std::endl;
     CefRefPtr<CefV8Value> object = context->GetGlobal();
 
