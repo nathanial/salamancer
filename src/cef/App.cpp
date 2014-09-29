@@ -5,6 +5,7 @@
  * Created on July 29, 2014, 1:13 AM
  */
 
+#include "App.h"
 #include "include/cef_client.h"
 #include "functions/CreateVoxelFunction.h"
 #include "functions/ToggleWireframeFunction.h"

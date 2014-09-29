@@ -1,4 +1,6 @@
 
+#include "include/cef_app.h"
+#include "include/cef_render_process_handler.h"
 #include "cef/functions/ToggleWireframeFunction.h"
 
 API::ToggleWireframeFunction::ToggleWireframeFunction(Ogre::Camera* camera) : mCamera(camera) {}
@@ -28,6 +30,6 @@ bool API::ToggleWireframeFunction::Execute(
     
 }
 
-void ToggleWireframeFunction::ToggleWireframe(bool enabled){
+void API::ToggleWireframeFunction::ToggleWireframe(bool enabled){
     
 }
