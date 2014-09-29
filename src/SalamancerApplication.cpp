@@ -8,9 +8,7 @@
 #include "include/cef_app.h"
 #include "include/cef_client.h"
 #include "include/cef_render_handler.h"
-#include "cef/BrowserClient.h"
-#include "cef/RenderHandler.h"
-#include "cef/LifeSpanHandler.h"
+#include "cef/handlers/ClientHandler.h"
 #include "cef/App.h"
 
 #include <OIS/OIS.h>
@@ -106,20 +104,18 @@ void SalamancerApplication::createBrowser(){
     
     overlay->show();
     
-    this->renderHandler = new RenderHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse);
-    
     this->windowInfo.SetAsWindowless(0, true);
     
-    this->browserClient = new BrowserClient(renderHandler, new LifeSpanHandler());
+    this->clientHandler = new ClientHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse);
     
-    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, browserClient.get(),
+    this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, this->clientHandler.get(),
             "file:///home/nathan/Projects/salamancer/dist/bin/hud/index.html",
             browserSettings, 
             NULL);
     
-    this->renderHandler->SetBrowser(this->browser);
+    this->clientHandler->SetBrowser(this->browser);
     
-    mRoot->addFrameListener(renderHandler);
+    mRoot->addFrameListener(this->clientHandler.get());
     
 }
 
@@ -415,8 +411,8 @@ bool SalamancerApplication::keyPressed( const OIS::KeyEvent &arg )
     } else if(arg.key == OIS::KC_LMENU || arg.key == OIS::KC_RMENU){
         this->toggleHud();
         return true;
-    } else if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible) {
-        return this->renderHandler->keyPressed(arg);
+    } else if(this->browser != 0 && this->hudVisible) {
+        return this->clientHandler->keyPressed(arg);
     } else {
         this->mCameraMan->injectKeyDown(arg);
     }
@@ -425,8 +421,8 @@ bool SalamancerApplication::keyPressed( const OIS::KeyEvent &arg )
 
 bool SalamancerApplication::keyReleased( const OIS::KeyEvent &arg )
 {
-    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
-        return this->renderHandler->keyReleased(arg);
+    if(this->browser != 0  && this->hudVisible){
+        return this->clientHandler->keyReleased(arg);
     } else {
         this->mCameraMan->injectKeyUp(arg);
     }
@@ -434,8 +430,8 @@ bool SalamancerApplication::keyReleased( const OIS::KeyEvent &arg )
 }
 
 bool SalamancerApplication::mouseMoved( const OIS::MouseEvent &arg ) {
-    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
-        this->renderHandler->mouseMoved(arg);
+    if(this->browser != 0  && this->hudVisible){
+        this->clientHandler->mouseMoved(arg);
     } else {
         this->mCameraMan->injectMouseMove(arg);
     }
@@ -444,8 +440,8 @@ bool SalamancerApplication::mouseMoved( const OIS::MouseEvent &arg ) {
 
 bool SalamancerApplication::mousePressed( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if(this->browser != 0 && this->renderHandler != 0  && this->hudVisible){
-        return this->renderHandler->mousePressed(arg, id);
+    if(this->browser != 0  && this->hudVisible){
+        return this->clientHandler->mousePressed(arg, id);
     } else {
         this->mCameraMan->injectMouseDown(arg, id);
     }
@@ -455,8 +451,8 @@ bool SalamancerApplication::mousePressed( const OIS::MouseEvent &arg, OIS::Mouse
 
 bool SalamancerApplication::mouseReleased( const OIS::MouseEvent &arg, OIS::MouseButtonID id )
 {
-    if(this->browser != 0 && this->renderHandler != 0 && this->hudVisible){
-        return this->renderHandler->mouseReleased(arg, id);
+    if(this->browser != 0 && this->hudVisible){
+        return this->clientHandler->mouseReleased(arg, id);
     } else {
         this->mCameraMan->injectMouseUp(arg, id);
     }

@@ -2,7 +2,7 @@
 #define __SalamancerApplication_h_
 
 #include "framework/Volume.h"
-#include "cef/BrowserClient.h"
+#include "cef/handlers/ClientHandler.h"
 #include "include/cef_app.h"
 #include "include/cef_client.h"
 #include "include/cef_render_handler.h"
@@ -24,7 +24,6 @@
 #include <SdkTrays.h>
 #include <SdkCameraMan.h>
 
-#include "cef/RenderHandler.h"
 #include "ois/linux/CustomLinuxInputManager.h"
 
 #include "cef/App.h"
@@ -80,13 +79,12 @@ private:
     
         
     CefRefPtr<CefBrowser> browser;
-    CefRefPtr<BrowserClient> browserClient;
+    CefRefPtr<ClientHandler> clientHandler;
     CefRefPtr<CefApp> cefApp;
     
     CefWindowInfo windowInfo;
     CefBrowserSettings browserSettings;
     
-    RenderHandler *renderHandler;
     Ogre::Root *mRoot;
     Ogre::Camera* mCamera;
     Ogre::SceneManager* mSceneMgr;

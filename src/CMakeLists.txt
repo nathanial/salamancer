@@ -1,8 +1,7 @@
 include_directories(${PROJECT_SRC_DIR}/src)
 add_library(src 
     SalamancerApplication.cpp
-    cef/RenderHandler.cpp
-    cef/LifeSpanHandler.cpp
+    cef/handlers/ClientHandler.cpp
     cef/functions/ToggleWireframeHandler.cpp
     cef/AppContext.cpp
     cef/App.cpp
