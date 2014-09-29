@@ -3,8 +3,7 @@ add_library(src
     SalamancerApplication.cpp
     cef/RenderHandler.cpp
     cef/LifeSpanHandler.cpp
-    cef/functions/ToggleWireframeFunction.cpp
-    cef/functions/CreateVoxelFunction.cpp
+    cef/functions/ToggleWireframeHandler.cpp
     cef/AppContext.cpp
     cef/App.cpp
     framework/meshers/GreedyMesher.cpp
