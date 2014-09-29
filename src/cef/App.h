@@ -10,17 +10,21 @@
 
 #include "include/cef_app.h"
 #include "include/cef_render_process_handler.h"
+#include "AppContext.h"
 
 namespace Ogre {
     class Camera;
 }
 
 class App : public CefApp, public CefRenderProcessHandler  {
-    public:
-        
-    Ogre::Camera* mCamera;
-        
-        
+private:
+    API::AppContextPtr context;
+public:
+    
+    App() : context(new API::AppContext()) {}
+    
+    void SetCamera(Ogre::Camera *camera);
+    
     virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() OVERRIDE {
         return this;
     }

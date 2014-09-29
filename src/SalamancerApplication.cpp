@@ -28,7 +28,7 @@ using namespace Ogre;
 void createColourCube(void);
 
 //-------------------------------------------------------------------------------------
-SalamancerApplication::SalamancerApplication(void) 
+SalamancerApplication::SalamancerApplication(CefRefPtr<CefApp> cefApp) 
     : mRoot(0),
     mCamera(0),
     mSceneMgr(0),
@@ -42,7 +42,8 @@ SalamancerApplication::SalamancerApplication(void)
     mShutDown(false),
     mInputManager(0),
     mMouse(0),
-    mKeyboard(0)
+    mKeyboard(0),
+    cefApp(cefApp)
 {
 }
 //-------------------------------------------------------------------------------------
@@ -145,7 +146,7 @@ int main(int argc, char *argv[])
     }
     
     // Create application object
-    SalamancerApplication app;
+    SalamancerApplication app(cefApp);
 
     try {
         app.go();
@@ -194,6 +195,8 @@ void SalamancerApplication::createCamera(void)
 {
     // Create the camera
     mCamera = mSceneMgr->createCamera("PlayerCam");
+    
+    ((App*)cefApp.get())->SetCamera(mCamera);
 
     // Position it at 500 in Z direction
     mCamera->setPosition(Ogre::Vector3(0,0,80));

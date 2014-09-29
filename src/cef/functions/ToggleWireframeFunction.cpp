@@ -1,9 +1,11 @@
 
+#include <OGRE/OgreCamera.h>
+
 #include "include/cef_app.h"
 #include "include/cef_render_process_handler.h"
 #include "cef/functions/ToggleWireframeFunction.h"
 
-API::ToggleWireframeFunction::ToggleWireframeFunction(Ogre::Camera* camera) : mCamera(camera) {}
+API::ToggleWireframeFunction::ToggleWireframeFunction(API::AppContextPtr context) : context(context) {}
 
 bool API::ToggleWireframeFunction::Execute(
         const CefString& name,
@@ -24,12 +26,18 @@ bool API::ToggleWireframeFunction::Execute(
 
         bool enabled = arguments[0]->GetBoolValue();
 
-        this->ToggleWireframe(enabled);
-        return true;
+        Ogre::Camera* camera = context->GetCamera();
+        if (camera != 0) {
+            if (enabled) {
+                camera->setPolygonMode(Ogre::PM_WIREFRAME);
+            } else {
+                camera->setPolygonMode(Ogre::PM_SOLID);
+            }
+            return true;
+        } else {
+            exception = "Camera not set";
+            return false;
+        }
     }
-    
-}
-
-void API::ToggleWireframeFunction::ToggleWireframe(bool enabled){
     
 }

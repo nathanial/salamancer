@@ -4,6 +4,7 @@ add_library(src
     cef/RenderHandler.cpp
     cef/functions/ToggleWireframeFunction.cpp
     cef/functions/CreateVoxelFunction.cpp
+    cef/AppContext.cpp
     cef/App.cpp
     framework/meshers/GreedyMesher.cpp
     framework/terrain/PerlinTerrainGenerator.cpp

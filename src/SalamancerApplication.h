@@ -27,6 +27,8 @@
 #include "cef/RenderHandler.h"
 #include "ois/linux/CustomLinuxInputManager.h"
 
+#include "cef/App.h"
+
 
 class SalamancerApplication : 
         public Ogre::FrameListener, 
@@ -36,7 +38,7 @@ class SalamancerApplication :
         OgreBites::SdkTrayListener
 {
 public:
-    SalamancerApplication(void);
+    SalamancerApplication(CefRefPtr<CefApp> cefApp);
     ~SalamancerApplication(void);
     
     void go(void);
@@ -79,6 +81,7 @@ private:
         
     CefRefPtr<CefBrowser> browser;
     CefRefPtr<BrowserClient> browserClient;
+    CefRefPtr<CefApp> cefApp;
     
     CefWindowInfo windowInfo;
     CefBrowserSettings browserSettings;
