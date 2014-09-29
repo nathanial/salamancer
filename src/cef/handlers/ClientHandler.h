@@ -27,7 +27,7 @@
 #include <OISKeyboard.h>
 #include <OISMouse.h>
 
-class ClientHandler : public CefClient, public CefLifeSpanHandler, public CefRenderHandler, public CefRenderProcessHandler , public Ogre::FrameListener{
+class ClientHandler : public CefClient, public CefLifeSpanHandler, public CefRenderHandler, public Ogre::FrameListener{
 private:
     
     CefRefPtr<API::ToggleWireframeHandler> _toggleWireframeHandler;
@@ -58,6 +58,12 @@ public:
     virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE {
         return this;
     }
+    
+    virtual bool OnProcessMessageReceived(
+            CefRefPtr<CefBrowser> browser,
+            CefProcessId source_process,
+            CefRefPtr<CefProcessMessage> message) OVERRIDE;
+    
     
     virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
     bool frameStarted(const Ogre::FrameEvent &evt) OVERRIDE;

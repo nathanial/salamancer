@@ -39,9 +39,17 @@ namespace {
     };
 }
 
+bool ClientHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) {
+    if (_messageRouter->OnProcessMessageReceived(browser, source_process, message)) {
+        return true;
+    }
+}
+
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     // Create the browser-side router for query handling.
     CefMessageRouterConfig config;
+    config.js_query_function = "cefQuery";
+    config.js_cancel_function = "cefQueryCancel";
     _messageRouter = CefMessageRouterBrowserSide::Create(config);
 
     _messageRouter->AddHandler(_toggleWireframeHandler, false);
