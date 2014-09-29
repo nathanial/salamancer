@@ -10,6 +10,7 @@
 
 #include "include/cef_app.h"
 #include "include/cef_render_process_handler.h"
+#include "include/wrapper/cef_message_router.h"
 #include "AppContext.h"
 
 namespace Ogre {
@@ -19,6 +20,8 @@ namespace Ogre {
 class App : public CefApp, public CefRenderProcessHandler  {
 private:
     API::AppContextPtr context;
+    CefRefPtr<CefMessageRouterRendererSide> messageRouter;
+    
 public:
     
     App() : context(new API::AppContext()) {}
@@ -28,10 +31,14 @@ public:
     virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() OVERRIDE {
         return this;
     }
-    
+
+    virtual void OnWebKitInitialized() OVERRIDE;
     virtual void OnContextCreated(CefRefPtr<CefBrowser> browser,
                               CefRefPtr<CefFrame> frame,
                               CefRefPtr<CefV8Context> context) OVERRIDE;
+    virtual void OnContextReleased(CefRefPtr<CefBrowser> browser,
+            CefRefPtr<CefFrame> frame,
+            CefRefPtr<CefV8Context> context) OVERRIDE;
     
     IMPLEMENT_REFCOUNTING(App);
 };

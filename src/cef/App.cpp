@@ -10,10 +10,22 @@
 #include "functions/ToggleWireframeHandler.h"
 #include <iostream>
 
+void App::OnWebKitInitialized() {
+    // Create the renderer-side router for query handling.
+    CefMessageRouterConfig config;
+    messageRouter = CefMessageRouterRendererSide::Create(config);
+}
+
 void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
-                           CefRefPtr<CefFrame> frame,
-                           CefRefPtr<CefV8Context> context) {
-    
+        CefRefPtr<CefFrame> frame,
+        CefRefPtr<CefV8Context> context) {
+    messageRouter->OnContextCreated(browser, frame, context);
+}
+
+void App:: OnContextReleased(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
+        CefRefPtr<CefV8Context> context) {
+    messageRouter->OnContextReleased(browser, frame, context);
 }
 
 void App::SetCamera(Ogre::Camera* camera){
