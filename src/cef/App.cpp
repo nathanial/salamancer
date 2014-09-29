@@ -5,8 +5,9 @@
  * Created on July 29, 2014, 1:13 AM
  */
 
-#include "App.h"
-#include "API.h"
+#include "include/cef_client.h"
+#include "functions/CreateVoxelFunction.h"
+#include "functions/ToggleWireframeFunction.h"
 #include <iostream>
 
     
@@ -21,8 +22,11 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
                        CefV8Value::CreateFunction("createVoxel", createVoxelHandler),
                        V8_PROPERTY_ATTRIBUTE_NONE);
     
+    if(this->mCamera == nullptr){
+        throw "Camera must be set before the context can be created";
+    }
     
-    CefRefPtr<CefV8Handler> toggleWireframeHandler = new API::ToggleWireframeFunction();
+    CefRefPtr<CefV8Handler> toggleWireframeHandler = new API::ToggleWireframeFunction(this->mCamera);
     object->SetValue("toggleWireframe", 
             CefV8Value::CreateFunction("toggleWireframe", toggleWireframeHandler), 
             V8_PROPERTY_ATTRIBUTE_NONE);
