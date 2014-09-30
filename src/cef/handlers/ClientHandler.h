@@ -46,9 +46,9 @@ private:
         
 public:
     
-    ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse)
+    ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera)
     : renderTexture(texture), window(window), mouse(mouse), keyTimer(new Ogre::Timer()) {
-        _toggleWireframeHandler = new API::ToggleWireframeHandler();
+        _toggleWireframeHandler = new API::ToggleWireframeHandler(camera);
     }
 
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE {

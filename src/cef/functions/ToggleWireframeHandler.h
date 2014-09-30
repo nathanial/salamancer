@@ -12,12 +12,18 @@
 #include "cef/AppContext.h"
 #include "include/wrapper/cef_message_router.h"
 
+namespace Ogre {
+    class Camera;
+}
+
 namespace API {
     class ToggleWireframeHandler : public CefMessageRouterBrowserSide::Handler {
+    private:
+        Ogre::Camera *camera;
 
     public:
 
-        ToggleWireframeHandler();
+        ToggleWireframeHandler(Ogre::Camera *camera);
 
         virtual bool OnQuery(CefRefPtr<CefBrowser> browser,
                 CefRefPtr<CefFrame> frame,

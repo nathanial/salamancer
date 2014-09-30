@@ -5,7 +5,8 @@
 #include "include/cef_render_process_handler.h"
 #include "cef/functions/ToggleWireframeHandler.h"
 
-API::ToggleWireframeHandler::ToggleWireframeHandler() 
+API::ToggleWireframeHandler::ToggleWireframeHandler(Ogre::Camera *camera) 
+: camera(camera)
 {
 }
 
@@ -17,8 +18,16 @@ bool API::ToggleWireframeHandler::OnQuery(
         bool persistent,
         CefRefPtr<Callback> callback)
 {
-    
-    std::cout << "Invoking Toggle Wireframe Handler" << std::endl;
+    if(request.ToString() == "enableWireframe"){
+        this->camera->setPolygonMode(Ogre::PM_WIREFRAME);
+        return true;
+    } else if (request.ToString() == "disableWireframe"){
+        this->camera->setPolygonMode(Ogre::PM_SOLID);
+        return true;
+    } else {
+        std::cout << "Didn't recognize: " << request.ToString() << std::endl;
+        return false;
+    }
 //
 //    if (name == "toggleWireframe") {
 //        if (arguments.size() < 1) {

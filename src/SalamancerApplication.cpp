@@ -106,7 +106,7 @@ void SalamancerApplication::createBrowser(){
     
     this->windowInfo.SetAsWindowless(0, true);
     
-    this->clientHandler = new ClientHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse);
+    this->clientHandler = new ClientHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse, this->mCamera);
     
     this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, this->clientHandler.get(),
             "file:///home/nathan/Projects/salamancer/dist/bin/hud/index.html",
