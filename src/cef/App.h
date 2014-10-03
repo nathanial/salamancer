@@ -22,8 +22,6 @@ public:
     
     App() {}
     
-    void SetCamera(Ogre::Camera *camera);
-    
     virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() OVERRIDE {
         return this;
     }

@@ -194,8 +194,6 @@ void SalamancerApplication::createCamera(void)
     // Create the camera
     mCamera = mSceneMgr->createCamera("PlayerCam");
     
-    ((App*)cefApp.get())->SetCamera(mCamera);
-
     // Position it at 500 in Z direction
     mCamera->setPosition(Ogre::Vector3(0,0,80));
     // Look back along -Z

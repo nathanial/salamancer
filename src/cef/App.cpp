@@ -23,6 +23,7 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
     
     AutoFunctionDescription createVoxelDescription;
     createVoxelDescription.name = "createVoxel";
+    createVoxelDescription.arguments = {AFA_INT, AFA_INT, AFA_INT, AFA_INT};
 
     this->CreateAutoFunction(browser, frame, context, toggleWireframeDescription);
     this->CreateAutoFunction(browser, frame, context, createVoxelDescription);
@@ -31,9 +32,6 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
 void App:: OnContextReleased(CefRefPtr<CefBrowser> browser,
         CefRefPtr<CefFrame> frame,
         CefRefPtr<CefV8Context> context) {
-}
-
-void App::SetCamera(Ogre::Camera* camera){
 }
 
 void App::CreateAutoFunction(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context, AutoFunctionDescription description) {

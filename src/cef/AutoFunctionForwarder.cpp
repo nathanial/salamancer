@@ -38,7 +38,7 @@ bool AutoFunctionForwarder::Execute(
                             exception = "Argument " + std::to_string(i) + "  must be an integer";
                             return true;
                         }
-                        msgArgs->SetInt(i+1, arguments[i]->GetBoolValue());
+                        msgArgs->SetInt(i+1, arguments[i]->GetIntValue());
                         break;
                     case AFA_STRING:
                         if(!arguments[i]->IsString()){
