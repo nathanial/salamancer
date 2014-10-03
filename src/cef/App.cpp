@@ -20,8 +20,12 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
     AutoFunctionDescription toggleWireframeDescription;
     toggleWireframeDescription.name = "toggleWireframe";
     toggleWireframeDescription.arguments.push_back(AFA_BOOL);
+    
+    AutoFunctionDescription createVoxelDescription;
+    createVoxelDescription.name = "createVoxel";
 
     this->CreateAutoFunction(browser, frame, context, toggleWireframeDescription);
+    this->CreateAutoFunction(browser, frame, context, createVoxelDescription);
 }
 
 void App:: OnContextReleased(CefRefPtr<CefBrowser> browser,

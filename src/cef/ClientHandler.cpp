@@ -15,6 +15,7 @@
 #include "include/cef_client.h"
 #include "handlers/ForwardedFunctionHandler.h"
 #include "handlers/ToggleWireframeHandler.h"
+#include "handlers/CreateVoxelHandler.h"
 
 #include <OISEvents.h>
 #include <OISInputManager.h>
@@ -44,8 +45,11 @@ namespace {
 ClientHandler::ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera)
 : renderTexture(texture), window(window), mouse(mouse), keyTimer(new Ogre::Timer()), context(new AppContext()) {
     this->context->camera = camera;
-    ForwardedFunctionHandlerPtr handler(new ToggleWireframeHandler(context));
-    functionHandlers.insert({handler->GetFunctionName(), handler});
+    ForwardedFunctionHandlerPtr toggleWireframe(new ToggleWireframeHandler(context));
+    ForwardedFunctionHandlerPtr createVoxelHandler(new CreateVoxelHandler(context));
+    functionHandlers.insert({toggleWireframe->GetFunctionName(), toggleWireframe});
+    functionHandlers.insert({createVoxelHandler->GetFunctionName(), createVoxelHandler});
+    
 }
 
 

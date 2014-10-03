@@ -4,6 +4,7 @@ add_library(src
     cef/ClientHandler.cpp
     cef/AutoFunctionForwarder.cpp
     cef/handlers/ToggleWireframeHandler.cpp
+    cef/handlers/CreateVoxelHandler.cpp
     cef/App.cpp
     framework/meshers/GreedyMesher.cpp
     framework/terrain/PerlinTerrainGenerator.cpp
