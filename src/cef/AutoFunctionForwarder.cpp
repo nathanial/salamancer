@@ -16,6 +16,17 @@ bool AutoFunctionForwarder::Execute(
         CefRefPtr<CefV8Value>& retval, 
         CefString& exception)
 {
-    std::cout << "Auto Function Forwarder " << name.ToString() << std::endl;
+    if (name == this->functionDescription.name) {
+        std::cout << "Auto Function Forwarder " << name.ToString() << std::endl;
+        CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create("autoForward");
+        if (arguments.size() != 1 || !arguments.at(0)->IsBool()) {
+            exception = "Invalid arguments to function";
+        } else {
+            msg->GetArgumentList()->SetBool(0, arguments.at(0)->GetBoolValue());
+            this->browser->SendProcessMessage(PID_RENDERER, msg);
+        }
+        return true;
+    }
+    
     return false;
 }
