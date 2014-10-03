@@ -10,8 +10,7 @@
 
 #include "include/cef_app.h"
 #include "include/cef_render_process_handler.h"
-#include "include/wrapper/cef_message_router.h"
-#include "AppContext.h"
+#include "AutoFunctionForwarder.h"
 
 namespace Ogre {
     class Camera;
@@ -19,12 +18,9 @@ namespace Ogre {
 
 class App : public CefApp, public CefRenderProcessHandler  {
 private:
-    API::AppContextPtr context;
-    CefRefPtr<CefMessageRouterRendererSide> messageRouter;
-    
 public:
     
-    App() : context(new API::AppContext()) {}
+    App() {}
     
     void SetCamera(Ogre::Camera *camera);
     
@@ -39,6 +35,8 @@ public:
     virtual void OnContextReleased(CefRefPtr<CefBrowser> browser,
             CefRefPtr<CefFrame> frame,
             CefRefPtr<CefV8Context> context) OVERRIDE;
+
+    void CreateAutoFunction(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context, AutoFunctionDescription description);
     
     IMPLEMENT_REFCOUNTING(App);
 };

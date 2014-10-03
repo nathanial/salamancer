@@ -13,8 +13,6 @@
 #include "include/cef_render_handler.h"
 #include "include/cef_render_process_handler.h"
 
-#include "cef/functions/ToggleWireframeHandler.h"
-
 #include <OgreEntity.h>
 #include <OgreHardwarePixelBuffer.h>
 #include <OgreMeshManager.h>
@@ -29,10 +27,6 @@
 
 class ClientHandler : public CefClient, public CefLifeSpanHandler, public CefRenderHandler, public Ogre::FrameListener{
 private:
-    
-    CefRefPtr<API::ToggleWireframeHandler> _toggleWireframeHandler;
-    CefRefPtr<CefMessageRouterBrowserSide> _messageRouter;
-
     Ogre::TexturePtr renderTexture;
     OIS::Mouse* mouse;
     Ogre::RenderWindow *window;
@@ -48,7 +42,6 @@ public:
     
     ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera)
     : renderTexture(texture), window(window), mouse(mouse), keyTimer(new Ogre::Timer()) {
-        _toggleWireframeHandler = new API::ToggleWireframeHandler(camera);
     }
 
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE {
