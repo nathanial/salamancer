@@ -16,7 +16,8 @@
 enum AutoFunctionArg {
     AFA_BOOL,
     AFA_INT,
-    AFA_STRING
+    AFA_STRING,
+    AFA_DOUBLE
 };
 
 class AutoFunctionDescription {

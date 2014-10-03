@@ -10,8 +10,13 @@
 
 #include <memory>
 
+namespace Ogre {
+    class Camera;
+}
+
 class AppContext {
-    
+public:
+    Ogre::Camera *camera;
 };
 
 typedef std::shared_ptr<AppContext> AppContextPtr;
