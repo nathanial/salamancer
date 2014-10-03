@@ -16,14 +16,21 @@
 
 namespace Ogre {
     class SceneManager;
+    class ManualObject;
 }
 
 class World {
 private:
     Ogre::SceneManager *sceneManager;
+    
     std::unordered_map<Position, VolumePtr> volumes;
+    std::unordered_map<Position, Ogre::ManualObject*> manuals;
+    
     VolumePtr findOrCreateVolume(Position p);
     Position toVolumePosition(Position p);
+    Position toVoxelPosition(Position p);
+    VolumePtr createVolume(Position volumePosition);
+    Ogre::ManualObject* findOrCreateManualObject(Position volumePosition);
 public:
     World(Ogre::SceneManager* sceneManager);
     void createVoxel(int type, int x, int y, int z);

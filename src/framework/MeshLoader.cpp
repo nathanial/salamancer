@@ -102,6 +102,7 @@ float textureYScale(Vertex v1, Vertex v2, Vertex v3, Vertex v4){
 
 void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
     const float sqrt13 = 0.577350269f; /* sqrt(1/3) */
+    manual->clear();
     manual->begin("Dirt", RenderOperation::OT_TRIANGLE_LIST);
     Vertices vertices = std::get<0>(vf);
     

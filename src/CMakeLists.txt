@@ -7,6 +7,7 @@ add_library(src
     cef/handlers/CreateVoxelHandler.cpp
     cef/App.cpp
     framework/World.cpp
+    framework/Volume.cpp
     framework/meshers/GreedyMesher.cpp
     framework/MeshLoader.cpp
     ois/linux/CustomLinuxKeyboard.cpp

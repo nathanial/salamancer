@@ -10,12 +10,16 @@
 
 #include <memory>
 
+#include "Position.h"
+
 class Volume {
 public:
     static const int XWIDTH = 32;
     static const int YWIDTH = 32;
     static const int ZWIDTH = 32;
     unsigned char voxels[XWIDTH][YWIDTH][ZWIDTH];
+    
+    void setVoxel(Position p, int type);
 };
 
 typedef std::shared_ptr<Volume> VolumePtr;
