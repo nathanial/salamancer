@@ -3,6 +3,7 @@ add_library(src
     SalamancerApplication.cpp
     cef/ClientHandler.cpp
     cef/AutoFunctionForwarder.cpp
+    cef/handlers/ToggleWireframeHandler.cpp
     cef/App.cpp
     framework/meshers/GreedyMesher.cpp
     framework/terrain/PerlinTerrainGenerator.cpp

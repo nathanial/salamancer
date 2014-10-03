@@ -12,6 +12,8 @@
 #include "include/cef_client.h"
 #include "include/cef_render_handler.h"
 #include "include/cef_render_process_handler.h"
+#include "handlers/ForwardedFunctionHandler.h"
+#include "AppContext.h"
 
 #include <OgreEntity.h>
 #include <OgreHardwarePixelBuffer.h>
@@ -24,9 +26,13 @@
 #include <OISInputManager.h>
 #include <OISKeyboard.h>
 #include <OISMouse.h>
+#include <vector>
+#include <map>
 
 class ClientHandler : public CefClient, public CefLifeSpanHandler, public CefRenderHandler, public Ogre::FrameListener{
 private:
+    AppContextPtr context;
+    std::map<std::string, ForwardedFunctionHandlerPtr> functionHandlers;
     Ogre::TexturePtr renderTexture;
     OIS::Mouse* mouse;
     Ogre::RenderWindow *window;
@@ -40,9 +46,7 @@ private:
         
 public:
     
-    ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera)
-    : renderTexture(texture), window(window), mouse(mouse), keyTimer(new Ogre::Timer()) {
-    }
+    ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera);
 
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE {
         return this;

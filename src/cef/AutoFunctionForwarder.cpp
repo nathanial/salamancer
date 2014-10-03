@@ -22,7 +22,8 @@ bool AutoFunctionForwarder::Execute(
         if (arguments.size() != 1 || !arguments.at(0)->IsBool()) {
             exception = "Invalid arguments to function";
         } else {
-            msg->GetArgumentList()->SetBool(0, arguments.at(0)->GetBoolValue());
+            msg->GetArgumentList()->SetString(0, this->functionDescription.name);
+            msg->GetArgumentList()->SetBool(1, arguments.at(0)->GetBoolValue());
             this->browser->SendProcessMessage(PID_RENDERER, msg);
         }
         return true;

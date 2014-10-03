@@ -13,6 +13,8 @@
 
 #include "include/cef_app.h"
 #include "include/cef_client.h"
+#include "handlers/ForwardedFunctionHandler.h"
+#include "handlers/ToggleWireframeHandler.h"
 
 #include <OISEvents.h>
 #include <OISInputManager.h>
@@ -39,7 +41,25 @@ namespace {
     };
 }
 
+ClientHandler::ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera)
+: renderTexture(texture), window(window), mouse(mouse), keyTimer(new Ogre::Timer()), context(new AppContext()) {
+    ForwardedFunctionHandlerPtr handler(new ToggleWireframeHandler(context));
+    functionHandlers.insert({handler->GetFunctionName(), handler});
+}
+
+
 bool ClientHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) {
+    std::string name = message->GetName().ToString();
+    if(message->GetName() == "autoForward") {
+        std::string functionName = message->GetArgumentList()->GetString(0);
+        auto item = functionHandlers.find(functionName);
+        if (item != functionHandlers.end()) {
+            auto handler = item->second;
+            handler->Handle(message);
+            return true;
+        }
+    }
+    return false;
 }
 
 void ClientHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
