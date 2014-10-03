@@ -8,7 +8,7 @@
 #include "include/cef_app.h"
 #include "include/cef_client.h"
 #include "include/cef_render_handler.h"
-#include "cef/handlers/ClientHandler.h"
+#include "cef/ClientHandler.h"
 #include "cef/App.h"
 
 #include <OIS/OIS.h>
