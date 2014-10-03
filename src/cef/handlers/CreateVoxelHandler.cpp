@@ -22,6 +22,8 @@ void CreateVoxelHandler::Handle(CefRefPtr<CefProcessMessage> message){
     std::cout << "X: " << x << std::endl;
     std::cout << "Y: " << y << std::endl;
     std::cout << "Z: " << z << std::endl;
+    
+    context->world->createVoxel(type, x, y, z);
 }
 
 std::string CreateVoxelHandler::GetFunctionName(){

@@ -42,14 +42,28 @@ namespace {
     };
 }
 
-ClientHandler::ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera)
-: renderTexture(texture), window(window), mouse(mouse), keyTimer(new Ogre::Timer()), context(new AppContext()) {
+ClientHandler::ClientHandler(
+    Ogre::TexturePtr texture, 
+    Ogre::RenderWindow *window, 
+    OIS::Mouse* mouse, 
+    Ogre::Camera* camera,
+    Ogre::SceneManager* sceneManager,
+    WorldPtr world
+) 
+:
+renderTexture(texture),
+window(window),
+mouse(mouse),
+keyTimer(new Ogre::Timer()),
+context(new AppContext()),
+sceneManager(sceneManager)
+{
     this->context->camera = camera;
+    this->context->world = world;
     ForwardedFunctionHandlerPtr toggleWireframe(new ToggleWireframeHandler(context));
     ForwardedFunctionHandlerPtr createVoxelHandler(new CreateVoxelHandler(context));
     functionHandlers.insert({toggleWireframe->GetFunctionName(), toggleWireframe});
     functionHandlers.insert({createVoxelHandler->GetFunctionName(), createVoxelHandler});
-    
 }
 
 

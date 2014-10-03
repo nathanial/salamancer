@@ -27,6 +27,7 @@
 #include "ois/linux/CustomLinuxInputManager.h"
 
 #include "cef/App.h"
+#include "framework/World.h"
 
 
 class SalamancerApplication : 
@@ -77,7 +78,7 @@ private:
     
     void toggleHud();
     
-        
+    
     CefRefPtr<CefBrowser> browser;
     CefRefPtr<ClientHandler> clientHandler;
     CefRefPtr<CefApp> cefApp;
@@ -85,6 +86,7 @@ private:
     CefWindowInfo windowInfo;
     CefBrowserSettings browserSettings;
     
+    WorldPtr world;
     Ogre::Root *mRoot;
     Ogre::Camera* mCamera;
     Ogre::SceneManager* mSceneMgr;

@@ -38,6 +38,7 @@ private:
     Ogre::RenderWindow *window;
     CefRefPtr<CefBrowser> browser;
     Ogre::Timer *keyTimer;
+    Ogre::SceneManager *sceneManager;
 
     bool hasKeyBeenPressed = false;
     bool repeatStarted = false;
@@ -46,7 +47,7 @@ private:
         
 public:
     
-    ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera);
+    ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera, Ogre::SceneManager* sceneManager, WorldPtr world);
 
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE {
         return this;

@@ -1,5 +1,4 @@
 #include "SalamancerApplication.h"
-#include "framework/terrain/PerlinTerrainGenerator.h"
 #include "framework/Position.h"
 #include "framework/meshers/GreedyMesher.h"
 #include "framework/World.h"
@@ -58,28 +57,8 @@ SalamancerApplication::~SalamancerApplication(void)
 }
 
 //---------SalamancerApplication----------------------------------------------------------------------------
-void SalamancerApplication::createScene(void)
-{
-    PerlinTerrainGenerator gen;
-    gen.init();
-    
-    for(int x = 0; x < World::XCHUNKS; x++){
-        for(int y = 0; y < World::YCHUNKS; y++){
-            for(int z = 0; z < World::ZCHUNKS; z++){
-                VolumePtr volume = gen.generate(Position(x, y, z));
-                GreedyMesher mesher;
-                VerticesAndFaces vf = mesher.mesh(volume);
-
-                ManualObject* manual = mSceneMgr->createManualObject("cc"+std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z));
-                MeshLoader::loadMesh(manual, vf);
-
-                SceneNode* thisSceneNode = mSceneMgr->getRootSceneNode()->createChildSceneNode();
-                thisSceneNode->setPosition(x * Volume::XWIDTH,y * Volume::YWIDTH,z * Volume::ZWIDTH - 100);
-                thisSceneNode->attachObject(manual);
-            }
-        }
-    }
-    //mSceneMgr->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
+void SalamancerApplication::createScene(void) {
+    mSceneMgr->setAmbientLight(Ogre::ColourValue(1.0f, 1.0f, 1.0f));
 }
 
 void SalamancerApplication::createBrowser(){
@@ -106,7 +85,7 @@ void SalamancerApplication::createBrowser(){
     
     this->windowInfo.SetAsWindowless(0, true);
     
-    this->clientHandler = new ClientHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse, this->mCamera);
+    this->clientHandler = new ClientHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse, this->mCamera, this->mSceneMgr, this->world);
     
     this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, this->clientHandler.get(),
             "file:///home/nathan/Projects/salamancer/dist/bin/hud/index.html",
@@ -187,6 +166,7 @@ void SalamancerApplication::chooseSceneManager(void)
     mSceneMgr = mRoot->createSceneManager(Ogre::ST_GENERIC);
     mOverlaySystem = new Ogre::OverlaySystem();
     mSceneMgr->addRenderQueueListener(mOverlaySystem);
+    world = WorldPtr(new World(mSceneMgr));
 }
 //-------------------------------------------------------------------------------------
 void SalamancerApplication::createCamera(void)

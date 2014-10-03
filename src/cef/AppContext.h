@@ -10,6 +10,8 @@
 
 #include <memory>
 
+#include "framework/World.h"
+
 namespace Ogre {
     class Camera;
 }
@@ -17,6 +19,7 @@ namespace Ogre {
 class AppContext {
 public:
     Ogre::Camera *camera;
+    WorldPtr world;
 };
 
 typedef std::shared_ptr<AppContext> AppContextPtr;

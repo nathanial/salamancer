@@ -6,9 +6,8 @@ add_library(src
     cef/handlers/ToggleWireframeHandler.cpp
     cef/handlers/CreateVoxelHandler.cpp
     cef/App.cpp
+    framework/World.cpp
     framework/meshers/GreedyMesher.cpp
-    framework/terrain/PerlinTerrainGenerator.cpp
-    framework/terrain/noiseutils.cpp
     framework/MeshLoader.cpp
     ois/linux/CustomLinuxKeyboard.cpp
     ois/linux/CustomLinuxMouse.cpp
