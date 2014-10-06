@@ -38,7 +38,7 @@ class SalamancerApplication :
         OgreBites::SdkTrayListener
 {
 public:
-    SalamancerApplication(CefRefPtr<CefApp> cefApp);
+    SalamancerApplication(AppContextPtr context, CefRefPtr<CefApp> cefApp);
     ~SalamancerApplication(void);
     
     void go(void);
@@ -78,6 +78,7 @@ private:
     
     void toggleHud();
     
+    AppContextPtr context;
     
     CefRefPtr<CefBrowser> browser;
     CefRefPtr<ClientHandler> clientHandler;

@@ -26,7 +26,7 @@ using namespace Ogre;
 void createColourCube(void);
 
 //-------------------------------------------------------------------------------------
-SalamancerApplication::SalamancerApplication(CefRefPtr<CefApp> cefApp) 
+SalamancerApplication::SalamancerApplication(AppContextPtr context, CefRefPtr<CefApp> cefApp) 
     : mRoot(0),
     mCamera(0),
     mSceneMgr(0),
@@ -41,6 +41,7 @@ SalamancerApplication::SalamancerApplication(CefRefPtr<CefApp> cefApp)
     mInputManager(0),
     mMouse(0),
     mKeyboard(0),
+    context(context),
     cefApp(cefApp)
 {
 }
@@ -85,7 +86,7 @@ void SalamancerApplication::createBrowser(){
     
     this->windowInfo.SetAsWindowless(0, true);
     
-    this->clientHandler = new ClientHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse, this->mCamera, this->mSceneMgr, this->world);
+    this->clientHandler = new ClientHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse, this->mCamera, this->mSceneMgr, this->world, this->context);
     
     browserSettings.web_security = STATE_DISABLED;
     
@@ -125,12 +126,14 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    if (!CefRegisterSchemeHandlerFactory("http", "", new BatchCreateVoxelsHandlerFactory())) {
+    AppContextPtr context(new AppContext());
+
+    if (!CefRegisterSchemeHandlerFactory("http", "", new BatchCreateVoxelsHandlerFactory(context))) {
         throw std::runtime_error("Could not register custom scheme");
     }
     
     // Create application object
-    SalamancerApplication app(cefApp);
+    SalamancerApplication app(context, cefApp);
 
     try {
         app.go();

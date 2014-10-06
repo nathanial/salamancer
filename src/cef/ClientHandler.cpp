@@ -49,14 +49,15 @@ ClientHandler::ClientHandler(
     OIS::Mouse* mouse, 
     Ogre::Camera* camera,
     Ogre::SceneManager* sceneManager,
-    WorldPtr world
+    WorldPtr world,
+    AppContextPtr context
 ) 
 :
 renderTexture(texture),
 window(window),
 mouse(mouse),
 keyTimer(new Ogre::Timer()),
-context(new AppContext()),
+context(context),
 sceneManager(sceneManager)
 {
     this->context->camera = camera;
@@ -80,7 +81,7 @@ bool ClientHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefP
             handler->Handle(message);
             return true;
         }
-    }
+    } 
     return false;
 }
 

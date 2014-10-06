@@ -31,7 +31,6 @@
 
 class ClientHandler : public CefClient, public CefLifeSpanHandler, public CefRenderHandler, public Ogre::FrameListener{
 private:
-    AppContextPtr context;
     std::map<std::string, ForwardedFunctionHandlerPtr> functionHandlers;
     Ogre::TexturePtr renderTexture;
     OIS::Mouse* mouse;
@@ -39,6 +38,7 @@ private:
     CefRefPtr<CefBrowser> browser;
     Ogre::Timer *keyTimer;
     Ogre::SceneManager *sceneManager;
+    AppContextPtr context;
 
     bool hasKeyBeenPressed = false;
     bool repeatStarted = false;
@@ -47,7 +47,7 @@ private:
         
 public:
     
-    ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera, Ogre::SceneManager* sceneManager, WorldPtr world);
+    ClientHandler(Ogre::TexturePtr texture, Ogre::RenderWindow *window, OIS::Mouse* mouse, Ogre::Camera* camera, Ogre::SceneManager* sceneManager, WorldPtr world, AppContextPtr context);
 
     virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE {
         return this;

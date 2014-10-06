@@ -33,13 +33,13 @@ void World::clearVoxels() {
     this->sceneManager->destroyAllManualObjects();
 }
 
-void World::batchCreateVoxels(std::vector<uint32>& voxels, int xwidth, int ywidth, int zwidth){
+void World::batchCreateVoxels(int baseX, int baseY, int baseZ, std::vector<unsigned char>& voxels){
     std::unordered_map<Position, VolumePtr> dirtyVolumes;
-    for(int x = 0; x < xwidth; x++){
-        for(int y = 0; y < ywidth; y++){
-            for(int z = 0; z < zwidth; z++){
-                uint32 type = voxels.at(x*xwidth*ywidth + y*ywidth + z);
-                Position p(x,y,z);
+    for(int x = 0; x < Volume::XWIDTH; x++){
+        for(int y = 0; y < Volume::YWIDTH; y++){
+            for(int z = 0; z < Volume::ZWIDTH; z++){
+                unsigned char type = voxels.at(x*Volume::YWIDTH*Volume::ZWIDTH + y*Volume::ZWIDTH + z);
+                Position p(x+baseX,y+baseY,z+baseZ);
                 Position volumePosition = this->toVolumePosition(p);
                 Position voxelPosition = this->toVoxelPosition(p);
                 VolumePtr volume = this->findOrCreateVolume(volumePosition);

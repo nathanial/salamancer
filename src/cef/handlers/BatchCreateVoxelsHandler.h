@@ -9,7 +9,6 @@
 #define	BATCHCREATEVOXELS_H
 
 #include "assert.h"
-#include <algorithm>
 #include <string>
 #include "include/cef_browser.h"
 #include "include/cef_callback.h"
@@ -23,9 +22,13 @@
 
 class BatchCreateVoxelsHandler : public CefResourceHandler {
 
+private:
+    CefRefPtr<CefBrowser> browser;
+    AppContextPtr context;
+    
 public:
 
-    BatchCreateVoxelsHandler()  {
+    BatchCreateVoxelsHandler(AppContextPtr context) : context(context)  {
     }
 
     virtual bool ProcessRequest(CefRefPtr<CefRequest> request, CefRefPtr<CefCallback> callback) OVERRIDE;
@@ -44,8 +47,11 @@ private:
 };
 
 class BatchCreateVoxelsHandlerFactory : public CefSchemeHandlerFactory {
+private:
+    AppContextPtr context;
 public:
-    // Return a new scheme handler instance to handle the request.
+    
+    BatchCreateVoxelsHandlerFactory(AppContextPtr context) : context(context) {}
 
     virtual CefRefPtr<CefResourceHandler> Create(CefRefPtr<CefBrowser> browser,
             CefRefPtr<CefFrame> frame,
@@ -53,7 +59,7 @@ public:
             CefRefPtr<CefRequest> request)
     OVERRIDE {
         assert(CefCurrentlyOn(TID_IO));
-        return new BatchCreateVoxelsHandler();
+        return new BatchCreateVoxelsHandler(context);
     }
 
     IMPLEMENT_REFCOUNTING(BatchCreateVoxelsHandlerFactory);

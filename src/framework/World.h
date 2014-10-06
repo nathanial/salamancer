@@ -35,7 +35,7 @@ private:
     Ogre::ManualObject* findOrCreateManualObject(Position volumePosition);
 public:
     World(Ogre::SceneManager* sceneManager);
-    void batchCreateVoxels(std::vector<uint32>& voxels, int xwidth, int ywidth, int zwidth);
+    void batchCreateVoxels(int baseX, int baseY, int baseZ, std::vector<unsigned char>& voxels);
     void createVoxel(int type, int x, int y, int z);
     void clearVoxels();
 };
