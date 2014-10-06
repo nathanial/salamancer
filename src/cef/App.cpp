@@ -51,7 +51,7 @@ void App::CreateAutoFunction(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> 
 }
 
 void App::OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar) {
-    if(!registrar->AddCustomScheme("batch", true, false, false)){
-        throw "Could not add custom scheme";
-    }
+//    if(!registrar->AddCustomScheme("batch", true, false, false)){
+//        throw "Could not add custom scheme";
+//    }
 }

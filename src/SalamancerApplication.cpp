@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    if (!CefRegisterSchemeHandlerFactory("batch", "", new BatchCreateVoxelsHandlerFactory())) {
+    if (!CefRegisterSchemeHandlerFactory("http", "", new BatchCreateVoxelsHandlerFactory())) {
         throw std::runtime_error("Could not register custom scheme");
     }
     
