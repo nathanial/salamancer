@@ -24,9 +24,14 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
     AutoFunctionDescription createVoxelDescription;
     createVoxelDescription.name = "createVoxel";
     createVoxelDescription.arguments = {AFA_INT, AFA_INT, AFA_INT, AFA_INT};
+    
+    AutoFunctionDescription clearVoxelsDescription;
+    clearVoxelsDescription.name = "clearVoxels";
+    clearVoxelsDescription.arguments = {};
 
     this->CreateAutoFunction(browser, frame, context, toggleWireframeDescription);
     this->CreateAutoFunction(browser, frame, context, createVoxelDescription);
+    this->CreateAutoFunction(browser, frame, context, clearVoxelsDescription);
 }
 
 void App:: OnContextReleased(CefRefPtr<CefBrowser> browser,
@@ -42,4 +47,7 @@ void App::CreateAutoFunction(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> 
 
     // Add the "myfunc" function to the "window" object.
     object->SetValue(description.name, func, V8_PROPERTY_ATTRIBUTE_NONE);
+}
+
+void App::OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar) {
 }

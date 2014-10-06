@@ -76,7 +76,32 @@
                 return input.replace(re, "");
             }
             
+            function autoReloadScript (path) {
+                var oldData = "";
+                
+                function load(){
+                    var promise = $.ajax(path);
+                    promise.then(function(data){
+                        if(data !== oldData){
+                            try {
+                                eval(data);
+                            } catch(err){
+                                console.log("ERROR");
+                                console.log(err)
+                            }
+                            oldData = data;
+                        }
+                        setTimeout(load, 1000);
+                    });
+                }
+                
+                load();
+            }
+            
+            
             $(function () {
+              autoReloadScript("terrains/flatland.js");
+                
               var jqconsole = $('#console').jqconsole('Hi\n', '>>>');
               var startPrompt = function () {
                 // Start the prompt with history enabled.

@@ -87,6 +87,8 @@ void SalamancerApplication::createBrowser(){
     
     this->clientHandler = new ClientHandler(renderTexture, this->mRoot->getAutoCreatedWindow(), mMouse, this->mCamera, this->mSceneMgr, this->world);
     
+    browserSettings.web_security = STATE_DISABLED;
+    
     this->browser = CefBrowserHost::CreateBrowserSync(windowInfo, this->clientHandler.get(),
             "file:///home/nathan/Projects/salamancer/dist/bin/hud/index.html",
             browserSettings, 
@@ -181,7 +183,7 @@ void SalamancerApplication::createCamera(void)
     mCamera->setNearClipDistance(5);
 
     mCameraMan = new OgreBites::SdkCameraMan(mCamera);   // create a default camera controller    
-    mCamera->setPolygonMode(Ogre::PM_WIREFRAME);
+    mCamera->setPolygonMode(Ogre::PM_SOLID);
 }
 //-------------------------------------------------------------------------------------
 void SalamancerApplication::createFrameListener(void)

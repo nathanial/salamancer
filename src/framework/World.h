@@ -34,6 +34,7 @@ private:
 public:
     World(Ogre::SceneManager* sceneManager);
     void createVoxel(int type, int x, int y, int z);
+    void clearVoxels();
 };
 
 typedef std::shared_ptr<World> WorldPtr;
