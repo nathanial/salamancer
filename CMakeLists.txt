@@ -24,6 +24,8 @@ find_package(OGRE REQUIRED)
 
 find_package(OIS REQUIRED)
 
+find_package (Threads)
+
 if(NOT OIS_FOUND)
 	message(SEND_ERROR "Failed to find OIS")
 endif()
@@ -80,6 +82,7 @@ target_link_libraries(
     X11
     ICE
     SM
+    pthread
     ${OGRE_LIBRARIES} 
     ${OIS_LIBRARIES} 
     ${OGRE_Overlay_LIBRARIES} 

@@ -9,6 +9,7 @@
 #include "Ogre.h"
 #include "OgreManualObject.h"
 #include "MeshLoader.h"
+#include "include/internal/cef_types.h"
 
 World::World(Ogre::SceneManager* sceneManager) : sceneManager(sceneManager) {}
 
@@ -30,6 +31,30 @@ void World::clearVoxels() {
     this->manuals.clear();
     this->volumes.clear();
     this->sceneManager->destroyAllManualObjects();
+}
+
+void World::batchCreateVoxels(std::vector<uint32>& voxels, int xwidth, int ywidth, int zwidth){
+    std::unordered_map<Position, VolumePtr> dirtyVolumes;
+    for(int x = 0; x < xwidth; x++){
+        for(int y = 0; y < ywidth; y++){
+            for(int z = 0; z < zwidth; z++){
+                uint32 type = voxels.at(x*xwidth*ywidth + y*ywidth + z);
+                Position p(x,y,z);
+                Position volumePosition = this->toVolumePosition(p);
+                Position voxelPosition = this->toVoxelPosition(p);
+                VolumePtr volume = this->findOrCreateVolume(volumePosition);
+                dirtyVolumes.insert({volumePosition, volume});
+                volume->setVoxel(voxelPosition, type);
+            }
+        }
+    }
+
+    for(auto& volPair : dirtyVolumes){
+        GreedyMesher mesher;
+        VerticesAndFaces vf = mesher.mesh(volPair.second);
+        Ogre::ManualObject* manual = this->findOrCreateManualObject(volPair.first);
+        MeshLoader::loadMesh(manual, vf);
+    }
 }
 
 VolumePtr World::findOrCreateVolume(Position p){

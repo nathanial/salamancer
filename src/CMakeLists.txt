@@ -5,7 +5,8 @@ add_library(src
     cef/AutoFunctionForwarder.cpp
     cef/handlers/ToggleWireframeHandler.cpp
     cef/handlers/CreateVoxelHandler.cpp
-    cef/handlers/ClearVoxelsHandler.cpp
+    cef/handlers/ClearVoxelsHandler.cpp 
+    cef/handlers/BatchCreateVoxelsHandler.cpp
     cef/App.cpp
     framework/World.cpp
     framework/Volume.cpp

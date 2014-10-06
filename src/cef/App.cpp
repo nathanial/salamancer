@@ -28,10 +28,11 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
     AutoFunctionDescription clearVoxelsDescription;
     clearVoxelsDescription.name = "clearVoxels";
     clearVoxelsDescription.arguments = {};
-
+    
     this->CreateAutoFunction(browser, frame, context, toggleWireframeDescription);
     this->CreateAutoFunction(browser, frame, context, createVoxelDescription);
     this->CreateAutoFunction(browser, frame, context, clearVoxelsDescription);
+    
 }
 
 void App:: OnContextReleased(CefRefPtr<CefBrowser> browser,
@@ -50,4 +51,7 @@ void App::CreateAutoFunction(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> 
 }
 
 void App::OnRegisterCustomSchemes(CefRefPtr<CefSchemeRegistrar> registrar) {
+    if(!registrar->AddCustomScheme("batch", true, false, false)){
+        throw "Could not add custom scheme";
+    }
 }

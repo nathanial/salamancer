@@ -123,6 +123,11 @@
               };
               startPrompt();
             });
+            
+            xhr = new XMLHttpRequest();
+            xhr.open("POST","batch://voxels",false);
+            xhr.send();
+            $("body").append("<p>Status Code: " + xhr.status + "\n\n" + xhr.responseText);
         </script>
     </body>
 </html>

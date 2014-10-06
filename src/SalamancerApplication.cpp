@@ -114,6 +114,7 @@ int main(int argc, char *argv[])
         return result;
     }
 
+
     CefSettings settings;
     settings.remote_debugging_port = 9999;
     settings.windowless_rendering_enabled = true;
@@ -122,6 +123,10 @@ int main(int argc, char *argv[])
     if (!result)
     {
         return -1;
+    }
+
+    if (!CefRegisterSchemeHandlerFactory("batch", "", new BatchCreateVoxelsHandlerFactory())) {
+        throw std::runtime_error("Could not register custom scheme");
     }
     
     // Create application object

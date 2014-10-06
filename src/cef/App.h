@@ -11,6 +11,7 @@
 #include "include/cef_app.h"
 #include "include/cef_render_process_handler.h"
 #include "AutoFunctionForwarder.h"
+#include "handlers/BatchCreateVoxelsHandler.h"
 
 namespace Ogre {
     class Camera;
@@ -18,6 +19,7 @@ namespace Ogre {
 
 class App : public CefApp, public CefRenderProcessHandler  {
 private:
+    std::shared_ptr<BatchCreateVoxelsHandler> batchCreateVoxelsHandler;
 public:
     
     App() {}
