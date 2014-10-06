@@ -35,6 +35,9 @@ void World::clearVoxels() {
 
 void World::batchCreateVoxels(int baseX, int baseY, int baseZ, std::vector<unsigned char>& voxels){
     std::unordered_map<Position, VolumePtr> dirtyVolumes;
+    baseX *= 32;
+    baseY *= 32;
+    baseZ *= 32;
     for(int x = 0; x < Volume::XWIDTH; x++){
         for(int y = 0; y < Volume::YWIDTH; y++){
             for(int z = 0; z < Volume::ZWIDTH; z++){

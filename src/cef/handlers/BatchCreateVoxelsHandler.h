@@ -25,10 +25,9 @@ class BatchCreateVoxelsHandler : public CefResourceHandler {
 private:
     CefRefPtr<CefBrowser> browser;
     AppContextPtr context;
-    
 public:
 
-    BatchCreateVoxelsHandler(AppContextPtr context) : context(context)  {
+    BatchCreateVoxelsHandler(CefRefPtr<CefBrowser> browser, AppContextPtr context) : browser(browser), context(context)  {
     }
 
     virtual bool ProcessRequest(CefRefPtr<CefRequest> request, CefRefPtr<CefCallback> callback) OVERRIDE;
@@ -59,7 +58,7 @@ public:
             CefRefPtr<CefRequest> request)
     OVERRIDE {
         assert(CefCurrentlyOn(TID_IO));
-        return new BatchCreateVoxelsHandler(context);
+        return new BatchCreateVoxelsHandler(browser, context);
     }
 
     IMPLEMENT_REFCOUNTING(BatchCreateVoxelsHandlerFactory);

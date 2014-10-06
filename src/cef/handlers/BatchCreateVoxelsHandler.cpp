@@ -11,11 +11,29 @@
 #include <vector>
 #include <algorithm>
 
+namespace {
+    class BatchCreateVoxelsTask : public CefTask {
+    public:
+        int x, y, z;
+        std::vector<unsigned char> voxels;
+        AppContextPtr context;
+        
+        BatchCreateVoxelsTask(AppContextPtr context, int x, int y, int z, std::vector<unsigned char> voxels)
+        : context(context), x(x), y(y), z(z), voxels(voxels)
+        {
+        }
+        
+        virtual void Execute() OVERRIDE {
+            this->context->world->batchCreateVoxels(x, y, z, voxels);
+        }
+        
+        IMPLEMENT_REFCOUNTING(BatchCreateVoxelsTask);
+    };
+    
+}
+
 bool BatchCreateVoxelsHandler::ProcessRequest(CefRefPtr<CefRequest> request, CefRefPtr<CefCallback> callback) {
     std::cout << "Batch Create Voxels" << std::endl;
-    
-    assert(CefCurrentlyOn(TID_RENDERER));
-    
     
     CefRefPtr<CefPostData> data = request->GetPostData();
     if(data == nullptr){
@@ -30,20 +48,20 @@ bool BatchCreateVoxelsHandler::ProcessRequest(CefRefPtr<CefRequest> request, Cef
         std::vector<unsigned char> bytes;
         bytes.resize(element->GetBytesCount());
         element->GetBytes(element->GetBytesCount(), &bytes[0]);
-        for(int i = 0; i < bytes.size(); i++){
-            if(bytes[i] != 0){
-                std::cout << "Got One: " << std::to_string(bytes[i]) << " at: " << i << std::endl;
-            }
-        }
-        
-        uint32 x = bytes[0] + (bytes[1] << 8) + (bytes[2] << 16) + (bytes[3] << 24);
-        uint32 y = bytes[4] + (bytes[5] << 8) + (bytes[6] << 16) + (bytes[7] << 24);
-        uint32 z = bytes[8] + (bytes[9] << 8) + (bytes[10] << 16) + (bytes[11] << 24);
-        
+        unsigned char x = bytes[0];
+        unsigned char y = bytes[1];
+        unsigned char z = bytes[2];
         std::vector<unsigned char> voxels;
-        voxels.resize(bytes.size() - 12);
-        std::copy(bytes.begin()+12, bytes.end(), voxels.begin());
-        this->context->world->batchCreateVoxels(x, y, z, voxels);
+        voxels.resize(bytes.size() - 3);
+        std::copy(bytes.begin()+3, bytes.end(), voxels.begin());
+
+        if(!CefPostTask(TID_UI, new BatchCreateVoxelsTask(this->context, x, y, z, voxels))){
+            throw std::runtime_error("Could not post task");
+        }
+        //CefPostTask(TID_IO, NewCefRunnableFunction(MyFunction, param1, param2));
+        
+        //this->browser->SendProcessMessage(PID_RENDERER, CefProcessMessage::Create("batchCreateVoxels"));
+        //this->context->world->batchCreateVoxels(x, y, z, voxels);
     }
     
     callback->Continue();

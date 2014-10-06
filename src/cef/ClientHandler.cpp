@@ -81,7 +81,9 @@ bool ClientHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefP
             handler->Handle(message);
             return true;
         }
-    } 
+    } else if(message->GetName() == "batchCreateVoxels"){
+        std::cout << "GOT A MESSAGE" << std::endl;
+    }
     return false;
 }
 
