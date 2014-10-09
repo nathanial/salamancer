@@ -1,6 +1,6 @@
 (function(){
     
-    var DIRT = 1;
+    var GRASS = 1;
     
     function Volume(x,y,z){
         this.position = {x:x,y:y,z:z};
@@ -58,7 +58,7 @@
             for (var x = 0; x < 32; x++) {
                 for (var y = 0; y < 1; y++) {
                     for (var z = 0; z < 32; z++) {
-                        volume.setVoxel(DIRT, x, y, z);
+                        volume.setVoxel(GRASS, x, y, z);
                     }
                 }
             }

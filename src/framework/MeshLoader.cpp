@@ -148,7 +148,13 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
         float leftXScale = std::abs(v1[2]-v3[2]);
         float leftYScale = std::abs(v1[1]-v3[1]);
         
-        manual->begin("Dirt", RenderOperation::OT_TRIANGLE_LIST);
+        if(topside){
+            manual->begin("GrassTop", RenderOperation::OT_TRIANGLE_LIST);
+        } else if(bottomside){
+            manual->begin("Dirt", RenderOperation::OT_TRIANGLE_LIST);
+        } else {
+            manual->begin("GrassSide", RenderOperation::OT_TRIANGLE_LIST);
+        }
 
         manual->position(v1[0], v1[1], v1[2]);
         if(topside){
