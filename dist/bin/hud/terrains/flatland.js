@@ -51,6 +51,9 @@
             clearInterval(window.createVolumesLoop);
         }
         window.createVolumesLoop = setInterval(function(){
+            if(v > 0){
+                return;
+            }
             var volume = new Volume(v / 20, 0, v % 20);
             for (var x = 0; x < 32; x++) {
                 for (var y = 0; y < 1; y++) {

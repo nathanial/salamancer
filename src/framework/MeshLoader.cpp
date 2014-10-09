@@ -109,7 +109,6 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
     
     const float sqrt13 = 0.577350269f; /* sqrt(1/3) */
     manual->clear();
-    manual->begin("Dirt", RenderOperation::OT_TRIANGLE_LIST);
     
     Faces faces = std::get<1>(vf);
     bool alreadyLoaded[vertices.size()] = {false};
@@ -147,6 +146,8 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
         float leftXScale = std::abs(v1[2]-v3[2]);
         float leftYScale = std::abs(v1[1]-v3[1]);
         
+        manual->begin("Dirt", RenderOperation::OT_TRIANGLE_LIST);
+
         manual->position(v1[0], v1[1], v1[2]);
         if(leftside){           
             manual->textureCoord(0, leftYScale);
@@ -195,10 +196,10 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
             manual->textureCoord(0,0);
         }
 
-        manual->quad(face[0], face[1], face[2], face[3]);
+        //manual->quad(face[0], face[1], face[2], face[3]);
+        manual->quad(0,1,2,3);
+
+        manual->end();
     }
     
-    assert(manual->getCurrentVertexCount() == vertices.size());
-    
-    manual->end();
 }
