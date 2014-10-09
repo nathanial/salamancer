@@ -140,6 +140,8 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
         auto leftside = normal.x <= -1;
         auto backside = normal.z <= -1;
         auto frontside = normal.z >= 1;
+        auto topside = normal.y >= 1;
+        auto bottomside = normal.y <= -1;
         
         float frontXScale = std::abs(v1[0] - v3[0]);
         float frontYScale = std::abs(v1[1] - v3[1]);
@@ -149,7 +151,11 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
         manual->begin("Dirt", RenderOperation::OT_TRIANGLE_LIST);
 
         manual->position(v1[0], v1[1], v1[2]);
-        if(leftside){           
+        if(topside){
+            manual->textureCoord(0, leftXScale);
+        } else if(bottomside){
+            manual->textureCoord(frontXScale, leftXScale);
+        } else if(leftside){           
             manual->textureCoord(0, leftYScale);
         } else if(frontside){
             manual->textureCoord(0, frontYScale);
@@ -162,7 +168,11 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
         }
         
         manual->position(v2[0], v2[1], v2[2]);
-        if(leftside){
+        if (topside) {
+            manual->textureCoord(frontXScale, leftXScale);
+        } else if(bottomside){
+            manual->textureCoord(frontXScale, 0);
+        } else if(leftside){
             manual->textureCoord(leftXScale, leftYScale);
         } else if(frontside) {
             manual->textureCoord(frontXScale, frontYScale);
@@ -175,7 +185,11 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
         }
         
         manual->position(v3[0], v3[1], v3[2]);
-        if(leftside){
+        if (topside) {
+            manual->textureCoord(frontXScale, 0);
+        } else if(bottomside){
+            manual->textureCoord(0, 0);
+        } else if(leftside){
             manual->textureCoord(leftXScale, 0);
         } else if(frontside){
             manual->textureCoord(frontXScale, 0);
@@ -188,14 +202,16 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
         }
 
         manual->position(v4[0], v4[1], v4[2]);
-        if(backside){
+        if(bottomside){
+            manual->textureCoord(0, leftXScale);
+        } else if(backside){
             manual->textureCoord(0, frontYScale);
         } else if(rightside){
             manual->textureCoord(0, leftYScale);
         } else {
             manual->textureCoord(0,0);
         }
-
+        
         //manual->quad(face[0], face[1], face[2], face[3]);
         manual->quad(0,1,2,3);
 
