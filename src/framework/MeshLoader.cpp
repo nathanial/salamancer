@@ -101,10 +101,15 @@ float textureYScale(Vertex v1, Vertex v2, Vertex v3, Vertex v4){
 }
 
 void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
+    Vertices vertices = std::get<0>(vf);
+
+    if (vertices.size() == 0) {
+        return;
+    }
+    
     const float sqrt13 = 0.577350269f; /* sqrt(1/3) */
     manual->clear();
     manual->begin("Dirt", RenderOperation::OT_TRIANGLE_LIST);
-    Vertices vertices = std::get<0>(vf);
     
     Faces faces = std::get<1>(vf);
     bool alreadyLoaded[vertices.size()] = {false};
