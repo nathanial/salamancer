@@ -17,6 +17,7 @@
 #include "handlers/ToggleWireframeHandler.h"
 #include "handlers/CreateVoxelHandler.h"
 #include "handlers/ClearVoxelsHandler.h"
+#include "handlers/DefineVoxelHandler.h"
 
 #include <OISEvents.h>
 #include <OISInputManager.h>
@@ -65,9 +66,12 @@ sceneManager(sceneManager)
     ForwardedFunctionHandlerPtr toggleWireframe(new ToggleWireframeHandler(context));
     ForwardedFunctionHandlerPtr createVoxelHandler(new CreateVoxelHandler(context));
     ForwardedFunctionHandlerPtr clearVoxelsHandler(new ClearVoxelsHandler(context));
+    ForwardedFunctionHandlerPtr defineVoxelHandler(new DefineVoxelHandler(context));
+    
     functionHandlers.insert({toggleWireframe->GetFunctionName(), toggleWireframe});
     functionHandlers.insert({createVoxelHandler->GetFunctionName(), createVoxelHandler});
     functionHandlers.insert({clearVoxelsHandler->GetFunctionName(), clearVoxelsHandler});
+    functionHandlers.insert({defineVoxelHandler->GetFunctionName(), defineVoxelHandler});
 }
 
 

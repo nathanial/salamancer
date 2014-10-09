@@ -14,8 +14,10 @@ namespace Ogre{
     class ManualObject;
 }
 
+class World;
+
 namespace MeshLoader {    
-    void loadMesh(Ogre::ManualObject *manual, VerticesAndFaces quads);
+    void loadMesh(World* world, Ogre::ManualObject *manual, VerticesAndFaces quads);
 };
 
 #endif	/* MESHLOADER_H */

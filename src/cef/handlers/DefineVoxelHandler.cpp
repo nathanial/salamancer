@@ -6,6 +6,7 @@
  */
 
 #include "DefineVoxelHandler.h"
+#include <iostream>
 
 
 //defineVoxel(integer, {left: })
@@ -15,6 +16,23 @@ void DefineVoxelHandler::Handle(CefRefPtr<CefProcessMessage> message){
     
     auto arguments = message->GetArgumentList();
     
-    int type = arguments->GetInt(1);
-    auto textures = arguments->GetDictionary();
+    auto name = arguments->GetString(1);
+    auto topImage = arguments->GetString(2);
+    auto sideImage = arguments->GetString(3);
+    auto bottomImage = arguments->GetString(4);
+    auto transparent = arguments->GetBool(5);
+    
+    VoxelDefinition definition;
+    definition.name = name;
+    definition.topImage = topImage;
+    definition.bottomImage = bottomImage;
+    definition.sideImage = sideImage;
+    definition.transparent = transparent;
+    
+    this->context->world->defineVoxel(definition);
+    
+}
+
+std::string DefineVoxelHandler::GetFunctionName() {
+    return "defineVoxel";
 }

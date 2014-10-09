@@ -29,9 +29,14 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
     clearVoxelsDescription.name = "clearVoxels";
     clearVoxelsDescription.arguments = {};
     
+    AutoFunctionDescription defineVoxelHandlerDescription;
+    defineVoxelHandlerDescription.name = "defineVoxel";
+    defineVoxelHandlerDescription.arguments = { AFA_STRING, AFA_STRING, AFA_STRING, AFA_STRING, AFA_BOOL };
+    
     this->CreateAutoFunction(browser, frame, context, toggleWireframeDescription);
     this->CreateAutoFunction(browser, frame, context, createVoxelDescription);
     this->CreateAutoFunction(browser, frame, context, clearVoxelsDescription);
+    this->CreateAutoFunction(browser, frame, context, defineVoxelHandlerDescription);
     
 }
 

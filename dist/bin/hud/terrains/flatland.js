@@ -1,21 +1,35 @@
 (function(){
     
     var GRASS = 1;
+    var DIRT = 2;
+    var WATER = 3;
+    
+    defineVoxel('Grass', 'grass_top.png', 'grass_side.png', 'dirt.png', false);
+    defineVoxel('Dirt', 'dirt.png', 'dirt.png', 'dirt.png', false);
+    defineVoxel('Water', 'water_still.png', 'water_still.png', 'water_still.png', false);  
     
     function Volume(x,y,z){
         this.position = {x:x,y:y,z:z};
-        this.data = new ArrayBuffer(3 + 32*32*32);
+        this.data = new ArrayBuffer(6 + 32*32*32);
         this.byteView = new Uint8Array(this.data);
-        this.byteView[0] = x;
-        this.byteView[1] = y;
-        this.byteView[2] = z;
+        
+        console.log(x + " " + y + " " + z);
+        
+        this.byteView[0] = (x & 0xFF00) >> 8
+        this.byteView[1] = x & 0x00FF;
+        
+        this.byteView[2] = (y & 0xFF00) >> 8;
+        this.byteView[3] = y & 0x00FF;
+        
+        this.byteView[4] = (z & 0xFF00) >> 8;
+        this.byteView[5] = z & 0x00FF;
     }
     
     Volume.prototype.setVoxel = function(type, x, y, z){
         if (x >= 32 || y >= 32 || z >= 32) {
             throw "Max coordinate is 32";
         }
-        var index = 3 + x * 32 * 32 + y * 32 + z;
+        var index = 6 + x * 32 * 32 + y * 32 + z;
         if (index >= this.data.length) {
             throw "Set Voxel Out of Bounds";
         }
@@ -29,44 +43,8 @@
     };
     
     
-    var volumeSendQueue = [];
-    
-    function startVolumeLoop(){
-        if(window.volumeLoop){
-            clearInterval(window.volumeLoop);
-        }
-        window.volumeLoop = setInterval(function(){
-            for(var i = 0; i < volumeSendQueue.length; i++){
-                var volume = volumeSendQueue[i];
-                volume.send();
-            }
-            volumeSendQueue = [];
-        }, 100);
-    }
-    
-    var v = 0;
-    
-    function startCreateVolumesLoop(){
-        if(window.createVolumesLoop){
-            clearInterval(window.createVolumesLoop);
-        }
-        window.createVolumesLoop = setInterval(function(){
-            if(v > 0){
-                return;
-            }
-            var volume = new Volume(v / 20, 0, v % 20);
-            for (var x = 0; x < 32; x++) {
-                for (var y = 0; y < 1; y++) {
-                    for (var z = 0; z < 32; z++) {
-                        volume.setVoxel(GRASS, x, y, z);
-                    }
-                }
-            }
-            volumeSendQueue.push(volume);
-            v++;
-        }, 200);
-    }
-    
+
+
     function clear(){
         volumeSendQueue = [];
         v = 0;
@@ -74,6 +52,23 @@
     }
     
     clear();
-    startVolumeLoop();
-    startCreateVolumesLoop();
+    for (var i = 0; i < 10; i++) {
+        for (var j = 0; j < 2; j++) {
+            for (var k = 0; k < 10; k++) {
+                var volume = new Volume(i, j, k);
+                for (var x = 0; x < 32; x++) {
+                    for (var y = 0; y < 32; y++) {
+                        for (var z = 0; z < 32; z++) {
+                            if(j == 0){
+                                volume.setVoxel(DIRT, x, y, z);
+                            } else {
+                                volume.setVoxel(WATER, x, y, z);
+                            }
+                        }
+                    }
+                }
+                volume.send();
+            }
+        }
+    }
 })();

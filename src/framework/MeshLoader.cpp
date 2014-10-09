@@ -100,7 +100,7 @@ float textureYScale(Vertex v1, Vertex v2, Vertex v3, Vertex v4){
     }
 }
 
-void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
+void MeshLoader::loadMesh(World* world, ManualObject *manual, VerticesAndFaces vf){
     Vertices vertices = std::get<0>(vf);
 
     if (vertices.size() == 0) {
@@ -120,6 +120,8 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
         Vertex v2 = vertices[face[1]];
         Vertex v3 = vertices[face[2]];
         Vertex v4 = vertices[face[3]];
+        int type = face[4];
+        VoxelDefinition definition = world->lookupVoxelDefinition(type);
         
         auto computeNormal = [&](){
             Ogre::Vector3 ov1(v1[0], v1[1], v1[2]);
@@ -149,11 +151,11 @@ void MeshLoader::loadMesh(ManualObject *manual, VerticesAndFaces vf){
         float leftYScale = std::abs(v1[1]-v3[1]);
         
         if(topside){
-            manual->begin("GrassTop", RenderOperation::OT_TRIANGLE_LIST);
+            manual->begin(definition.name + "Top", RenderOperation::OT_TRIANGLE_LIST);
         } else if(bottomside){
-            manual->begin("Dirt", RenderOperation::OT_TRIANGLE_LIST);
+            manual->begin(definition.name + "Bottom", RenderOperation::OT_TRIANGLE_LIST);
         } else {
-            manual->begin("GrassSide", RenderOperation::OT_TRIANGLE_LIST);
+            manual->begin(definition.name + "Side", RenderOperation::OT_TRIANGLE_LIST);
         }
 
         manual->position(v1[0], v1[1], v1[2]);

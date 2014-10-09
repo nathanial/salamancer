@@ -48,12 +48,12 @@ bool BatchCreateVoxelsHandler::ProcessRequest(CefRefPtr<CefRequest> request, Cef
         std::vector<unsigned char> bytes;
         bytes.resize(element->GetBytesCount());
         element->GetBytes(element->GetBytesCount(), &bytes[0]);
-        unsigned char x = bytes[0];
-        unsigned char y = bytes[1];
-        unsigned char z = bytes[2];
+        short x = ((bytes[0] << 8) | bytes[1]) & 0xFFFF;
+        short y = ((bytes[2] << 8) | bytes[3]) & 0xFFFF;
+        short z= ((bytes[4] << 8) | bytes[5]) & 0xFFFF;
         std::vector<unsigned char> voxels;
-        voxels.resize(bytes.size() - 3);
-        std::copy(bytes.begin()+3, bytes.end(), voxels.begin());
+        voxels.resize(bytes.size() - 6);
+        std::copy(bytes.begin()+6, bytes.end(), voxels.begin());
 
         if(!CefPostTask(TID_UI, new BatchCreateVoxelsTask(this->context, x, y, z, voxels))){
             throw std::runtime_error("Could not post task");
