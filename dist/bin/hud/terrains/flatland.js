@@ -3,10 +3,12 @@
     var GRASS = 1;
     var DIRT = 2;
     var WATER = 3;
+    var STONE = 4;
     
     defineVoxel('Grass', 'grass_top.png', 'grass_side.png', 'dirt.png', false);
     defineVoxel('Dirt', 'dirt.png', 'dirt.png', 'dirt.png', false);
-    defineVoxel('Water', 'water_still.png', 'water_still.png', 'water_still.png', false);  
+    defineVoxel('Water', 'water_still.png', 'water_still.png', 'water_still.png', true);  
+    defineVoxel('Stone', 'stone.png', 'stone.png', 'stone.png', false);
     
     function Volume(x,y,z){
         this.position = {x:x,y:y,z:z};
@@ -42,9 +44,6 @@
         xhr.send(this.byteView);
     };
     
-    
-
-
     function clear(){
         volumeSendQueue = [];
         v = 0;
@@ -52,15 +51,19 @@
     }
     
     clear();
-    for (var i = 0; i < 10; i++) {
-        for (var j = 0; j < 2; j++) {
-            for (var k = 0; k < 10; k++) {
+    var xwidth = 10;
+    var zwidth = 10;
+    var height = 3;
+    
+    for (var i = 0; i < xwidth; i++) {
+        for (var j = 0; j < height; j++) {
+            for (var k = 0; k < zwidth; k++) {
                 var volume = new Volume(i, j, k);
                 for (var x = 0; x < 32; x++) {
                     for (var y = 0; y < 32; y++) {
                         for (var z = 0; z < 32; z++) {
-                            if(j == 0){
-                                volume.setVoxel(DIRT, x, y, z);
+                            if(j == 0 || i == 0 || i == xwidth - 1 || k == 0 || k == zwidth - 1){
+                                volume.setVoxel(STONE, x, y, z);
                             } else {
                                 volume.setVoxel(WATER, x, y, z);
                             }

@@ -8,6 +8,7 @@ add_library(src
     cef/handlers/ClearVoxelsHandler.cpp 
     cef/handlers/BatchCreateVoxelsHandler.cpp
     cef/handlers/DefineVoxelHandler.cpp
+    cef/handlers/CreateVoxelsHandler.cpp
     cef/App.cpp
     framework/World.cpp
     framework/Volume.cpp

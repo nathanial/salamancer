@@ -33,11 +33,15 @@ void App::OnContextCreated(CefRefPtr<CefBrowser> browser,
     defineVoxelHandlerDescription.name = "defineVoxel";
     defineVoxelHandlerDescription.arguments = { AFA_STRING, AFA_STRING, AFA_STRING, AFA_STRING, AFA_BOOL };
     
+    AutoFunctionDescription runLengthCreateVoxelsDescription;
+    runLengthCreateVoxelsDescription.name = "createVoxels";
+    runLengthCreateVoxelsDescription.arguments = { AFA_INT, AFA_INT, AFA_INT, AFA_STRING };
+    
     this->CreateAutoFunction(browser, frame, context, toggleWireframeDescription);
     this->CreateAutoFunction(browser, frame, context, createVoxelDescription);
     this->CreateAutoFunction(browser, frame, context, clearVoxelsDescription);
     this->CreateAutoFunction(browser, frame, context, defineVoxelHandlerDescription);
-    
+    this->CreateAutoFunction(browser, frame, context, runLengthCreateVoxelsDescription);
 }
 
 void App:: OnContextReleased(CefRefPtr<CefBrowser> browser,

@@ -56,6 +56,10 @@ void World::batchCreateVoxels(int baseX, int baseY, int baseZ, std::vector<unsig
     }
 }
 
+void World::createVoxels(int baseX, int baseY, int baseZ, std::string runLengthEncodedVoxels){
+    std::cout << "World Create Voxels: " << baseX << " " << baseY << " " << baseZ << " " << runLengthEncodedVoxels << std::endl;
+}
+
 VolumePtr World::findOrCreateVolume(Position p){
     auto item = this->volumes.find(p);
     if(item != this->volumes.end()){
@@ -116,6 +120,7 @@ void World::defineVoxel(VoxelDefinition definition){
         pass->setLightingEnabled(false);
         if(definition.transparent) {
             pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+            pass->setSceneBlendingOperation(Ogre::SceneBlendOperation::SBO_MAX);
         }
         Ogre::TextureUnitState *tex = pass->createTextureUnitState();
         tex->setTextureName(imageName);

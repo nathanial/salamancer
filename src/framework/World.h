@@ -51,6 +51,7 @@ public:
     World(Ogre::SceneManager* sceneManager);
     void batchCreateVoxels(int baseX, int baseY, int baseZ, std::vector<unsigned char>& voxels);
     void createVoxel(int type, int x, int y, int z);
+    void createVoxels(int x, int y, int z, std::string runLengthEncodedVoxels);
     void clearVoxels();
     void defineVoxel(VoxelDefinition definition);
     VoxelDefinition lookupVoxelDefinition(int type);
