@@ -22,5 +22,5 @@ void CreateVoxelsHandler::Handle(CefRefPtr<CefProcessMessage> message){
 }
 
 std::string CreateVoxelsHandler::GetFunctionName() {
-    return "CreateVoxels";
+    return "createVoxels";
 }

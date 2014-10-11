@@ -30,6 +30,11 @@ struct VoxelDefinition {
     bool transparent;
 };
 
+struct Run {
+    int type;
+    int length;
+};
+
 typedef std::vector<VoxelDefinition> VoxelDefinitions;
 
 class World {
@@ -55,6 +60,7 @@ public:
     void clearVoxels();
     void defineVoxel(VoxelDefinition definition);
     VoxelDefinition lookupVoxelDefinition(int type);
+    std::vector<Run> parseRuns(std::string runLengthEncodedVoxels);
 };
 
 typedef std::shared_ptr<World> WorldPtr;

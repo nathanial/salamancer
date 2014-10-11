@@ -4,12 +4,23 @@
 
 #include <iostream>
 #include <exception>
+#include <vector>
 
 #include "framework/meshers/GreedyMesher.h"
 #include "Ogre.h"
 #include "OgreManualObject.h"
 #include "MeshLoader.h"
 #include "include/internal/cef_types.h"
+
+std::vector<std::string> split(const std::string src, char delim) {
+    std::vector<std::string> elements;
+    std::stringstream ss(src);
+    std::string item;
+    while (std::getline(ss, item, delim)) {
+        elements.push_back(item);
+    }
+    return elements;
+}
 
 World::World(Ogre::SceneManager* sceneManager) : sceneManager(sceneManager) {}
 
@@ -18,7 +29,7 @@ void World::createVoxel(int type, int x, int y, int z) {
     Position volumePosition = this->toVolumePosition(p);
     Position voxelPosition = this->toVoxelPosition(p);
     VolumePtr volume = this->findOrCreateVolume(volumePosition);
-    volume->setVoxel(voxelPosition,type);
+    volume->setVoxel(type, voxelPosition.x, voxelPosition.y, voxelPosition.z);
     GreedyMesher mesher;
     VerticesAndFaces vf = mesher.mesh(volume);
     Ogre::ManualObject* manual = this->findOrCreateManualObject(volumePosition);
@@ -40,10 +51,9 @@ void World::batchCreateVoxels(int baseX, int baseY, int baseZ, std::vector<unsig
         for(int y = 0; y < Volume::YWIDTH; y++){
             for(int z = 0; z < Volume::ZWIDTH; z++){
                 unsigned char type = voxels.at(x*Volume::YWIDTH*Volume::ZWIDTH + y*Volume::ZWIDTH + z);
-                Position voxelPosition(x,y,z);
                 VolumePtr volume = this->findOrCreateVolume(volumePosition);
                 dirtyVolumes.insert({volumePosition, volume});
-                volume->setVoxel(voxelPosition, type);
+                volume->setVoxel(type, x,y,z);
             }
         }
     }
@@ -58,6 +68,29 @@ void World::batchCreateVoxels(int baseX, int baseY, int baseZ, std::vector<unsig
 
 void World::createVoxels(int baseX, int baseY, int baseZ, std::string runLengthEncodedVoxels){
     std::cout << "World Create Voxels: " << baseX << " " << baseY << " " << baseZ << " " << runLengthEncodedVoxels << std::endl;
+    
+    Position volumePosition(baseX, baseY, baseZ);
+    VolumePtr volume = this->findOrCreateVolume(volumePosition);
+    std::vector<Run> runs = this->parseRuns(runLengthEncodedVoxels);
+    int cursor = 0;
+    for(auto run : runs){
+        for(int i = 0; i < run.length; i++){
+            int x = i % Volume::XWIDTH;
+            int y = i/ (Volume::XWIDTH * Volume::ZWIDTH);
+            int z = (i / Volume::XWIDTH) % Volume::ZWIDTH;
+            
+            assert(x < Volume::XWIDTH);
+            assert(y < Volume::YWIDTH);
+            assert(z < Volume::ZWIDTH);
+            volume->setVoxel(run.type, x, y, z);
+            cursor++;
+        }
+    }
+    
+    GreedyMesher mesher;
+    auto vf = mesher.mesh(volume);
+    auto manual = this->findOrCreateManualObject(Position(baseX, baseY, baseZ));
+    MeshLoader::loadMesh(this, manual, vf);
 }
 
 VolumePtr World::findOrCreateVolume(Position p){
@@ -130,4 +163,17 @@ void World::defineVoxel(VoxelDefinition definition){
 
 VoxelDefinition World::lookupVoxelDefinition(int type){
     return definitions.at(type - 1);
+}
+
+std::vector<Run> World::parseRuns(std::string runLengthEncodedVoxels) {
+    auto runTexts = split(runLengthEncodedVoxels, ',');
+    std::vector<Run> runs;
+    for(auto runText : runTexts){
+        auto runElements = split(runText, ':');
+        Run run;
+        run.length = std::stoi(runElements[0]);
+        run.type = std::stoi(runElements[1]);
+        runs.push_back(run);
+    }
+    return runs;
 }

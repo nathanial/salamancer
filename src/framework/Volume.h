@@ -19,7 +19,7 @@ public:
     static const int ZWIDTH = 32;
     unsigned char voxels[XWIDTH][YWIDTH][ZWIDTH];
     
-    void setVoxel(Position p, int type);
+    void setVoxel(int type, int x, int y, int z);
 };
 
 typedef std::shared_ptr<Volume> VolumePtr;

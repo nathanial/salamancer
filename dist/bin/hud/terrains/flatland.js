@@ -4,6 +4,9 @@
     var DIRT = 2;
     var WATER = 3;
     var STONE = 4;
+    var XWIDTH = 32;
+    var YWIDTH = 32;
+    var ZWIDTH = 32;
     
     defineVoxel('Grass', 'grass_top.png', 'grass_side.png', 'dirt.png', false);
     defineVoxel('Dirt', 'dirt.png', 'dirt.png', 'dirt.png', false);
@@ -12,36 +15,45 @@
     
     function Volume(x,y,z){
         this.position = {x:x,y:y,z:z};
-        this.data = new ArrayBuffer(6 + 32*32*32);
-        this.byteView = new Uint8Array(this.data);
-        
-        console.log(x + " " + y + " " + z);
-        
-        this.byteView[0] = (x & 0xFF00) >> 8
-        this.byteView[1] = x & 0x00FF;
-        
-        this.byteView[2] = (y & 0xFF00) >> 8;
-        this.byteView[3] = y & 0x00FF;
-        
-        this.byteView[4] = (z & 0xFF00) >> 8;
-        this.byteView[5] = z & 0x00FF;
+        this.data = [];
+        for(var i = 0; i < XWIDTH * YWIDTH * ZWIDTH; i++){
+            this.data[i] = 0;
+        }
     }
     
     Volume.prototype.setVoxel = function(type, x, y, z){
-        if (x >= 32 || y >= 32 || z >= 32) {
+        if (x >= XWIDTH || y >= YWIDTH || z >= ZWIDTH) {
             throw "Max coordinate is 32";
         }
-        var index = 6 + x * 32 * 32 + y * 32 + z;
+        var index = x * XWIDTH * YWIDTH + y * ZWIDTH + z;
         if (index >= this.data.length) {
             throw "Set Voxel Out of Bounds";
         }
-        this.byteView[index] = type;        
+        this.data[index] = type;
     };
     
     Volume.prototype.send = function(){
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://voxels", true);
-        xhr.send(this.byteView);
+        var rle = this.runLengthEncoding();
+        createVoxels(this.position.x, this.position.y, this.position.z, rle);
+    };
+    
+    Volume.prototype.runLengthEncoding = function(){
+        this.cursor = 0;
+        var runs = [];
+        while(this.cursor < this.data.length){
+            runs.push(this.nextRun());
+        }
+        return runs.join(",");
+    };
+    
+    Volume.prototype.nextRun = function(){
+        var type = this.data[this.cursor];
+        var count = 0;
+        while(this.cursor < this.data.length && this.data[this.cursor] === type){
+            count++;
+            this.cursor++;
+        }
+        return count+":"+type;
     };
     
     function clear(){
@@ -51,7 +63,7 @@
     }
     
     clear();
-    var xwidth = 10;
+    var xwidth = 20;
     var zwidth = 10;
     var height = 3;
     

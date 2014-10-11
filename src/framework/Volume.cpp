@@ -1,5 +1,5 @@
 #include "Volume.h"
 
-void Volume::setVoxel(Position p, int type){
-    this->voxels[p.x][p.y][p.z] = (unsigned char)type;
+void Volume::setVoxel(int type, int x, int y, int z){
+    this->voxels[x][y][z] = (unsigned char)type;
 }
