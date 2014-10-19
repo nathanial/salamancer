@@ -160,9 +160,9 @@ void MeshLoader::loadMesh(World* world, ManualObject *manual, VerticesAndFaces v
 
         manual->position(v1[0], v1[1], v1[2]);
         if(topside){
-            manual->textureCoord(0, leftXScale);
-        } else if(bottomside){
             manual->textureCoord(frontXScale, leftXScale);
+        } else if(bottomside){
+            manual->textureCoord(leftXScale, frontXScale);
         } else if(leftside){           
             manual->textureCoord(0, leftYScale);
         } else if(frontside){
@@ -177,9 +177,9 @@ void MeshLoader::loadMesh(World* world, ManualObject *manual, VerticesAndFaces v
         
         manual->position(v2[0], v2[1], v2[2]);
         if (topside) {
-            manual->textureCoord(frontXScale, leftXScale);
-        } else if(bottomside){
             manual->textureCoord(frontXScale, 0);
+        } else if(bottomside){
+            manual->textureCoord(leftXScale, 0);
         } else if(leftside){
             manual->textureCoord(leftXScale, leftYScale);
         } else if(frontside) {
@@ -194,7 +194,7 @@ void MeshLoader::loadMesh(World* world, ManualObject *manual, VerticesAndFaces v
         
         manual->position(v3[0], v3[1], v3[2]);
         if (topside) {
-            manual->textureCoord(frontXScale, 0);
+            manual->textureCoord(0, 0);
         } else if(bottomside){
             manual->textureCoord(0, 0);
         } else if(leftside){
@@ -210,8 +210,10 @@ void MeshLoader::loadMesh(World* world, ManualObject *manual, VerticesAndFaces v
         }
 
         manual->position(v4[0], v4[1], v4[2]);
-        if(bottomside){
+        if(topside) {
             manual->textureCoord(0, leftXScale);
+        } else if(bottomside){
+            manual->textureCoord(0, frontXScale);
         } else if(backside){
             manual->textureCoord(0, frontYScale);
         } else if(rightside){
