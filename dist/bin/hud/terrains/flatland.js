@@ -18,7 +18,7 @@
         if (x >= XWIDTH || y >= YWIDTH || z >= ZWIDTH) {
             throw "Max coordinate is 32";
         }
-        var index = x * XWIDTH * YWIDTH + y * ZWIDTH + z;
+        var index = y * XWIDTH * ZWIDTH + x * ZWIDTH + z;
         if (index >= this.data.length) {
             throw "Set Voxel Out of Bounds";
         }
@@ -66,29 +66,39 @@
     defineVoxel('Water', 'water_still.png', 'water_still.png', 'water_still.png', true);
     defineVoxel('Stone', 'stone.png', 'stone.png', 'stone.png', false);
     
-    var xwidth = 20;
-    var zwidth = 10;
+    noise.seed(Math.random());
+    
+    var xwidth = 4;
+    var zwidth = 4;
     var height = 1;
     
-    for (var i = 0; i < xwidth; i++) {
-        for (var j = 0; j < height; j++) {
-            for (var k = 0; k < zwidth; k++) {
-                var volume = new Volume(i, j, k);
-                for (var x = 0; x < 32; x++) {
-                    for (var y = 0; y < 32; y++) {
-                        for (var z = 0; z < 32; z++) {
-                            if(x >= 31){
-                                volume.setVoxel(GRASS, x, y, z);
-                            } else if (x > 5){
-                                volume.setVoxel(DIRT, x,y,z);
-                            } else {
-                                volume.setVoxel(STONE, x,y,z);
-                            }
-                        }
-                    }
+    function createVolumes(fn){
+        for (var i = 0; i < xwidth; i++) {
+            for (var j = 0; j < height; j++) {
+                for (var k = 0; k < zwidth; k++) {
+                    var volume = new Volume(i, j, k);
+                    fn(volume);
+                    volume.send();
                 }
-                volume.send();
             }
         }
     }
+    
+    createVolumes(function(volume){
+        for (var x = 0; x < 32; x++) {
+            for (var z = 0; z < 32; z++) {
+                var y = Math.round(noise.perlin2(x/5,z/5) * 5 +16);
+                volume.setVoxel(GRASS, x, y, z);
+                y--;
+                for(; y >= 0; y--){
+                    if (y > 5) {
+                        volume.setVoxel(DIRT, x, y, z);
+                    } else {
+                        volume.setVoxel(STONE, x, y, z);
+                    }
+                }
+            }
+        }
+    });
+    
 })();
