@@ -38,6 +38,7 @@ void World::createVoxel(int type, int x, int y, int z) {
 
 
 void World::clearVoxels() {
+    this->definitions.clear();
     this->sceneManager->clearScene();
     this->manuals.clear();
     this->volumes.clear();
@@ -75,9 +76,9 @@ void World::createVoxels(int baseX, int baseY, int baseZ, std::string runLengthE
     int cursor = 0;
     for(auto run : runs){
         for(int i = 0; i < run.length; i++){
-            int x = i % Volume::XWIDTH;
-            int y = i/ (Volume::XWIDTH * Volume::ZWIDTH);
-            int z = (i / Volume::XWIDTH) % Volume::ZWIDTH;
+            int x = cursor % Volume::XWIDTH;
+            int y = cursor / (Volume::XWIDTH * Volume::ZWIDTH);
+            int z = (cursor / Volume::XWIDTH) % Volume::ZWIDTH;
             
             assert(x < Volume::XWIDTH);
             assert(y < Volume::YWIDTH);

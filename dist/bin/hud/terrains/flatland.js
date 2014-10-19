@@ -1,18 +1,11 @@
 (function(){
     
-    var GRASS = 1;
-    var DIRT = 2;
-    var WATER = 3;
-    var STONE = 4;
+
     var XWIDTH = 32;
     var YWIDTH = 32;
     var ZWIDTH = 32;
     
-    defineVoxel('Grass', 'grass_top.png', 'grass_side.png', 'dirt.png', false);
-    defineVoxel('Dirt', 'dirt.png', 'dirt.png', 'dirt.png', false);
-    defineVoxel('Water', 'water_still.png', 'water_still.png', 'water_still.png', true);  
-    defineVoxel('Stone', 'stone.png', 'stone.png', 'stone.png', false);
-    
+
     function Volume(x,y,z){
         this.position = {x:x,y:y,z:z};
         this.data = [];
@@ -63,9 +56,19 @@
     }
     
     clear();
+    
+    var GRASS = 1;
+    var DIRT = 2;
+    var WATER = 3;
+    var STONE = 4;
+    defineVoxel('Grass', 'grass_top.png', 'grass_side.png', 'dirt.png', false);
+    defineVoxel('Dirt', 'dirt.png', 'dirt.png', 'dirt.png', false);
+    defineVoxel('Water', 'water_still.png', 'water_still.png', 'water_still.png', true);
+    defineVoxel('Stone', 'stone.png', 'stone.png', 'stone.png', false);
+    
     var xwidth = 20;
     var zwidth = 10;
-    var height = 3;
+    var height = 1;
     
     for (var i = 0; i < xwidth; i++) {
         for (var j = 0; j < height; j++) {
@@ -74,10 +77,12 @@
                 for (var x = 0; x < 32; x++) {
                     for (var y = 0; y < 32; y++) {
                         for (var z = 0; z < 32; z++) {
-                            if(j == 0 || i == 0 || i == xwidth - 1 || k == 0 || k == zwidth - 1){
-                                volume.setVoxel(STONE, x, y, z);
+                            if(x >= 31){
+                                volume.setVoxel(GRASS, x, y, z);
+                            } else if (x > 5){
+                                volume.setVoxel(DIRT, x,y,z);
                             } else {
-                                volume.setVoxel(WATER, x, y, z);
+                                volume.setVoxel(STONE, x,y,z);
                             }
                         }
                     }
