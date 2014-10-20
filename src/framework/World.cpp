@@ -146,7 +146,7 @@ void World::defineVoxel(VoxelDefinition definition){
     Ogre::TexturePtr tex = Ogre::TextureManager::getSingleton().createManual("TextureArrayTex",
             Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
             Ogre::TEX_TYPE_3D,
-            256, 256, 256,
+            256, 256, 6,
             0,
             Ogre::PF_A8R8G8B8,
             Ogre::TU_STATIC_WRITE_ONLY);
@@ -166,7 +166,7 @@ void World::defineVoxel(VoxelDefinition definition){
                 }
                 else {
                     //Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().load(textures[i], Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
-                    Ogre::PixelUtil::packColour((float) x / pb.getWidth(), (float) y / pb.getHeight(), (float) z / pb.getDepth(), 1.0f, Ogre::PF_A8R8G8B8, &pbptr[x]);
+                    Ogre::PixelUtil::packColour(1.0f, 0.5f, 0.1f, 1.0f, Ogre::PF_A8R8G8B8, &pbptr[x]);
                 }
             }
             pbptr += pb.rowPitch;

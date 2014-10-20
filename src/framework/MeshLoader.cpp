@@ -160,7 +160,7 @@ void MeshLoader::loadMesh(World* world, ManualObject *manual, VerticesAndFaces v
 //            manual->begin(definition.name + "Side", RenderOperation::OT_TRIANGLE_LIST);
 //        }
         
-        float d = (0+0.5)/6;
+        float d = 0.5;
 
         manual->position(v1[0], v1[1], v1[2]);
         if(topside){
