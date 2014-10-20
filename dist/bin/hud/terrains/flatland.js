@@ -68,8 +68,8 @@
     
     noise.seed(Math.random());
     
-    var xwidth = 2;
-    var zwidth = 2;
+    var xwidth = 5;
+    var zwidth = 5;
     var height = 1;
     
     function createVolumes(fn){
