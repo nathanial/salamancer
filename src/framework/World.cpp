@@ -11,6 +11,7 @@
 #include "OgreManualObject.h"
 #include "MeshLoader.h"
 #include "include/internal/cef_types.h"
+#include "OgrePass.h"
 
 std::vector<std::string> split(const std::string src, char delim) {
     std::vector<std::string> elements;
@@ -139,27 +140,50 @@ Ogre::ManualObject* World::findOrCreateManualObject(Position p){
 void World::defineVoxel(VoxelDefinition definition){
     definitions.push_back(definition);
    
-    std::vector<std::tuple<std::string, std::string> > materialNames = {
-        std::make_tuple(definition.name + "Top", definition.topImage),
-        std::make_tuple(definition.name + "Side", definition.sideImage),
-        std::make_tuple(definition.name + "Bottom", definition.bottomImage)
-    };
     
-    for(auto pair : materialNames){
-        auto materialName = std::get<0>(pair);
-        auto imageName = std::get<1>(pair);
+    std::vector<std::string> textures = { definition.topImage, definition.sideImage, definition.sideImage, definition.sideImage, definition.sideImage, definition.bottomImage };
 
-        auto material = Ogre::MaterialManager::getSingleton().create(materialName, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, true);
-        auto pass = material->getTechnique(0)->getPass(0);
-        pass->setLightingEnabled(false);
-        if(definition.transparent) {
-            pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
-            pass->setSceneBlendingOperation(Ogre::SceneBlendOperation::SBO_MAX);
+    Ogre::TexturePtr tex = Ogre::TextureManager::getSingleton().createManual("TextureArrayTex",
+            Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+            Ogre::TEX_TYPE_3D,
+            256, 256, 256,
+            0,
+            Ogre::PF_A8R8G8B8,
+            Ogre::TU_STATIC_WRITE_ONLY);
+
+
+    Ogre::HardwarePixelBufferSharedPtr buffer = tex->getBuffer(0,0);
+    buffer->lock(Ogre::HardwareBuffer::HBL_NORMAL);
+    const Ogre::PixelBox &pb = buffer->getCurrentLock();
+    Ogre::uint32 *pbptr = static_cast<Ogre::uint32*> (pb.data);
+    for (size_t z = pb.front; z < pb.back; z++) {
+        for (size_t y = pb.top; y < pb.bottom; y++) {
+            for (size_t x = pb.left; x < pb.right; x++) {
+                if (z == pb.front || z == (pb.back - 1) || y == pb.top || y == (pb.bottom - 1) ||
+                        x == pb.left || x == (pb.right - 1)) {
+                    // On border, must be zero
+                    pbptr[x] = 0;
+                }
+                else {
+                    //Ogre::TexturePtr texture = Ogre::TextureManager::getSingleton().load(textures[i], Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME);
+                    Ogre::PixelUtil::packColour((float) x / pb.getWidth(), (float) y / pb.getHeight(), (float) z / pb.getDepth(), 1.0f, Ogre::PF_A8R8G8B8, &pbptr[x]);
+                }
+            }
+            pbptr += pb.rowPitch;
         }
-        Ogre::TextureUnitState *tex = pass->createTextureUnitState();
-        tex->setTextureName(imageName);
-        material ->load();
+        pbptr += pb.getSliceSkip();
     }
+    buffer->unlock();
+    
+    auto material = Ogre::MaterialManager::getSingleton().create(definition.name, Ogre::ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME, true);
+    Ogre::Pass *pass = material->getTechnique(0)->getPass(0);
+    pass->setLightingEnabled(false);
+    if(definition.transparent) {
+        pass->setSceneBlending(Ogre::SBT_TRANSPARENT_ALPHA);
+        pass->setSceneBlendingOperation(Ogre::SceneBlendOperation::SBO_MAX);
+    }
+    Ogre::TextureUnitState *texUnit = pass->createTextureUnitState();
+    texUnit->setTextureName("TextureArrayTex");
 }
 
 VoxelDefinition World::lookupVoxelDefinition(int type){

@@ -113,6 +113,8 @@ void MeshLoader::loadMesh(World* world, ManualObject *manual, VerticesAndFaces v
     Faces faces = std::get<1>(vf);
     bool alreadyLoaded[vertices.size()] = {false};
     
+    manual->begin("Grass", RenderOperation::OT_TRIANGLE_LIST);
+    
     for(int i = 0; i < faces.size(); i++){
         Face face = faces[i];
         
@@ -150,82 +152,86 @@ void MeshLoader::loadMesh(World* world, ManualObject *manual, VerticesAndFaces v
         float leftXScale = std::abs(v1[2]-v3[2]);
         float leftYScale = std::abs(v1[1]-v3[1]);
         
-        if(topside){
-            manual->begin(definition.name + "Top", RenderOperation::OT_TRIANGLE_LIST);
-        } else if(bottomside){
-            manual->begin(definition.name + "Bottom", RenderOperation::OT_TRIANGLE_LIST);
-        } else {
-            manual->begin(definition.name + "Side", RenderOperation::OT_TRIANGLE_LIST);
-        }
+//        if(topside){
+//            manual->begin(definition.name + "Top", RenderOperation::OT_TRIANGLE_LIST);
+//        } else if(bottomside){
+//            manual->begin(definition.name + "Bottom", RenderOperation::OT_TRIANGLE_LIST);
+//        } else {
+//            manual->begin(definition.name + "Side", RenderOperation::OT_TRIANGLE_LIST);
+//        }
+        
+        float d = (0+0.5)/6;
 
         manual->position(v1[0], v1[1], v1[2]);
         if(topside){
-            manual->textureCoord(frontXScale, leftXScale);
+            manual->textureCoord(frontXScale, leftXScale, d);
         } else if(bottomside){
-            manual->textureCoord(leftXScale, frontXScale);
+            manual->textureCoord(leftXScale, frontXScale, d);
         } else if(leftside){           
-            manual->textureCoord(0, leftYScale);
+            manual->textureCoord(0, leftYScale, d);
         } else if(frontside){
-            manual->textureCoord(0, frontYScale);
+            manual->textureCoord(0, frontYScale, d);
         } else if(backside){
-            manual->textureCoord(frontXScale,frontYScale);
+            manual->textureCoord(frontXScale,frontYScale, d);
         } else if(rightside){
-            manual->textureCoord(leftXScale, leftYScale);
+            manual->textureCoord(leftXScale, leftYScale, d);
         } else {
-            manual->textureCoord(0,0);
+            manual->textureCoord(0,0, d);
         }
         
         manual->position(v2[0], v2[1], v2[2]);
         if (topside) {
-            manual->textureCoord(frontXScale, 0);
+            manual->textureCoord(frontXScale, 0, d);
         } else if(bottomside){
-            manual->textureCoord(leftXScale, 0);
+            manual->textureCoord(leftXScale, 0, d);
         } else if(leftside){
-            manual->textureCoord(leftXScale, leftYScale);
+            manual->textureCoord(leftXScale, leftYScale, d);
         } else if(frontside) {
-            manual->textureCoord(frontXScale, frontYScale);
+            manual->textureCoord(frontXScale, frontYScale, d);
         } else if(backside){
-            manual->textureCoord(frontXScale,0);
+            manual->textureCoord(frontXScale,0, d);
         } else if(rightside){
-            manual->textureCoord(leftXScale, 0);
+            manual->textureCoord(leftXScale, 0, d);
         } else {
-            manual->textureCoord(0,0);
+            manual->textureCoord(0,0, d);
         }
         
         manual->position(v3[0], v3[1], v3[2]);
         if (topside) {
-            manual->textureCoord(0, 0);
+            manual->textureCoord(0, 0, d);
         } else if(bottomside){
-            manual->textureCoord(0, 0);
+            manual->textureCoord(0, 0, d);
         } else if(leftside){
-            manual->textureCoord(leftXScale, 0);
+            manual->textureCoord(leftXScale, 0, d);
         } else if(frontside){
-            manual->textureCoord(frontXScale, 0);
+            manual->textureCoord(frontXScale, 0, d);
         } else if(backside){
-            manual->textureCoord(0, 0);
+            manual->textureCoord(0, 0, d);
         } else if(rightside){
-            manual->textureCoord(0, 0);
+            manual->textureCoord(0, 0, d);
         }  else {
-            manual->textureCoord(0,0);
+            manual->textureCoord(0,0, d);
         }
 
         manual->position(v4[0], v4[1], v4[2]);
         if(topside) {
-            manual->textureCoord(0, leftXScale);
+            manual->textureCoord(0, leftXScale, d);
         } else if(bottomside){
-            manual->textureCoord(0, frontXScale);
+            manual->textureCoord(0, frontXScale, d);
         } else if(backside){
-            manual->textureCoord(0, frontYScale);
+            manual->textureCoord(0, frontYScale, d);
         } else if(rightside){
-            manual->textureCoord(0, leftYScale);
+            manual->textureCoord(0, leftYScale, d);
         } else {
-            manual->textureCoord(0,0);
+            manual->textureCoord(0,0, d);
         }
         
-        //manual->quad(face[0], face[1], face[2], face[3]);
-        manual->quad(0,1,2,3);
+        manual->quad(face[0], face[1], face[2], face[3]);
+        //manual->quad(0,1,2,3);
 
-        manual->end();
+        
     }
+    
+    manual->end();
     
 }

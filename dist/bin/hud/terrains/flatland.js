@@ -62,14 +62,14 @@
     var WATER = 3;
     var STONE = 4;
     defineVoxel('Grass', 'grass_top.png', 'grass_side.png', 'dirt.png', false);
-    defineVoxel('Dirt', 'dirt.png', 'dirt.png', 'dirt.png', false);
-    defineVoxel('Water', 'water_still.png', 'water_still.png', 'water_still.png', true);
-    defineVoxel('Stone', 'stone.png', 'stone.png', 'stone.png', false);
+//    defineVoxel('Dirt', 'dirt.png', 'dirt.png', 'dirt.png', false);
+//    defineVoxel('Water', 'water_still.png', 'water_still.png', 'water_still.png', true);
+//    defineVoxel('Stone', 'stone.png', 'stone.png', 'stone.png', false);
     
     noise.seed(Math.random());
     
-    var xwidth = 5;
-    var zwidth = 5;
+    var xwidth = 1;
+    var zwidth = 1;
     var height = 1;
     
     function createVolumes(fn){
@@ -84,33 +84,33 @@
         }
     }
     
-    createVolumes(function(volume){
-        for (var x = 0; x < 32; x++) {
-            for (var z = 0; z < 32; z++) {
-                var y = Math.round(noise.perlin2(x/5,z/5) * 5 +16);
-                volume.setVoxel(GRASS, x, y, z);
-                y--;
-                for(; y >= 0; y--){
-                    if (y > 5) {
-                        volume.setVoxel(DIRT, x, y, z);
-                    } else {
-                        volume.setVoxel(STONE, x, y, z);
-                    }
-                }
-            }
-        }
-    });
-//    
 //    createVolumes(function(volume){
-//       volume.setVoxel(GRASS, 0, 0, 0);
-//       volume.setVoxel(GRASS, 0, 0, 1);
-//       volume.setVoxel(GRASS, 0, 0, 2);
-//       volume.setVoxel(GRASS, 0, 0, 3);
-//       
-//       volume.setVoxel(GRASS, 2, 0, 0);
-//       volume.setVoxel(GRASS, 2, 0, 1);
-//       volume.setVoxel(GRASS, 3, 0, 0);
-//       volume.setVoxel(GRASS, 3, 0, 1);
+//        for (var x = 0; x < 32; x++) {
+//            for (var z = 0; z < 32; z++) {
+//                var y = Math.round(noise.perlin2(x/5,z/5) * 5 +16);
+//                volume.setVoxel(GRASS, x, y, z);
+//                y--;
+//                for(; y >= 0; y--){
+//                    if (y > 5) {
+//                        volume.setVoxel(DIRT, x, y, z);
+//                    } else {
+//                        volume.setVoxel(STONE, x, y, z);
+//                    }
+//                }
+//            }
+//        }
 //    });
+//    
+    createVolumes(function(volume){
+       volume.setVoxel(GRASS, 0, 0, 0);
+       volume.setVoxel(GRASS, 0, 0, 1);
+       volume.setVoxel(GRASS, 0, 0, 2);
+       volume.setVoxel(GRASS, 0, 0, 3);
+       
+       volume.setVoxel(GRASS, 2, 0, 0);
+       volume.setVoxel(GRASS, 2, 0, 1);
+       volume.setVoxel(GRASS, 3, 0, 0);
+       volume.setVoxel(GRASS, 3, 0, 1);
+    });
     
 })();
